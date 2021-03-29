@@ -1,5 +1,5 @@
 import winston, { LoggerOptions } from 'winston';
-import IS_PROD from '../helpers/isProd';
+import IS_PROD from './isProd';
 
 const options: LoggerOptions = {
   transports: [
