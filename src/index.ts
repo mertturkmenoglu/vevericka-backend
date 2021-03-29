@@ -1,4 +1,7 @@
 import express from 'express';
+import dotenvSafe from 'dotenv-safe';
+
+dotenvSafe.config();
 
 const app = express();
 
