@@ -16,10 +16,18 @@
     "plugins": [
         "@typescript-eslint"
     ],
+    "settings": {
+      "import/resolver": {
+        "node": {
+          "extensions": [".js", ".ts"]
+        }
+      }
+    },
     "rules": {
       "no-console": "off",
       "indent": ["error", 2],
       "quotes": ["error", "single"],
-      "linebreak-style": "off"
+      "linebreak-style": "off",
+      "import/extensions": "off"
     }
 }
