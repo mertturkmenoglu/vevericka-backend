@@ -1,0 +1,8 @@
+{
+  "name": "vevericka-backend",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "https://github.com/mertturkmenoglu/vevericka-backend.git",
+  "author": "Mert <mertturkmenoglu99@gmail.com>",
+  "license": "Apache"
+}
