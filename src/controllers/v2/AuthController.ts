@@ -2,6 +2,7 @@ import { Request, Response } from 'express';
 import AuthService from '../../services/v2/AuthService';
 import err from '../../utils/err';
 import BaseController from './BaseController';
+import RegisterDto from './dto/RegisterDto';
 
 class AuthController extends BaseController {
   authService: AuthService
@@ -12,8 +13,10 @@ class AuthController extends BaseController {
   }
 
   register(req: Request, res: Response) {
+    const dto = req.body as RegisterDto;
     console.log(this.authService);
-    console.log(req.body);
+    console.log('Register dto', dto);
+
     return res.status(501).json(err('Not implemented', 501));
   }
 }
