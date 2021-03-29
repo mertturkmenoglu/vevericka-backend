@@ -29,7 +29,8 @@
     "resolveJsonModule": true
   },
   "exclude": [
-    "node_modules"
+    "node_modules",
+    "**/*.test.ts"
   ],
   "lib": [
     "es2015"
