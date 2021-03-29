@@ -9,6 +9,7 @@ import mongooseOptions from './configs/MongoConfig';
 import morganConfig from './configs/MorganConfig';
 import applicationConfig from './configs/ApplicationConfig';
 import appV2Routes from './routes/v2';
+import Log from './utils/Log';
 
 // Load environment variables
 dotenvSafe.config();
@@ -33,7 +34,7 @@ app.use(morgan(morganConfig));
 app.use('/api/v2', appV2Routes);
 
 const server = app.listen(PORT, () => {
-  console.log(`Server started on port ${PORT}`);
+  Log.i(`Server started on port ${PORT}`);
 });
 
 export default {
