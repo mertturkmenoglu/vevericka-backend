@@ -4,6 +4,7 @@ import isAuth from '../../middlewares/isAuth';
 import UserRepository from '../../repositories/UserRepository';
 import UserService from '../../services/v2/UserService';
 import logger from '../../utils/winstonLogger';
+import authorize from './authorization';
 import validateDto from './validation';
 
 const router = express.Router();
@@ -19,6 +20,7 @@ router.get('/:id', (req: Request, res: Response) => userController.getUserById(r
 router.post(
   '/follow',
   isAuth,
+  (req, res, next) => authorize('follow-user', req, res, next),
   (req: Request, res: Response, next: NextFunction) => validateDto('follow-user', req, res, next),
   (req: Request, res: Response) => userController.followUser(req, res),
 );
