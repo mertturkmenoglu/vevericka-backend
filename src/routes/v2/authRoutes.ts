@@ -18,4 +18,10 @@ router.post(
   (req: Request, res: Response) => authController.register(req, res),
 );
 
+router.post(
+  '/login',
+  (req: Request, res: Response, next: NextFunction) => validateDto('login', req, res, next),
+  (req: Request, res: Response) => authController.login(req, res),
+);
+
 export default router;

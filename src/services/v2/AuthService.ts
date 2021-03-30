@@ -10,6 +10,10 @@ class AuthService {
     return this.repository.insertUser(user);
   }
 
+  async getUserByEmail(email: string): Promise<UserDocument | null> {
+    return this.repository.findUserByEmail(email);
+  }
+
   async userExists(username: string, email: string): Promise<Boolean> {
     const user = await this.repository.findUserByUsernameOrEmail(username, email);
     return !(user === null);
