@@ -8,74 +8,37 @@ import isValidSendPasswordResetEmailDto from '../../validation/sendPasswordReset
 import isValidUnfollowUserDto from '../../validation/unfollowUser';
 import isValidUpdateUserDto from '../../validation/updateUser';
 
-type DtoType = 'register' | 'login' | 'send-password-reset-email'
-  | 'reset-password' | 'follow-user' | 'unfollow-user' | 'update-user';
+type DtoType =
+  | 'register'
+  | 'login'
+  | 'send-password-reset-email'
+  | 'reset-password'
+  | 'follow-user'
+  | 'unfollow-user'
+  | 'update-user';
+
+// eslint-disable-next-line no-unused-vars
+type ValidationFn = (_: object) => Promise<boolean>;
+
+const matchDtoTypeToFunction: Record<DtoType, ValidationFn> = {
+  register: isValidRegisterDto,
+  login: isValidLoginDto,
+  'send-password-reset-email': isValidSendPasswordResetEmailDto,
+  'reset-password': isValidResetPasswordDto,
+  'follow-user': isValidFollowUserDto,
+  'unfollow-user': isValidUnfollowUserDto,
+  'update-user': isValidUpdateUserDto,
+};
 
 const validateDto = async (dtoType: DtoType, req: Request, res: Response, next: NextFunction) => {
-  if (dtoType === 'register') {
-    const isValid = await isValidRegisterDto(req.body);
-    if (isValid) {
-      return next();
-    }
+  const fn = matchDtoTypeToFunction[dtoType];
 
-    return res.status(400).json(err('Request body is not valid', 400));
+  const isValid = await fn(req.body);
+  if (isValid) {
+    return next();
   }
 
-  if (dtoType === 'login') {
-    const isValid = await isValidLoginDto(req.body);
-    if (isValid) {
-      return next();
-    }
-
-    return res.status(400).json(err('Request body is not valid', 400));
-  }
-
-  if (dtoType === 'send-password-reset-email') {
-    const isValid = await isValidSendPasswordResetEmailDto(req.body);
-    if (isValid) {
-      return next();
-    }
-
-    return res.status(400).json(err('Request body is not valid', 400));
-  }
-
-  if (dtoType === 'reset-password') {
-    const isValid = await isValidResetPasswordDto(req.body);
-    if (isValid) {
-      return next();
-    }
-
-    return res.status(400).json(err('Request body is not valid', 400));
-  }
-
-  if (dtoType === 'follow-user') {
-    const isValid = await isValidFollowUserDto(req.body);
-    if (isValid) {
-      return next();
-    }
-
-    return res.status(400).json(err('Request body is not valid', 400));
-  }
-
-  if (dtoType === 'unfollow-user') {
-    const isValid = await isValidUnfollowUserDto(req.body);
-    if (isValid) {
-      return next();
-    }
-
-    return res.status(400).json(err('Request body is not valid', 400));
-  }
-
-  if (dtoType === 'update-user') {
-    const isValid = await isValidUpdateUserDto(req.body);
-    if (isValid) {
-      return next();
-    }
-
-    return res.status(400).json(err('Request body is not valid', 400));
-  }
-
-  return res.status(400).json(err('Unknown dto type', 400));
+  return res.status(400).json(err('Request body is not valid', 400));
 };
 
 export default validateDto;
