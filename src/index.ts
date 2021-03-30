@@ -5,12 +5,14 @@ import helmet from 'helmet';
 import cors from 'cors';
 import morgan from 'morgan';
 import Redis from 'ioredis';
+import expresStatusMonitor from 'express-status-monitor';
 
 import mongooseOptions from './configs/MongoConfig';
 import morganConfig from './configs/MorganConfig';
 import applicationConfig from './configs/ApplicationConfig';
 import appV2Routes from './routes/v2';
 import Log from './utils/Log';
+import IS_DEV from './utils/isDev';
 
 // Load environment variables
 dotenvSafe.config();
@@ -30,6 +32,10 @@ mongoose.connect(process.env.MONGO_URI as string, mongooseOptions, () => {
 app.set('trust proxy', 1);
 
 // Middlewares
+if (IS_DEV) {
+  app.use(expresStatusMonitor());
+}
+
 app.use(express.json());
 app.use(helmet());
 app.use(cors());
