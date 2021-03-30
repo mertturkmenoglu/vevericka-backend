@@ -54,7 +54,6 @@ class AuthController extends BaseController {
   async login(req: Request, res: Response) {
     const dto = req.body as LoginDto;
     const user = await this.authService.getUserByEmail(dto.email);
-    console.log('login user', user);
 
     if (!user) {
       return res.status(HttpCodes.BAD_REQUEST).json(err('Cannot login', HttpCodes.BAD_REQUEST));

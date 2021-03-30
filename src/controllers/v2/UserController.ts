@@ -4,6 +4,7 @@ import err from '../../utils/err';
 import HttpCodes from '../../utils/HttpCodes';
 import response from '../../utils/response';
 import BaseController from './BaseController';
+import FollowUserDto from './dto/FollowUserDto';
 
 class UserController extends BaseController {
   constructor(readonly userService: UserService) {
@@ -31,6 +32,34 @@ class UserController extends BaseController {
     }
 
     return res.json(response(user));
+  }
+
+  async followUser(req: Request, res: Response) {
+    const dto = req.body as FollowUserDto;
+    const thisUser = await this.userService.getUserByUsername(dto.thisUsername);
+    const otherUser = await this.userService.getUserByUsername(dto.otherUsername);
+
+    if (!thisUser || !otherUser) {
+      return res.status(HttpCodes.NOT_FOUND).json(err('User(s) not found', HttpCodes.NOT_FOUND));
+    }
+
+    // thisUser already follows otherUser
+    if (thisUser.following.includes(otherUser.id)) {
+      return res.status(HttpCodes.BAD_REQUEST).json(err('Already following', HttpCodes.NOT_FOUND));
+    }
+
+    thisUser.following.push(otherUser.id);
+    otherUser.followers.push(thisUser.id);
+
+    try {
+      await thisUser.save();
+      await otherUser.save();
+      return res.status(HttpCodes.NO_CONTENT).end();
+    } catch (e) {
+      return res
+        .status(HttpCodes.INTERNAL_SERVER_ERROR)
+        .json(err('Server error: Cannot follow', HttpCodes.INTERNAL_SERVER_ERROR));
+    }
   }
 }
 
