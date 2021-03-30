@@ -45,7 +45,7 @@ class UserController extends BaseController {
 
     // thisUser already follows otherUser
     if (thisUser.following.includes(otherUser.id)) {
-      return res.status(HttpCodes.BAD_REQUEST).json(err('Already following', HttpCodes.NOT_FOUND));
+      return res.status(HttpCodes.BAD_REQUEST).json(err('Already following', HttpCodes.BAD_REQUEST));
     }
 
     thisUser.following.push(otherUser.id);
