@@ -30,4 +30,10 @@ router.post(
   (req: Request, res: Response) => authController.sendPasswordResetEmail(req, res),
 );
 
+router.post(
+  '/reset-password',
+  (req: Request, res: Response, next: NextFunction) => validateDto('reset-password', req, res, next),
+  (req: Request, res: Response) => authController.resetPassword(req, res),
+);
+
 export default router;

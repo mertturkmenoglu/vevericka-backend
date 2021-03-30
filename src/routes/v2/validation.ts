@@ -2,9 +2,10 @@ import { NextFunction, Request, Response } from 'express';
 import err from '../../utils/err';
 import isValidLoginDto from '../../validation/login';
 import isValidRegisterDto from '../../validation/register';
+import isValidResetPasswordDto from '../../validation/resetPassword';
 import isValidSendPasswordResetEmailDto from '../../validation/sendPasswordResetEmail';
 
-type DtoType = 'register' | 'login' | 'send-password-reset-email';
+type DtoType = 'register' | 'login' | 'send-password-reset-email' | 'reset-password';
 
 const validateDto = async (dtoType: DtoType, req: Request, res: Response, next: NextFunction) => {
   if (dtoType === 'register') {
@@ -27,6 +28,15 @@ const validateDto = async (dtoType: DtoType, req: Request, res: Response, next: 
 
   if (dtoType === 'send-password-reset-email') {
     const isValid = await isValidSendPasswordResetEmailDto(req.body);
+    if (isValid) {
+      return next();
+    }
+
+    return res.status(400).json(err('Request body is not valid', 400));
+  }
+
+  if (dtoType === 'reset-password') {
+    const isValid = await isValidResetPasswordDto(req.body);
     if (isValid) {
       return next();
     }

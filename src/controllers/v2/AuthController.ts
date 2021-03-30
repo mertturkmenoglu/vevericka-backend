@@ -10,9 +10,11 @@ import BaseController from './BaseController';
 import RegisterDto from './dto/RegisterDto';
 import LoginDto from './dto/LoginDto';
 import SendPasswordResetEmailDto from './dto/SendPasswordResetEmailDto';
+import ResetPasswordDto from './dto/ResetPasswordDto';
 import response from '../../utils/response';
 import app from '../../index';
 import { FORGET_PASSWORD_PREFIX } from '../../configs/RedisConfig';
+import logger from '../../utils/winstonLogger';
 
 class AuthController extends BaseController {
   authService: AuthService
@@ -98,6 +100,39 @@ class AuthController extends BaseController {
 
     await this.authService.sendPasswordResetEmail(dto.email, passwordResetCode);
     return res.status(HttpCodes.OK).end();
+  }
+
+  async resetPassword(req: Request, res: Response) {
+    const dto = req.body as ResetPasswordDto;
+    const user = await this.authService.getUserByEmail(dto.email);
+
+    if (!user) {
+      return res.status(HttpCodes.BAD_REQUEST).json(err('User does not exist', HttpCodes.BAD_REQUEST));
+    }
+
+    const REDIS_KEY = FORGET_PASSWORD_PREFIX + dto.code;
+    const userId = await app.redis.get(REDIS_KEY);
+
+    if (!userId) {
+      return res.status(HttpCodes.BAD_REQUEST).json(err('Password reset code is invalid', HttpCodes.BAD_REQUEST));
+    }
+
+    if (userId !== user.id) {
+      return res.status(HttpCodes.BAD_REQUEST).json(err('Password reset code is invalid', HttpCodes.BAD_REQUEST));
+    }
+
+    user.password = dto.password;
+
+    try {
+      await user.save();
+      await app.redis.del(REDIS_KEY);
+      return res.status(HttpCodes.NO_CONTENT).end();
+    } catch (e) {
+      logger.error(e);
+      return res
+        .status(HttpCodes.INTERNAL_SERVER_ERROR)
+        .json(err('Server error: Cannot reset password', HttpCodes.INTERNAL_SERVER_ERROR));
+    }
   }
 }
 
