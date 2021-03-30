@@ -5,7 +5,7 @@ import getTokenFromHeader from '../../utils/getTokenFromHeader';
 import HttpCodes from '../../utils/HttpCodes';
 import isAuthorized from '../../utils/isAuthorized';
 
-type AuthorizationType = 'follow-user' | 'unfollow-user';
+type AuthorizationType = 'follow-user' | 'unfollow-user' | 'update-user';
 
 const authorize = async (
   authorizationType: AuthorizationType,
@@ -22,6 +22,24 @@ const authorize = async (
     }
 
     const auth = isAuthorized(token, req.body.thisUsername);
+    if (!auth) {
+      return res
+        .status(HttpCodes.UNAUTHORIZED)
+        .json(err('Unauthorized', HttpCodes.UNAUTHORIZED));
+    }
+
+    return next();
+  }
+
+  if (authorizationType === 'update-user') {
+    const token = getTokenFromHeader(req);
+    if (!token) {
+      return res
+        .status(HttpCodes.UNAUTHORIZED)
+        .json(err('Unauthorized', HttpCodes.UNAUTHORIZED));
+    }
+
+    const auth = isAuthorized(token, req.body.username);
     if (!auth) {
       return res
         .status(HttpCodes.UNAUTHORIZED)

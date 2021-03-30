@@ -33,4 +33,12 @@ router.post(
   (req: Request, res: Response) => userController.unfollowUser(req, res),
 );
 
+router.put(
+  '/',
+  isAuth,
+  (req, res, next) => authorize('update-user', req, res, next),
+  (req, res, next) => validateDto('update-user', req, res, next),
+  (req, res) => userController.updateUser(req, res),
+);
+
 export default router;

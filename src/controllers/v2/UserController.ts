@@ -6,6 +6,7 @@ import response from '../../utils/response';
 import BaseController from './BaseController';
 import FollowUserDto from './dto/FollowUserDto';
 import UnfollowUserDto from './dto/UnfollowUserDto';
+import UpdateUserDto from './dto/UpdateUserDto';
 
 class UserController extends BaseController {
   constructor(readonly userService: UserService) {
@@ -91,6 +92,43 @@ class UserController extends BaseController {
       return res
         .status(HttpCodes.INTERNAL_SERVER_ERROR)
         .json(err('Server error: Cannot follow', HttpCodes.INTERNAL_SERVER_ERROR));
+    }
+  }
+
+  async updateUser(req: Request, res: Response) {
+    const dto = req.body as UpdateUserDto;
+    const user = await this.userService.getUserByUsername(dto.username);
+
+    if (!user) {
+      return res
+        .status(HttpCodes.INTERNAL_SERVER_ERROR)
+        .json(err('Server error: User not found', HttpCodes.INTERNAL_SERVER_ERROR));
+    }
+
+    user.name = dto.name || user.name;
+    user.image = dto.image || user.image;
+    user.hobbies = dto.hobbies || user.hobbies;
+    user.features = dto.features || user.features;
+    user.bdate = dto.bdate || user.bdate;
+    user.location = dto.location || user.location;
+    user.job = dto.job || user.job;
+    user.school = dto.school || user.school;
+    user.website = dto.website || user.website;
+    user.twitter = dto.twitter || user.twitter;
+    user.bio = dto.bio || user.bio;
+    user.gender = dto.gender || user.gender;
+    user.languages = dto.languages || user.languages;
+    user.wishToSpeak = dto.wishToSpeak || user.wishToSpeak;
+
+    try {
+      const updatedUser = await user.save();
+      return res
+        .status(HttpCodes.OK)
+        .json(response(updatedUser));
+    } catch (e) {
+      return res
+        .status(HttpCodes.INTERNAL_SERVER_ERROR)
+        .json(err('Server error: Cannot update user', HttpCodes.INTERNAL_SERVER_ERROR));
     }
   }
 }
