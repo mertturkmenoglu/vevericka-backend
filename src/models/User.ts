@@ -11,8 +11,6 @@ export type UserDocument = mongoose.Document & {
   username: string;
   email: string;
   password: string;
-  passwordResetToken: string;
-  passwordResetExpires: Date;
   name: string;
   image: string;
   hobbies: string[];
@@ -59,14 +57,7 @@ const userSchema = new mongoose.Schema<UserDocument>({
     type: String,
     required: true,
     trim: true,
-  },
-  passwordResetToken: {
-    type: String,
-    default: '',
-  },
-  passwordResetExpires: {
-    type: Date,
-    default: Date.now,
+    select: false,
   },
   name: {
     type: String,

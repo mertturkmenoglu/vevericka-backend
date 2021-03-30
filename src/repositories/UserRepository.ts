@@ -16,9 +16,9 @@ class UserRepository {
     }
   }
 
-  async findUserById(id: string): Promise<UserDocument | null> {
+  async findUserByIdUnsafe(id: string): Promise<UserDocument | null> {
     try {
-      const user = await User.findById(id);
+      const user = await User.findById(id, '+password');
       return user;
     } catch (e) {
       this.logger.error(e);
@@ -26,7 +26,17 @@ class UserRepository {
     }
   }
 
-  async findUserByUsername(username: string): Promise<UserDocument | null> {
+  async findUserByUsernameUnsafe(username: string): Promise<UserDocument | null> {
+    try {
+      const user = await User.findOne({ username }, '+password');
+      return user;
+    } catch (e) {
+      this.logger.error(e);
+      return null;
+    }
+  }
+
+  async findUserByUsernameSafe(username: string): Promise<UserDocument | null> {
     try {
       const user = await User.findOne({ username });
       return user;
@@ -36,9 +46,9 @@ class UserRepository {
     }
   }
 
-  async findUserByEmail(email: string): Promise<UserDocument | null> {
+  async findUserByEmailUnsafe(email: string): Promise<UserDocument | null> {
     try {
-      const user = await User.findOne({ email });
+      const user = await User.findOne({ email }, '+password');
       return user;
     } catch (e) {
       this.logger.error(e);
@@ -46,10 +56,16 @@ class UserRepository {
     }
   }
 
-  async findUserByUsernameOrEmail(username: string, email: string): Promise<UserDocument | null> {
+  async findUserByUsernameOrEmailUnsafe(
+    username: string,
+    email: string,
+  ): Promise<UserDocument | null> {
     try {
       const user = await User
-        .findOne({ $or: [{ username: { $eq: username } }, { email: { $eq: email } }] });
+        .findOne(
+          { $or: [{ username }, { email }] },
+          '+password',
+        );
       return user;
     } catch (e) {
       this.logger.error(e);

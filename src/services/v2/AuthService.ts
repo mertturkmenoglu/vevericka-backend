@@ -14,11 +14,11 @@ class AuthService {
   }
 
   async getUserByEmail(email: string): Promise<UserDocument | null> {
-    return this.repository.findUserByEmail(email);
+    return this.repository.findUserByEmailUnsafe(email);
   }
 
   async userExists(username: string, email: string): Promise<Boolean> {
-    const user = await this.repository.findUserByUsernameOrEmail(username, email);
+    const user = await this.repository.findUserByUsernameOrEmailUnsafe(username, email);
     return !(user === null);
   }
 
