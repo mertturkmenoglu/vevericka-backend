@@ -66,7 +66,11 @@ class AuthController extends BaseController {
         return res.status(HttpCodes.BAD_REQUEST).json(err('Cannot login', HttpCodes.BAD_REQUEST));
       }
 
-      const payload = { userId: user.id };
+      const payload = {
+        userId: user.id,
+        username: user.username,
+      };
+
       const jwtToken = jwt.sign(payload, process.env.JWT_SECRET as string, {
         expiresIn: '7d',
       });
