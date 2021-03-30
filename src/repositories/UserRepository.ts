@@ -82,6 +82,18 @@ class UserRepository {
       return null;
     }
   }
+
+  async searchUsers(query: string, limit = 100): Promise<UserDocument[] | null> {
+    try {
+      const result = await User
+        .find({ username: { $regex: `.*${query}.*` } })
+        .limit(limit);
+      return result;
+    } catch (e) {
+      this.logger.error(e);
+      return null;
+    }
+  }
 }
 
 export default UserRepository;

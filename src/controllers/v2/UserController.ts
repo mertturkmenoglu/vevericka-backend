@@ -131,6 +131,32 @@ class UserController extends BaseController {
         .json(err('Server error: Cannot update user', HttpCodes.INTERNAL_SERVER_ERROR));
     }
   }
+
+  async searchUsersByQuery(req: Request, res: Response) {
+    try {
+      const { searchTerm } = req.query;
+
+      if (typeof searchTerm !== 'string') {
+        return res
+          .status(HttpCodes.BAD_REQUEST)
+          .json(err('Invalid query parameter', HttpCodes.BAD_REQUEST));
+      }
+
+      const result = this.userService.searchUsers(searchTerm);
+
+      if (!result) {
+        return res
+          .status(HttpCodes.BAD_REQUEST)
+          .json(err('Malformed query', HttpCodes.BAD_REQUEST));
+      }
+
+      return res.json(response(result));
+    } catch (e) {
+      return res
+        .status(HttpCodes.BAD_REQUEST)
+        .json(err('Invalid query parameter', HttpCodes.BAD_REQUEST));
+    }
+  }
 }
 
 export default UserController;

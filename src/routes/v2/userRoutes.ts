@@ -13,9 +13,23 @@ const userRepository = new UserRepository(logger);
 const userService = new UserService(userRepository);
 const userController = new UserController(userService);
 
-router.get('/username/:username', (req: Request, res: Response) => userController.getUserByUsername(req, res));
+router.get(
+  '/q',
+  isAuth,
+  (req, res) => userController.searchUsersByQuery(req, res),
+);
 
-router.get('/:id', (req: Request, res: Response) => userController.getUserById(req, res));
+router.get(
+  '/username/:username',
+  isAuth,
+  (req: Request, res: Response) => userController.getUserByUsername(req, res),
+);
+
+router.get(
+  '/:id',
+  isAuth,
+  (req: Request, res: Response) => userController.getUserById(req, res),
+);
 
 router.post(
   '/follow',

@@ -13,6 +13,10 @@ class UserService {
   async getUserById(id: string): Promise<UserDocument | null> {
     return this.userRepository.findUserByIdSafe(id);
   }
+
+  async searchUsers(query: string) {
+    return this.userRepository.searchUsers(query);
+  }
 }
 
 export default UserService;
