@@ -12,4 +12,6 @@ const userController = new UserController(userService);
 
 router.get('/username/:username', (req: Request, res: Response) => userController.getUserByUsername(req, res));
 
+router.get('/:id', (req: Request, res: Response) => userController.getUserById(req, res));
+
 export default router;

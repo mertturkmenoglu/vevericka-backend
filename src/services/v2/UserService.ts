@@ -9,6 +9,10 @@ class UserService {
   async getUserByUsername(username: string): Promise<UserDocument | null> {
     return this.userRepository.findUserByUsernameSafe(username);
   }
+
+  async getUserById(id: string): Promise<UserDocument | null> {
+    return this.userRepository.findUserByIdSafe(id);
+  }
 }
 
 export default UserService;

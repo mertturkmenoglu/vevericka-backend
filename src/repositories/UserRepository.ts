@@ -26,6 +26,16 @@ class UserRepository {
     }
   }
 
+  async findUserByIdSafe(id: string): Promise<UserDocument | null> {
+    try {
+      const user = await User.findById(id);
+      return user;
+    } catch (e) {
+      this.logger.error(e);
+      return null;
+    }
+  }
+
   async findUserByUsernameUnsafe(username: string): Promise<UserDocument | null> {
     try {
       const user = await User.findOne({ username }, '+password');

@@ -21,6 +21,17 @@ class UserController extends BaseController {
 
     return res.json(response(user));
   }
+
+  async getUserById(req: Request, res: Response) {
+    const { id } = req.params;
+    const user = await this.userService.getUserById(id);
+
+    if (!user) {
+      return res.status(HttpCodes.NOT_FOUND).json(err('User not found', HttpCodes.NOT_FOUND));
+    }
+
+    return res.json(response(user));
+  }
 }
 
 export default UserController;
