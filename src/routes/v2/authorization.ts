@@ -5,7 +5,7 @@ import getTokenFromHeader from '../../utils/getTokenFromHeader';
 import HttpCodes from '../../utils/HttpCodes';
 import isAuthorized from '../../utils/isAuthorized';
 
-type AuthorizationType = 'follow-user';
+type AuthorizationType = 'follow-user' | 'unfollow-user';
 
 const authorize = async (
   authorizationType: AuthorizationType,
@@ -13,7 +13,7 @@ const authorize = async (
   res: Response,
   next: NextFunction,
 ) => {
-  if (authorizationType === 'follow-user') {
+  if (authorizationType === 'follow-user' || authorizationType === 'unfollow-user') {
     const token = getTokenFromHeader(req);
     if (!token) {
       return res

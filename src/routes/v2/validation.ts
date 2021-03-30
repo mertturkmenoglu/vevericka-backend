@@ -5,8 +5,10 @@ import isValidLoginDto from '../../validation/login';
 import isValidRegisterDto from '../../validation/register';
 import isValidResetPasswordDto from '../../validation/resetPassword';
 import isValidSendPasswordResetEmailDto from '../../validation/sendPasswordResetEmail';
+import isValidUnfollowUserDto from '../../validation/unfollowUser';
 
-type DtoType = 'register' | 'login' | 'send-password-reset-email' | 'reset-password' | 'follow-user';
+type DtoType = 'register' | 'login' | 'send-password-reset-email'
+  | 'reset-password' | 'follow-user' | 'unfollow-user';
 
 const validateDto = async (dtoType: DtoType, req: Request, res: Response, next: NextFunction) => {
   if (dtoType === 'register') {
@@ -47,6 +49,15 @@ const validateDto = async (dtoType: DtoType, req: Request, res: Response, next: 
 
   if (dtoType === 'follow-user') {
     const isValid = await isValidFollowUserDto(req.body);
+    if (isValid) {
+      return next();
+    }
+
+    return res.status(400).json(err('Request body is not valid', 400));
+  }
+
+  if (dtoType === 'unfollow-user') {
+    const isValid = await isValidUnfollowUserDto(req.body);
     if (isValid) {
       return next();
     }

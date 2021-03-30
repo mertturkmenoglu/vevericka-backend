@@ -25,4 +25,12 @@ router.post(
   (req: Request, res: Response) => userController.followUser(req, res),
 );
 
+router.post(
+  '/unfollow',
+  isAuth,
+  (req, res, next) => authorize('unfollow-user', req, res, next),
+  (req: Request, res: Response, next: NextFunction) => validateDto('unfollow-user', req, res, next),
+  (req: Request, res: Response) => userController.unfollowUser(req, res),
+);
+
 export default router;
