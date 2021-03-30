@@ -9,7 +9,10 @@ import HttpCodes from '../../utils/HttpCodes';
 import BaseController from './BaseController';
 import RegisterDto from './dto/RegisterDto';
 import LoginDto from './dto/LoginDto';
+import SendPasswordResetEmailDto from './dto/SendPasswordResetEmailDto';
 import response from '../../utils/response';
+import app from '../../index';
+import { FORGET_PASSWORD_PREFIX } from '../../configs/RedisConfig';
 
 class AuthController extends BaseController {
   authService: AuthService
@@ -75,6 +78,26 @@ class AuthController extends BaseController {
     } catch (e) {
       return res.status(HttpCodes.INTERNAL_SERVER_ERROR).json(err('Login operation failed', HttpCodes.INTERNAL_SERVER_ERROR));
     }
+  }
+
+  async sendPasswordResetEmail(req: Request, res: Response) {
+    const dto = req.body as SendPasswordResetEmailDto;
+    const user = await this.authService.getUserByEmail(dto.email);
+
+    if (!user) {
+      return res.status(HttpCodes.OK).end();
+    }
+
+    const passwordResetCode = this.authService.generatePasswordResetCode();
+    await app.redis.set(
+      FORGET_PASSWORD_PREFIX + passwordResetCode,
+      user.id,
+      'ex',
+      1000 * 60 * 60 * 3, // 3 hours
+    );
+
+    await this.authService.sendPasswordResetEmail(dto.email, passwordResetCode);
+    return res.status(HttpCodes.OK).end();
   }
 }
 

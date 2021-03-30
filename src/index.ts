@@ -4,6 +4,7 @@ import mongoose from 'mongoose';
 import helmet from 'helmet';
 import cors from 'cors';
 import morgan from 'morgan';
+import Redis from 'ioredis';
 
 import mongooseOptions from './configs/MongoConfig';
 import morganConfig from './configs/MorganConfig';
@@ -17,6 +18,10 @@ dotenvSafe.config();
 const app = express();
 const PORT = process.env.PORT || applicationConfig.PORT;
 
+// Connect to Redis
+const redis = new Redis();
+
+// Connect to MongoDB
 mongoose.connect(process.env.MONGO_URI as string, mongooseOptions, () => {
   console.log('Connected to MongoDB');
 });
@@ -39,4 +44,5 @@ const server = app.listen(PORT, () => {
 
 export default {
   server,
+  redis,
 };

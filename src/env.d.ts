@@ -4,5 +4,6 @@ declare namespace NodeJS {
     PORT: string;
     MONGU_URI: string;
     JWT_SECRET: string;
+    SENDGRID_API_KEY: string;
   }
 }
