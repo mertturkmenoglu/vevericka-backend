@@ -4,7 +4,7 @@
   "main": "index.js",
   "scripts": {
     "start": "node build/src/index.js",
-    "build": "tsc && yarn start",
+    "build": "tsc",
     "postinstall": "yarn build",
     "dev": "nodemon",
     "test": "jest"
