@@ -22,7 +22,10 @@ class PostRepository {
 
   async getUserFeed(users: string[]): Promise<PostDocument[] | null> {
     try {
-      const posts = await Post.find({ createdBy: { $in: users } }).sort({ createdAt: 'desc' });
+      const posts = await Post
+        .find({ createdBy: { $in: users } })
+        .populate('createdBy')
+        .sort({ createdAt: 'desc' });
       return posts;
     } catch (e) {
       return null;
