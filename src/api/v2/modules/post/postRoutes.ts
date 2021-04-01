@@ -39,4 +39,11 @@ router.post(
   (req, res) => postController.createPost(req, res),
 );
 
+router.delete(
+  '/:id',
+  isAuth,
+  (req, res, next) => authorize('delete-post', req, res, next),
+  (req, res) => postController.deletePost(req, res),
+);
+
 export default router;

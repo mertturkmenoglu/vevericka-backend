@@ -82,6 +82,19 @@ class PostController extends BaseController {
         .json(err('Server error: Cannot create post', HttpCodes.INTERNAL_SERVER_ERROR));
     }
   }
+
+  // eslint-disable-next-line class-methods-use-this
+  async deletePost(req: Request, res: Response) {
+    const postId = req.params.id;
+
+    try {
+      await Post.findByIdAndDelete(postId);
+      return res.status(HttpCodes.NO_CONTENT).end();
+    } catch (e) {
+      return res.status(HttpCodes.INTERNAL_SERVER_ERROR)
+        .json(err('Server error: Cannot delete post', HttpCodes.INTERNAL_SERVER_ERROR));
+    }
+  }
 }
 
 export default PostController;
