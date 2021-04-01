@@ -109,6 +109,22 @@ class PostController extends BaseController {
         .json(err('Server error: Cannot delete post', HttpCodes.INTERNAL_SERVER_ERROR));
     }
   }
+
+  async getCommentById(req: Request, res: Response) {
+    const commentId = req.params.id;
+
+    if (!commentId) {
+      return res.status(HttpCodes.BAD_REQUEST).json(err('Invalid comment id', HttpCodes.BAD_REQUEST));
+    }
+
+    const comment = await this.postService.getCommentById(commentId);
+
+    if (!comment) {
+      return res.status(HttpCodes.NOT_FOUND).json(err('Comment not found', HttpCodes.NOT_FOUND));
+    }
+
+    return res.json(response(comment));
+  }
 }
 
 export default PostController;

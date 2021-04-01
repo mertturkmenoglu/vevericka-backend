@@ -1,3 +1,4 @@
+import { Comment, CommentDocument } from '../../../../models/Comment';
 import { PostDocument } from '../../../../models/Post';
 import { UserDocument } from '../../../../models/User';
 import PostRepository from './PostRepository';
@@ -18,6 +19,11 @@ class PostService {
   async getUserFeed(user: UserDocument): Promise<PostDocument[] | null> {
     const users = [...user.following, user.id];
     return this.postRepository.getUserFeed(users);
+  }
+
+  // eslint-disable-next-line class-methods-use-this
+  async getCommentById(id: string): Promise<CommentDocument | null> {
+    return Comment.findById(id);
   }
 }
 

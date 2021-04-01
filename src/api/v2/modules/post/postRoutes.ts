@@ -53,4 +53,10 @@ router.delete(
   (req, res) => postController.deleteComment(req, res),
 );
 
+router.get(
+  '/comment/:id',
+  isAuth,
+  (req, res) => postController.getCommentById(req, res),
+);
+
 export default router;
