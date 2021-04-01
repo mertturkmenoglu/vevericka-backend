@@ -39,7 +39,9 @@ if (IS_DEV) {
 
 app.use(express.json());
 app.use(helmet());
-app.use(cors());
+app.use(cors({
+  exposedHeaders: ['authorization'],
+}));
 app.use(morgan(morganConfig));
 
 // Application routes

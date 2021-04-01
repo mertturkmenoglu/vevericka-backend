@@ -79,7 +79,7 @@ class AuthController extends BaseController {
       const bearer = `Bearer ${jwtToken}`;
 
       return res
-        .header('Authorization', bearer)
+        .set('authorization', bearer)
         .status(HttpCodes.OK)
         .json(response({ userId: user.id, username: user.username }));
     } catch (e) {
