@@ -10,6 +10,15 @@ class PostRepository {
       return null;
     }
   }
+
+  async findPostsByUsername(username: string): Promise<PostDocument[] | null> {
+    try {
+      const posts = await Post.find({ username });
+      return posts;
+    } catch (e) {
+      return null;
+    }
+  }
 }
 
 export default PostRepository;

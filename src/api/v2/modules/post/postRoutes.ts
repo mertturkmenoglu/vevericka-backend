@@ -16,4 +16,10 @@ router.get(
   (req, res) => postController.getPostById(req, res),
 );
 
+router.get(
+  '/user/:username',
+  isAuth,
+  (req, res) => postController.getUserPosts(req, res),
+);
+
 export default router;
