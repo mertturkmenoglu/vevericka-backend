@@ -12,7 +12,8 @@ type AuthorizationType =
   | 'update-user'
   | 'fetch-user-feed'
   | 'create-post'
-  | 'delete-post';
+  | 'delete-post'
+  | 'delete-comment';
 
 const authorize = async (
   authorizationType: AuthorizationType,
@@ -110,6 +111,33 @@ const authorize = async (
     }
 
     const auth = isAuthorized(token, post.createdBy);
+    if (!auth) {
+      return res
+        .status(HttpCodes.UNAUTHORIZED)
+        .json(err('Unauthorized', HttpCodes.UNAUTHORIZED));
+    }
+
+    return next();
+  }
+
+  if (authorizationType === 'delete-comment') {
+    const token = getTokenFromHeader(req);
+    if (!token) {
+      return res
+        .status(HttpCodes.UNAUTHORIZED)
+        .json(err('Unauthorized', HttpCodes.UNAUTHORIZED));
+    }
+
+    const commentId = req.params.id;
+    const comment = await Comment.findById(commentId);
+
+    if (!comment) {
+      return res
+        .status(HttpCodes.NOT_FOUND)
+        .json(err('Comment not found', HttpCodes.NOT_FOUND));
+    }
+
+    const auth = isAuthorized(token, comment.createdBy);
     if (!auth) {
       return res
         .status(HttpCodes.UNAUTHORIZED)

@@ -46,4 +46,11 @@ router.delete(
   (req, res) => postController.deletePost(req, res),
 );
 
+router.delete(
+  '/comment/:id',
+  isAuth,
+  (req, res, next) => authorize('delete-comment', req, res, next),
+  (req, res) => postController.deleteComment(req, res),
+);
+
 export default router;

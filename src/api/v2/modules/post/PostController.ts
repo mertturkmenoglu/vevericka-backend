@@ -7,6 +7,7 @@ import BaseController from '../../interfaces/BaseController';
 import { User } from '../../../../models/User';
 import CreatePostDto from './dto/CreatePostDto';
 import { Post } from '../../../../models/Post';
+import { Comment } from '../../../../models/Comment';
 
 class PostController extends BaseController {
   constructor(readonly postService: PostService) {
@@ -89,6 +90,19 @@ class PostController extends BaseController {
 
     try {
       await Post.findByIdAndDelete(postId);
+      return res.status(HttpCodes.NO_CONTENT).end();
+    } catch (e) {
+      return res.status(HttpCodes.INTERNAL_SERVER_ERROR)
+        .json(err('Server error: Cannot delete post', HttpCodes.INTERNAL_SERVER_ERROR));
+    }
+  }
+
+  // eslint-disable-next-line class-methods-use-this
+  async deleteComment(req: Request, res: Response) {
+    const commentId = req.params.id;
+
+    try {
+      await Comment.findByIdAndDelete(commentId);
       return res.status(HttpCodes.NO_CONTENT).end();
     } catch (e) {
       return res.status(HttpCodes.INTERNAL_SERVER_ERROR)
