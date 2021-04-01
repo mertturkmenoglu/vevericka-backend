@@ -35,7 +35,7 @@ class PostController extends BaseController {
       return res.status(HttpCodes.BAD_REQUEST).json(err('Invalid username', HttpCodes.BAD_REQUEST));
     }
 
-    const user = User.findOne({ username });
+    const user = await User.findOne({ username });
 
     if (!user) {
       return res.status(HttpCodes.NOT_FOUND).json(err('User not found', HttpCodes.NOT_FOUND));
@@ -43,6 +43,23 @@ class PostController extends BaseController {
 
     const posts = await this.postService.getUserPosts(username);
     return res.json(response(posts));
+  }
+
+  async getUserFeed(req: Request, res: Response) {
+    const { username } = req.params;
+
+    if (!username) {
+      return res.status(HttpCodes.BAD_REQUEST).json(err('Invalid username', HttpCodes.BAD_REQUEST));
+    }
+
+    const user = await User.findOne({ username });
+
+    if (!user) {
+      return res.status(HttpCodes.NOT_FOUND).json(err('User not found', HttpCodes.NOT_FOUND));
+    }
+
+    const feed = await this.postService.getUserFeed(user);
+    return res.json(response(feed));
   }
 }
 

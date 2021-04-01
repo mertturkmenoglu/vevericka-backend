@@ -19,6 +19,15 @@ class PostRepository {
       return null;
     }
   }
+
+  async getUserFeed(users: string[]): Promise<PostDocument[] | null> {
+    try {
+      const posts = await Post.find({ createdBy: { $in: users } }).sort({ createdAt: 'desc' });
+      return posts;
+    } catch (e) {
+      return null;
+    }
+  }
 }
 
 export default PostRepository;
