@@ -3,7 +3,9 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "start": "ts-node src/index.ts",
+    "start": "node build/src/index.js",
+    "build": "tsc && yarn start",
+    "postinstall": "yarn build",
     "dev": "nodemon",
     "test": "jest"
   },
