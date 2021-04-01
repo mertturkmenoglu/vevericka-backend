@@ -21,7 +21,7 @@ const app = express();
 const PORT = process.env.PORT || applicationConfig.PORT;
 
 // Connect to Redis
-const redis = new Redis();
+const redis = new Redis(process.env.REDIS_URL as string);
 
 // Connect to MongoDB
 mongoose.connect(process.env.MONGO_URI as string, mongooseOptions, () => {
