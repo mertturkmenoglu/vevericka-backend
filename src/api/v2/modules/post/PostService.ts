@@ -34,7 +34,9 @@ class PostService {
 
   // eslint-disable-next-line class-methods-use-this
   async getUserBookmarks(username: string): Promise<BookmarkDocument[] | null> {
-    return Bookmark.find({ belongsTo: username });
+    return Bookmark
+      .find({ belongsTo: username })
+      .populate('belongsTo', 'username name image');
   }
 }
 
