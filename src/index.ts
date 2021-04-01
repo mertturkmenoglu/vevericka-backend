@@ -13,6 +13,7 @@ import applicationConfig from './configs/ApplicationConfig';
 import appV2Routes from './api/v2/routes';
 import Log from './utils/Log';
 import IS_DEV from './utils/isDev';
+import errorHandler from './utils/errorHandler';
 
 // Load environment variables
 dotenvSafe.config();
@@ -43,6 +44,9 @@ app.use(morgan(morganConfig));
 
 // Application routes
 app.use('/api/v2', appV2Routes);
+
+// Error handler
+app.use(errorHandler);
 
 const server = app.listen(PORT, () => {
   Log.i(`Server started on port ${PORT}`);

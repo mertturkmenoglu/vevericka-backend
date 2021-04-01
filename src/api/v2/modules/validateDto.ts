@@ -1,18 +1,17 @@
 import { NextFunction, Request, Response } from 'express';
-import err from '../../../utils/err';
-import HttpCodes from '../../../utils/HttpCodes';
+import BadRequest from '../../../errors/BadRequest';
 import { DtoType } from '../types';
 import validation from '../validation';
 
-const validateDto = async (dtoType: DtoType, req: Request, res: Response, next: NextFunction) => {
+const validateDto = async (dtoType: DtoType, req: Request, _res: Response, next: NextFunction) => {
   const fn = validation[dtoType];
-
   const isValid = await fn(req.body);
-  if (isValid) {
-    return next();
+
+  if (!isValid) {
+    return next(new BadRequest('Request body is invalid'));
   }
 
-  return res.status(HttpCodes.BAD_REQUEST).json(err('Request body is not valid', HttpCodes.BAD_REQUEST));
+  return next();
 };
 
 export default validateDto;
