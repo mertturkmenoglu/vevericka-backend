@@ -1,4 +1,4 @@
-import express, { NextFunction, Request, Response } from 'express';
+import express from 'express';
 
 import AuthController from './AuthController';
 import UserRepository from '../user/UserRepository';
@@ -14,26 +14,26 @@ const authController = new AuthController(authService);
 
 router.post(
   '/register',
-  (req: Request, res: Response, next: NextFunction) => validateDto('register', req, res, next),
-  (req: Request, res: Response) => authController.register(req, res),
+  (req, res, next) => validateDto('register', req, res, next),
+  (req, res, next) => authController.register(req, res, next),
 );
 
 router.post(
   '/login',
-  (req: Request, res: Response, next: NextFunction) => validateDto('login', req, res, next),
-  (req: Request, res: Response) => authController.login(req, res),
+  (req, res, next) => validateDto('login', req, res, next),
+  (req, res, next) => authController.login(req, res, next),
 );
 
 router.post(
   '/send-password-reset-email',
-  (req: Request, res: Response, next: NextFunction) => validateDto('send-password-reset-email', req, res, next),
-  (req: Request, res: Response) => authController.sendPasswordResetEmail(req, res),
+  (req, res, next) => validateDto('send-password-reset-email', req, res, next),
+  (req, res, next) => authController.sendPasswordResetEmail(req, res, next),
 );
 
 router.post(
   '/reset-password',
-  (req: Request, res: Response, next: NextFunction) => validateDto('reset-password', req, res, next),
-  (req: Request, res: Response) => authController.resetPassword(req, res),
+  (req, res, next) => validateDto('reset-password', req, res, next),
+  (req, res, next) => authController.resetPassword(req, res, next),
 );
 
 export default router;
