@@ -5,6 +5,7 @@ import isValidLoginDto from './auth/validation/login';
 import isValidRegisterDto from './auth/validation/register';
 import isValidResetPasswordDto from './auth/validation/resetPassword';
 import isValidSendPasswordResetEmailDto from './auth/validation/sendPasswordResetEmail';
+import isValidCreatePostDto from './post/validation/createPost';
 import isValidUnfollowUserDto from './user/validation/unfollowUser';
 import isValidUpdateUserDto from './user/validation/updateUser';
 
@@ -15,7 +16,8 @@ type DtoType =
   | 'reset-password'
   | 'follow-user'
   | 'unfollow-user'
-  | 'update-user';
+  | 'update-user'
+  | 'create-post';
 
 // eslint-disable-next-line no-unused-vars
 type ValidationFn = (_: object) => Promise<boolean>;
@@ -28,6 +30,7 @@ const matchDtoTypeToFunction: Record<DtoType, ValidationFn> = {
   'follow-user': isValidFollowUserDto,
   'unfollow-user': isValidUnfollowUserDto,
   'update-user': isValidUpdateUserDto,
+  'create-post': isValidCreatePostDto,
 };
 
 const validateDto = async (dtoType: DtoType, req: Request, res: Response, next: NextFunction) => {

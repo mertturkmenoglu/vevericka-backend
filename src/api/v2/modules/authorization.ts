@@ -9,7 +9,8 @@ type AuthorizationType =
   | 'follow-user'
   | 'unfollow-user'
   | 'update-user'
-  | 'fetch-user-feed';
+  | 'fetch-user-feed'
+  | 'create-post';
 
 const authorize = async (
   authorizationType: AuthorizationType,
@@ -62,6 +63,24 @@ const authorize = async (
     }
 
     const auth = isAuthorized(token, req.params.username);
+    if (!auth) {
+      return res
+        .status(HttpCodes.UNAUTHORIZED)
+        .json(err('Unauthorized', HttpCodes.UNAUTHORIZED));
+    }
+
+    return next();
+  }
+
+  if (authorizationType === 'create-post') {
+    const token = getTokenFromHeader(req);
+    if (!token) {
+      return res
+        .status(HttpCodes.UNAUTHORIZED)
+        .json(err('Unauthorized', HttpCodes.UNAUTHORIZED));
+    }
+
+    const auth = isAuthorized(token, req.body.createdBy);
     if (!auth) {
       return res
         .status(HttpCodes.UNAUTHORIZED)

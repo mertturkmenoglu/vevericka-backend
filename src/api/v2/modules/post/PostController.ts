@@ -5,6 +5,8 @@ import HttpCodes from '../../../../utils/HttpCodes';
 import response from '../../../../utils/response';
 import BaseController from '../../interfaces/BaseController';
 import { User } from '../../../../models/User';
+import CreatePostDto from './dto/CreatePostDto';
+import { Post } from '../../../../models/Post';
 
 class PostController extends BaseController {
   constructor(readonly postService: PostService) {
@@ -60,6 +62,25 @@ class PostController extends BaseController {
 
     const feed = await this.postService.getUserFeed(user);
     return res.json(response(feed));
+  }
+
+  // eslint-disable-next-line class-methods-use-this
+  async createPost(req: Request, res: Response) {
+    const dto = req.body as CreatePostDto;
+
+    const post = new Post({
+      createdBy: dto.createdBy,
+      content: dto.content,
+      comments: [],
+    });
+
+    try {
+      const savedPost = await post.save();
+      return res.status(HttpCodes.CREATED).json(response(savedPost));
+    } catch (e) {
+      return res.status(HttpCodes.INTERNAL_SERVER_ERROR)
+        .json(err('Server error: Cannot create post', HttpCodes.INTERNAL_SERVER_ERROR));
+    }
   }
 }
 
