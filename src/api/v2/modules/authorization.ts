@@ -1,4 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
+import { Bookmark } from '../../../models/Bookmark';
 import { Comment } from '../../../models/Comment';
 import { Post } from '../../../models/Post';
 
@@ -15,7 +16,11 @@ type AuthorizationType =
   | 'create-post'
   | 'delete-post'
   | 'delete-comment'
-  | 'create-comment';
+  | 'create-comment'
+  | 'get-bookmark'
+  | 'get-user-bookmarks'
+  | 'delete-bookmark'
+  | 'create-bookmark';
 
 const authorize = async (
   authorizationType: AuthorizationType,
@@ -158,6 +163,92 @@ const authorize = async (
     }
 
     const auth = isAuthorized(token, req.body.createdBy);
+    if (!auth) {
+      return res
+        .status(HttpCodes.UNAUTHORIZED)
+        .json(err('Unauthorized', HttpCodes.UNAUTHORIZED));
+    }
+
+    return next();
+  }
+
+  if (authorizationType === 'get-bookmark') {
+    const token = getTokenFromHeader(req);
+    if (!token) {
+      return res
+        .status(HttpCodes.UNAUTHORIZED)
+        .json(err('Unauthorized', HttpCodes.UNAUTHORIZED));
+    }
+
+    const bookmark = await Bookmark.findById(req.params.id);
+
+    if (!bookmark) {
+      return res.status(HttpCodes.NOT_FOUND)
+        .json(err('Bookmark not found', HttpCodes.NOT_FOUND));
+    }
+
+    const auth = isAuthorized(token, bookmark.belongsTo);
+    if (!auth) {
+      return res
+        .status(HttpCodes.UNAUTHORIZED)
+        .json(err('Unauthorized', HttpCodes.UNAUTHORIZED));
+    }
+
+    return next();
+  }
+
+  if (authorizationType === 'get-user-bookmarks') {
+    const token = getTokenFromHeader(req);
+    if (!token) {
+      return res
+        .status(HttpCodes.UNAUTHORIZED)
+        .json(err('Unauthorized', HttpCodes.UNAUTHORIZED));
+    }
+
+    const auth = isAuthorized(token, req.params.username);
+    if (!auth) {
+      return res
+        .status(HttpCodes.UNAUTHORIZED)
+        .json(err('Unauthorized', HttpCodes.UNAUTHORIZED));
+    }
+
+    return next();
+  }
+
+  if (authorizationType === 'delete-bookmark') {
+    const token = getTokenFromHeader(req);
+    if (!token) {
+      return res
+        .status(HttpCodes.UNAUTHORIZED)
+        .json(err('Unauthorized', HttpCodes.UNAUTHORIZED));
+    }
+
+    const bookmark = await Bookmark.findById(req.params.id);
+
+    if (!bookmark) {
+      return res.status(HttpCodes.NOT_FOUND)
+        .json(err('Bookmark not found', HttpCodes.NOT_FOUND));
+    }
+
+    const auth = isAuthorized(token, bookmark.belongsTo);
+    if (!auth) {
+      return res
+        .status(HttpCodes.UNAUTHORIZED)
+        .json(err('Unauthorized', HttpCodes.UNAUTHORIZED));
+    }
+
+    return next();
+  }
+
+  if (authorizationType === 'create-bookmark') {
+    const token = getTokenFromHeader(req);
+    if (!token) {
+      return res
+        .status(HttpCodes.UNAUTHORIZED)
+        .json(err('Unauthorized', HttpCodes.UNAUTHORIZED));
+    }
+
+    const auth = isAuthorized(token, req.body.belongsTo);
     if (!auth) {
       return res
         .status(HttpCodes.UNAUTHORIZED)

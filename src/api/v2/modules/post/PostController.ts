@@ -9,6 +9,8 @@ import CreatePostDto from './dto/CreatePostDto';
 import { Post } from '../../../../models/Post';
 import { Comment } from '../../../../models/Comment';
 import CreateCommentDto from './dto/CreateCommentDto';
+import { Bookmark } from '../../../../models/Bookmark';
+import CreateBookmarkDto from './dto/CreateBookmarkDto';
 
 class PostController extends BaseController {
   constructor(readonly postService: PostService) {
@@ -151,6 +153,87 @@ class PostController extends BaseController {
     } catch (e) {
       return res.status(HttpCodes.INTERNAL_SERVER_ERROR)
         .json(err('Server error: Cannot create comment', HttpCodes.INTERNAL_SERVER_ERROR));
+    }
+  }
+
+  async getBookmarkById(req: Request, res: Response) {
+    const bookmarkId = req.params.id;
+
+    if (!bookmarkId) {
+      return res.status(HttpCodes.BAD_REQUEST)
+        .json(err('Invalid bookmark id', HttpCodes.BAD_REQUEST));
+    }
+
+    const bookmark = await this.postService.getBookmarkById(bookmarkId);
+
+    if (!bookmark) {
+      return res.status(HttpCodes.NOT_FOUND)
+        .json(err('Bookmark not found', HttpCodes.NOT_FOUND));
+    }
+
+    return res.json(response(bookmark));
+  }
+
+  async getUserBookmarks(req: Request, res: Response) {
+    const { username } = req.params;
+
+    const user = await User.findOne({ username });
+
+    if (!user) {
+      return res.status(HttpCodes.NOT_FOUND)
+        .json(err('User not found', HttpCodes.NOT_FOUND));
+    }
+
+    const bookmarks = await this.postService.getUserBookmarks(username);
+
+    if (!bookmarks) {
+      return res.status(HttpCodes.NOT_FOUND)
+        .json(err('Bookmarks not found', HttpCodes.NOT_FOUND));
+    }
+
+    return res.json(response(bookmarks));
+  }
+
+  // eslint-disable-next-line class-methods-use-this
+  async deleteBookmark(req: Request, res: Response) {
+    const bookmarkId = req.params.id;
+
+    if (!bookmarkId) {
+      return res.status(HttpCodes.BAD_REQUEST)
+        .json(err('Invalid bookmark id', HttpCodes.BAD_REQUEST));
+    }
+
+    try {
+      await Bookmark.findByIdAndDelete(bookmarkId);
+      return res.status(HttpCodes.NO_CONTENT).end();
+    } catch (e) {
+      return res.status(HttpCodes.INTERNAL_SERVER_ERROR)
+        .json(err('Server error: Cannot delete bookmark', HttpCodes.INTERNAL_SERVER_ERROR));
+    }
+  }
+
+  // eslint-disable-next-line class-methods-use-this
+  async createBookmark(req: Request, res: Response) {
+    const dto = req.body as CreateBookmarkDto;
+    const post = await this.postService.getPostById(dto.postId);
+
+    if (!post) {
+      return res.status(HttpCodes.NOT_FOUND)
+        .json(err('Post not found', HttpCodes.NOT_FOUND));
+    }
+
+    const bookmark = new Bookmark({
+      postId: post.id,
+      belongsTo: dto.belongsTo,
+    });
+
+    try {
+      const savedBookmark = await bookmark.save();
+      return res.status(HttpCodes.CREATED)
+        .json(response(savedBookmark));
+    } catch (e) {
+      return res.status(HttpCodes.INTERNAL_SERVER_ERROR)
+        .json(err('Server error: Cannot create bookmark', HttpCodes.INTERNAL_SERVER_ERROR));
     }
   }
 }

@@ -1,3 +1,4 @@
+import { Bookmark, BookmarkDocument } from '../../../../models/Bookmark';
 import { Comment, CommentDocument } from '../../../../models/Comment';
 import { PostDocument } from '../../../../models/Post';
 import { UserDocument } from '../../../../models/User';
@@ -24,6 +25,16 @@ class PostService {
   // eslint-disable-next-line class-methods-use-this
   async getCommentById(id: string): Promise<CommentDocument | null> {
     return Comment.findById(id);
+  }
+
+  // eslint-disable-next-line class-methods-use-this
+  async getBookmarkById(id: string): Promise<BookmarkDocument | null> {
+    return Bookmark.findById(id);
+  }
+
+  // eslint-disable-next-line class-methods-use-this
+  async getUserBookmarks(username: string): Promise<BookmarkDocument[] | null> {
+    return Bookmark.find({ belongsTo: username });
   }
 }
 
