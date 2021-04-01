@@ -81,7 +81,7 @@ class AuthController extends BaseController {
       return res
         .header('Authorization', bearer)
         .status(HttpCodes.OK)
-        .end();
+        .json(response({ userId: user.id, username: user.username }));
     } catch (e) {
       return next(new InternalServerError('Server error: Login failed'));
     }
