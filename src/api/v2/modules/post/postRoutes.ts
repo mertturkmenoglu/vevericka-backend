@@ -59,4 +59,12 @@ router.get(
   (req, res) => postController.getCommentById(req, res),
 );
 
+router.post(
+  '/',
+  isAuth,
+  (req, res, next) => authorize('create-comment', req, res, next),
+  (req, res, next) => validateDto('create-comment', req, res, next),
+  (req, res) => postController.createComment(req, res),
+);
+
 export default router;

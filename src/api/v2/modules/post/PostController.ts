@@ -8,6 +8,7 @@ import { User } from '../../../../models/User';
 import CreatePostDto from './dto/CreatePostDto';
 import { Post } from '../../../../models/Post';
 import { Comment } from '../../../../models/Comment';
+import CreateCommentDto from './dto/CreateCommentDto';
 
 class PostController extends BaseController {
   constructor(readonly postService: PostService) {
@@ -124,6 +125,33 @@ class PostController extends BaseController {
     }
 
     return res.json(response(comment));
+  }
+
+  async createComment(req: Request, res: Response) {
+    const dto = req.body as CreateCommentDto;
+    const post = await this.postService.getPostById(dto.postId);
+
+    if (!post) {
+      return res.status(HttpCodes.NOT_FOUND)
+        .json(err('Post not found', HttpCodes.NOT_FOUND));
+    }
+
+    const comment = new Comment({
+      postId: post.id,
+      createdBy: dto.createdBy,
+      content: dto.content,
+    });
+
+    try {
+      const savedComment = await comment.save();
+      post.comments = [...post.comments, savedComment.id];
+      await post.save();
+      return res.status(HttpCodes.CREATED)
+        .json(response(savedComment));
+    } catch (e) {
+      return res.status(HttpCodes.INTERNAL_SERVER_ERROR)
+        .json(err('Server error: Cannot create comment', HttpCodes.INTERNAL_SERVER_ERROR));
+    }
   }
 }
 

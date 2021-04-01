@@ -1,4 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
+import { Comment } from '../../../models/Comment';
 import { Post } from '../../../models/Post';
 
 import err from '../../../utils/err';
@@ -13,7 +14,8 @@ type AuthorizationType =
   | 'fetch-user-feed'
   | 'create-post'
   | 'delete-post'
-  | 'delete-comment';
+  | 'delete-comment'
+  | 'create-comment';
 
 const authorize = async (
   authorizationType: AuthorizationType,
@@ -138,6 +140,24 @@ const authorize = async (
     }
 
     const auth = isAuthorized(token, comment.createdBy);
+    if (!auth) {
+      return res
+        .status(HttpCodes.UNAUTHORIZED)
+        .json(err('Unauthorized', HttpCodes.UNAUTHORIZED));
+    }
+
+    return next();
+  }
+
+  if (authorizationType === 'create-comment') {
+    const token = getTokenFromHeader(req);
+    if (!token) {
+      return res
+        .status(HttpCodes.UNAUTHORIZED)
+        .json(err('Unauthorized', HttpCodes.UNAUTHORIZED));
+    }
+
+    const auth = isAuthorized(token, req.body.createdBy);
     if (!auth) {
       return res
         .status(HttpCodes.UNAUTHORIZED)
