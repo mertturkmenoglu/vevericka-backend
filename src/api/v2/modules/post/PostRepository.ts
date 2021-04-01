@@ -13,7 +13,7 @@ class PostRepository {
 
   async findPostsByUsername(username: string): Promise<PostDocument[] | null> {
     try {
-      const posts = await Post.find({ username });
+      const posts = await Post.find({ username }).sort({ createdAt: 'desc' });
       return posts;
     } catch (e) {
       return null;
