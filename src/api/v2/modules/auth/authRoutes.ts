@@ -3,7 +3,7 @@ import express, { NextFunction, Request, Response } from 'express';
 import AuthController from './AuthController';
 import UserRepository from '../user/UserRepository';
 import AuthService from './AuthService';
-import validateDto from '../validation';
+import validateDto from '../validateDto';
 import logger from '../../../../utils/winstonLogger';
 
 const router = express.Router();

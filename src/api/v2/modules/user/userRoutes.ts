@@ -5,7 +5,7 @@ import UserRepository from './UserRepository';
 import UserService from './UserService';
 import logger from '../../../../utils/winstonLogger';
 import authorize from '../authorization';
-import validateDto from '../validation';
+import validateDto from '../validateDto';
 
 const router = express.Router();
 

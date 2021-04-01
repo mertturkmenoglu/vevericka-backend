@@ -4,7 +4,7 @@ import PostController from './PostController';
 import PostRepository from './PostRepository';
 import PostService from './PostService';
 import authorize from '../authorization';
-import validateDto from '../validation';
+import validateDto from '../validateDto';
 
 const router = express.Router();
 
