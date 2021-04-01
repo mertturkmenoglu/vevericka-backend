@@ -2,19 +2,19 @@ import { Request, Response } from 'express';
 import * as argon2 from 'argon2';
 import jwt from 'jsonwebtoken';
 
-import { User } from '../../models/User';
-import AuthService from '../../services/v2/AuthService';
-import err from '../../utils/err';
-import HttpCodes from '../../utils/HttpCodes';
-import BaseController from './BaseController';
+import { User } from '../../../../models/User';
+import AuthService from './AuthService';
+import err from '../../../../utils/err';
+import HttpCodes from '../../../../utils/HttpCodes';
+import BaseController from '../../interfaces/BaseController';
 import RegisterDto from './dto/RegisterDto';
 import LoginDto from './dto/LoginDto';
 import SendPasswordResetEmailDto from './dto/SendPasswordResetEmailDto';
 import ResetPasswordDto from './dto/ResetPasswordDto';
-import response from '../../utils/response';
-import app from '../../index';
-import { FORGET_PASSWORD_PREFIX } from '../../configs/RedisConfig';
-import logger from '../../utils/winstonLogger';
+import response from '../../../../utils/response';
+import app from '../../../../index';
+import { FORGET_PASSWORD_PREFIX } from '../../../../configs/RedisConfig';
+import logger from '../../../../utils/winstonLogger';
 
 class AuthController extends BaseController {
   authService: AuthService

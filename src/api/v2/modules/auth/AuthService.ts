@@ -1,8 +1,8 @@
 import crypto from 'crypto';
 import sgMail from '@sendgrid/mail';
 
-import { UserDocument } from '../../models/User';
-import UserRepository from '../../repositories/UserRepository';
+import { UserDocument } from '../../../../models/User';
+import UserRepository from '../user/UserRepository';
 
 class AuthService {
   constructor(private readonly repository: UserRepository) {

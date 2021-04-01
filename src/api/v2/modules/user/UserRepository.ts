@@ -1,5 +1,5 @@
 import { Logger } from 'winston';
-import { User, UserDocument } from '../models/User';
+import { User, UserDocument } from '../../../../models/User';
 
 class UserRepository {
   constructor(private readonly logger: Logger) {

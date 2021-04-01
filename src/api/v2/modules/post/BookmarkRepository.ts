@@ -1,5 +1,5 @@
 /* eslint-disable class-methods-use-this */
-import { Bookmark, BookmarkDocument } from '../models/Bookmark';
+import { Bookmark, BookmarkDocument } from '../../../../models/Bookmark';
 
 class BookmarkRepository {
   async findBookmarkById(id: string): Promise<BookmarkDocument | null> {

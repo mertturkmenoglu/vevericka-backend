@@ -1,9 +1,9 @@
 import express from 'express';
 
-import authRoutes from './v2/authRoutes';
-import postRoutes from './v2/postRoutes';
-import userRoutes from './v2/userRoutes';
-import messageRoutes from './v2/messageRoutes';
+import authRoutes from './modules/auth/authRoutes';
+import postRoutes from './modules/post/postRoutes';
+import userRoutes from './modules/user/userRoutes';
+import messageRoutes from './modules/message/messageRoutes';
 
 const router = express.Router();
 

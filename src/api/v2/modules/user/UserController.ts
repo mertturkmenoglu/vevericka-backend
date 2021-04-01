@@ -1,9 +1,9 @@
 import { Request, Response } from 'express';
-import UserService from '../../services/v2/UserService';
-import err from '../../utils/err';
-import HttpCodes from '../../utils/HttpCodes';
-import response from '../../utils/response';
-import BaseController from './BaseController';
+import UserService from './UserService';
+import err from '../../../../utils/err';
+import HttpCodes from '../../../../utils/HttpCodes';
+import response from '../../../../utils/response';
+import BaseController from '../../interfaces/BaseController';
 import FollowUserDto from './dto/FollowUserDto';
 import UnfollowUserDto from './dto/UnfollowUserDto';
 import UpdateUserDto from './dto/UpdateUserDto';

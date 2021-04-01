@@ -1,5 +1,5 @@
-import { UserDocument } from '../../models/User';
-import UserRepository from '../../repositories/UserRepository';
+import { UserDocument } from '../../../../models/User';
+import UserRepository from './UserRepository';
 
 class UserService {
   constructor(readonly userRepository: UserRepository) {

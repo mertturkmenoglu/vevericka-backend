@@ -1,10 +1,10 @@
 import express, { NextFunction, Request, Response } from 'express';
 
-import AuthController from '../../controllers/v2/AuthController';
-import UserRepository from '../../repositories/UserRepository';
-import AuthService from '../../services/v2/AuthService';
-import validateDto from './validation';
-import logger from '../../utils/winstonLogger';
+import AuthController from './AuthController';
+import UserRepository from '../user/UserRepository';
+import AuthService from './AuthService';
+import validateDto from '../validation';
+import logger from '../../../../utils/winstonLogger';
 
 const router = express.Router();
 

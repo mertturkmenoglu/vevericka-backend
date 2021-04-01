@@ -10,7 +10,7 @@ import expresStatusMonitor from 'express-status-monitor';
 import mongooseOptions from './configs/MongoConfig';
 import morganConfig from './configs/MorganConfig';
 import applicationConfig from './configs/ApplicationConfig';
-import appV2Routes from './routes/v2';
+import appV2Routes from './api/v2/routes';
 import Log from './utils/Log';
 import IS_DEV from './utils/isDev';
 

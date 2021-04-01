@@ -1,9 +1,9 @@
 import { Request, Response, NextFunction } from 'express';
 
-import err from '../../utils/err';
-import getTokenFromHeader from '../../utils/getTokenFromHeader';
-import HttpCodes from '../../utils/HttpCodes';
-import isAuthorized from '../../utils/isAuthorized';
+import err from '../../../utils/err';
+import getTokenFromHeader from '../../../utils/getTokenFromHeader';
+import HttpCodes from '../../../utils/HttpCodes';
+import isAuthorized from '../../../utils/isAuthorized';
 
 type AuthorizationType = 'follow-user' | 'unfollow-user' | 'update-user';
 

@@ -1,12 +1,12 @@
 import { NextFunction, Request, Response } from 'express';
-import err from '../../utils/err';
-import isValidFollowUserDto from '../../validation/followUser';
-import isValidLoginDto from '../../validation/login';
-import isValidRegisterDto from '../../validation/register';
-import isValidResetPasswordDto from '../../validation/resetPassword';
-import isValidSendPasswordResetEmailDto from '../../validation/sendPasswordResetEmail';
-import isValidUnfollowUserDto from '../../validation/unfollowUser';
-import isValidUpdateUserDto from '../../validation/updateUser';
+import err from '../../../utils/err';
+import isValidFollowUserDto from './auth/validation/followUser';
+import isValidLoginDto from './auth/validation/login';
+import isValidRegisterDto from './auth/validation/register';
+import isValidResetPasswordDto from './auth/validation/resetPassword';
+import isValidSendPasswordResetEmailDto from './auth/validation/sendPasswordResetEmail';
+import isValidUnfollowUserDto from './user/validation/unfollowUser';
+import isValidUpdateUserDto from './user/validation/updateUser';
 
 type DtoType =
   | 'register'
