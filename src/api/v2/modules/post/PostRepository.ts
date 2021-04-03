@@ -28,7 +28,7 @@ class PostRepository {
     try {
       const posts = await Post
         .find({ createdBy: { $in: users } })
-        .populate('createdBy')
+        .populate('createdBy', 'username name image')
         .sort({ createdAt: 'desc' });
       return posts;
     } catch (e) {
