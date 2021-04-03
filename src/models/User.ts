@@ -70,10 +70,6 @@ const userSchema = new mongoose.Schema<UserDocument>({
     required: true,
     trim: true,
     default: 'profile.png',
-    validate: {
-      validator: (v: string) => validate.isURL(v),
-      message: (props: any) => `${props.value} is not a URL`,
-    },
   },
   hobbies: {
     type: [String],

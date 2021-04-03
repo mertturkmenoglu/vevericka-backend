@@ -1,9 +1,9 @@
 import * as yup from 'yup';
 
 const updateUserSchema = yup.object().shape({
-  username: yup.string().required().max(32).lowercase(),
+  username: yup.string().required().max(32),
   name: yup.string().max(255).trim().notRequired(),
-  image: yup.string().url().trim().notRequired(),
+  image: yup.string().trim().notRequired(),
   hobbies: yup.array().of(yup.string()).notRequired(),
   features: yup.array().of(yup.string()).max(5).notRequired(),
   bdate: yup.date().notRequired(),
