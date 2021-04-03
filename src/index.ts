@@ -24,10 +24,10 @@ const PORT = process.env.PORT || applicationConfig.PORT;
 // Connect to Redis
 const redis = new Redis(process.env.REDIS_URL as string);
 
-// Connect to MongoDB
-mongoose.connect(process.env.MONGO_URI as string, mongooseOptions, () => {
-  console.log('Connected to MongoDB');
-});
+const main = async () => {
+  // Connect to MongoDB
+  await mongoose.connect(process.env.MONGO_URI as string, mongooseOptions);
+};
 
 // Application values
 app.set('trust proxy', 1);
@@ -50,11 +50,15 @@ app.use('/api/v2', appV2Routes);
 // Error handler
 app.use(errorHandler);
 
-const server = app.listen(PORT, () => {
-  Log.i(`Server started on port ${PORT}`);
+main().then(() => {
+  app.listen(PORT, () => {
+    Log.i(`Server started on port ${PORT}`);
+  });
+}).catch((e) => {
+  console.error(e);
+  process.exit(1);
 });
 
 export default {
-  server,
   redis,
 };

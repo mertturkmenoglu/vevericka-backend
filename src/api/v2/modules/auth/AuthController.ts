@@ -19,9 +19,7 @@ import InternalServerError from '../../../../errors/InternalServerError';
 import NotFound from '../../../../errors/NotFound';
 
 class AuthController extends BaseController {
-  authService: AuthService
-
-  constructor(authService: AuthService) {
+  constructor(readonly authService: AuthService) {
     super();
     this.authService = authService;
   }

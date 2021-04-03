@@ -157,21 +157,16 @@ const userSchema = new mongoose.Schema<UserDocument>({
   }],
 }, { timestamps: true });
 
-userSchema.pre('save', function save(next) {
+// eslint-disable-next-line consistent-return
+userSchema.pre('save', async function save() {
   const user = this as UserDocument;
 
   if (!user.isModified('password')) {
-    return next();
+    return;
   }
 
-  return argon2.hash(user.password)
-    .then((hashed) => {
-      user.password = hashed;
-      return next();
-    })
-    .catch((err) => {
-      console.log(err);
-    });
+  const hashed = await argon2.hash(user.password);
+  user.password = hashed;
 });
 
 export const User = mongoose.model<UserDocument>('User', userSchema);

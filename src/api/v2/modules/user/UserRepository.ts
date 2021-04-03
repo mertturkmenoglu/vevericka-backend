@@ -71,11 +71,7 @@ class UserRepository {
     email: string,
   ): Promise<UserDocument | null> {
     try {
-      const user = await User
-        .findOne(
-          { $or: [{ username }, { email }] },
-          '+password',
-        );
+      const user = User.findOne().or([{ username }, { email }]);
       return user;
     } catch (e) {
       this.logger.error(e);
