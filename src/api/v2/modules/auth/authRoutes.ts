@@ -6,6 +6,8 @@ import AuthService from './AuthService';
 import validateDto from '../validateDto';
 import logger from '../../../../utils/winstonLogger';
 
+import app from '../../../../index';
+
 const router = express.Router();
 
 const userRepository = new UserRepository(logger);
@@ -14,12 +16,14 @@ const authController = new AuthController(authService);
 
 router.post(
   '/register',
+  app.rateLimiter.register,
   (req, res, next) => validateDto('register', req, res, next),
   (req, res, next) => authController.register(req, res, next),
 );
 
 router.post(
   '/login',
+  app.rateLimiter.login,
   (req, res, next) => validateDto('login', req, res, next),
   (req, res, next) => authController.login(req, res, next),
 );
