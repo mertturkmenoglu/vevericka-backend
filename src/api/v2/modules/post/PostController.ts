@@ -184,7 +184,7 @@ class PostController extends BaseController {
         .json(err('User not found', HttpCodes.NOT_FOUND));
     }
 
-    const bookmarks = await this.postService.getUserBookmarks(username);
+    const bookmarks = await this.postService.getUserBookmarks(user.id);
 
     if (!bookmarks) {
       return res.status(HttpCodes.NOT_FOUND)

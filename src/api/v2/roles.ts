@@ -44,15 +44,35 @@ const roles: Record<AuthorizationType, AuthValidateFn> = {
     }
     return user.username;
   },
-  'create-bookmark': async (r) => r.body.belongsTo,
+  'create-bookmark': async (r) => {
+    const user = await User.findById(r.body.belongsTo);
+    if (!user) {
+      return undefined;
+    }
+    return user.username;
+  },
   'get-bookmark': async (r) => {
     const bookmark = await Bookmark.findById(r.params.id);
-    return bookmark ? bookmark.belongsTo : undefined;
+    if (!bookmark) {
+      return undefined;
+    }
+    const user = await User.findById(bookmark.belongsTo);
+    if (!user) {
+      return undefined;
+    }
+    return user.username;
   },
   'get-user-bookmarks': async (r) => r.params.username,
   'delete-bookmark': async (r) => {
     const bookmark = await Bookmark.findById(r.params.id);
-    return bookmark ? bookmark.belongsTo : undefined;
+    if (!bookmark) {
+      return undefined;
+    }
+    const user = await User.findById(bookmark.belongsTo);
+    if (!user) {
+      return undefined;
+    }
+    return user.username;
   },
 };
 
