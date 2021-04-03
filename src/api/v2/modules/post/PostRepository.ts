@@ -6,7 +6,14 @@ class PostRepository {
     try {
       const post = await Post
         .findById(id)
-        .populate('createdBy', 'username name image');
+        .populate('createdBy', 'username name image')
+        .populate({
+          path: 'comments',
+          populate: {
+            path: 'createdBy',
+            select: 'username name image',
+          },
+        });
       return post;
     } catch (e) {
       return null;
