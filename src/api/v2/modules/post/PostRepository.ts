@@ -20,10 +20,11 @@ class PostRepository {
     }
   }
 
-  async findPostsByUsername(username: string): Promise<PostDocument[] | null> {
+  async findPostsByUsername(userId: string): Promise<PostDocument[] | null> {
     try {
       const posts = await Post
-        .find({ username })
+        .find({ createdBy: userId })
+        .populate('createdBy', 'name username image')
         .sort({ createdAt: 'desc' });
       return posts;
     } catch (e) {

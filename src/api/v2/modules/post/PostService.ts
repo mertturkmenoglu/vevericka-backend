@@ -13,8 +13,8 @@ class PostService {
     return this.postRepository.findPostById(id);
   }
 
-  async getUserPosts(username: string): Promise<PostDocument[] | null> {
-    return this.postRepository.findPostsByUsername(username);
+  async getUserPosts(userId: string): Promise<PostDocument[] | null> {
+    return this.postRepository.findPostsByUsername(userId);
   }
 
   async getUserFeed(user: UserDocument): Promise<PostDocument[] | null> {

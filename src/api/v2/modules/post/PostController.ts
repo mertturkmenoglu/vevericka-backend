@@ -47,7 +47,7 @@ class PostController extends BaseController {
       return res.status(HttpCodes.NOT_FOUND).json(err('User not found', HttpCodes.NOT_FOUND));
     }
 
-    const posts = await this.postService.getUserPosts(username);
+    const posts = await this.postService.getUserPosts(user.id);
     return res.json(response(posts));
   }
 
