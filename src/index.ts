@@ -5,7 +5,6 @@ import helmet from 'helmet';
 import cors from 'cors';
 import morgan from 'morgan';
 import Redis from 'ioredis';
-import rateLimit from 'express-rate-limit';
 import expresStatusMonitor from 'express-status-monitor';
 
 import mongooseOptions from './configs/MongoConfig';
@@ -24,18 +23,6 @@ const PORT = process.env.PORT || applicationConfig.PORT;
 
 // Connect to Redis
 const redis = new Redis(process.env.REDIS_URL as string);
-
-// Rate limiters
-const rateLimiter = {
-  register: rateLimit({
-    windowMs: 1000 * 60, // 1 minute
-    max: 10,
-  }),
-  login: rateLimit({
-    windowMs: 1000 * 60, // 1 minute
-    max: 10,
-  }),
-};
 
 const main = async () => {
   // Connect to MongoDB
@@ -74,5 +61,4 @@ main().then(() => {
 
 export default {
   redis,
-  rateLimiter,
 };
