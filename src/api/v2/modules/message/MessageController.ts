@@ -1,7 +1,9 @@
 import { NextFunction, Request, Response } from 'express';
+import BadRequest from '../../../../errors/BadRequest';
 import InternalServerError from '../../../../errors/InternalServerError';
 import Unauthorized from '../../../../errors/Unauthorized';
 import { Chat } from '../../../../models/Chat';
+import { User } from '../../../../models/User';
 import HttpCodes from '../../../../utils/HttpCodes';
 import response from '../../../../utils/response';
 import BaseController from '../../interfaces/BaseController';
@@ -20,6 +22,13 @@ class MessageController extends BaseController {
 
     if (!dto.users.includes(dto.createdBy)) {
       return next(new Unauthorized('User is not authorized to create this chat'));
+    }
+
+    const checkUsers = await Promise.all(dto.users.map((userId) => User.findById(userId)));
+
+    // If any user does not exist
+    if (!checkUsers.includes(null)) {
+      return next(new BadRequest('Chat users are not valid: User does not exist'));
     }
 
     const chat = new Chat({
