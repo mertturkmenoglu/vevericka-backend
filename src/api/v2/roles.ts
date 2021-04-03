@@ -37,7 +37,13 @@ const roles: Record<AuthorizationType, AuthValidateFn> = {
     const comment = await Comment.findById(commentId);
     return comment ? comment.createdBy : undefined;
   },
-  'create-comment': async (r) => r.body.createdBy,
+  'create-comment': async (r) => {
+    const user = await User.findById(r.body.createdBy);
+    if (!user) {
+      return undefined;
+    }
+    return user.username;
+  },
   'create-bookmark': async (r) => r.body.belongsTo,
   'get-bookmark': async (r) => {
     const bookmark = await Bookmark.findById(r.params.id);
