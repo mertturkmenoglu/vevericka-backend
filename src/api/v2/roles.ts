@@ -23,7 +23,14 @@ const roles: Record<AuthorizationType, AuthValidateFn> = {
   'delete-post': async (r) => {
     const postId = r.params.id;
     const post = await Post.findById(postId);
-    return post ? post.createdBy : undefined;
+    if (!post) {
+      return undefined;
+    }
+    const user = await User.findById(post.createdBy);
+    if (!user) {
+      return undefined;
+    }
+    return user.username;
   },
   'delete-comment': async (r) => {
     const commentId = r.params.id;
