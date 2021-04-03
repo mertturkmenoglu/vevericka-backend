@@ -2,12 +2,20 @@ import { Post } from '../../models/Post';
 import { Comment } from '../../models/Comment';
 import { Bookmark } from '../../models/Bookmark';
 import { AuthorizationType, AuthValidateFn } from './types';
+import { User } from '../../models/User';
 
 const roles: Record<AuthorizationType, AuthValidateFn> = {
   'update-user': async (r) => r.body.username,
   'unfollow-user': async (r) => r.body.thisUsername,
   'follow-user': async (r) => r.body.thisUsername,
-  'create-post': async (r) => r.body.createdBy,
+  'create-post': async (r) => {
+    const id = r.body.createdBy;
+    const user = await User.findById(id);
+    if (!user) {
+      return undefined;
+    }
+    return user.username;
+  },
   'fetch-user-feed': async (r) => {
     const { username } = r.params;
     return username;
