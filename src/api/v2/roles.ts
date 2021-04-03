@@ -74,6 +74,16 @@ const roles: Record<AuthorizationType, AuthValidateFn> = {
     }
     return user.username;
   },
+  'create-chat': async (r) => {
+    const { createdBy } = r.body;
+
+    const user = await User.findById(createdBy);
+    if (!user) {
+      return undefined;
+    }
+
+    return user.username;
+  },
 };
 
 export default roles;

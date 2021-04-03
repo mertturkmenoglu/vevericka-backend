@@ -3,6 +3,7 @@ import isValidLoginDto from './modules/auth/validation/login';
 import isValidRegisterDto from './modules/auth/validation/register';
 import isValidResetPasswordDto from './modules/auth/validation/resetPassword';
 import isValidSendPasswordResetEmailDto from './modules/auth/validation/sendPasswordResetEmail';
+import isValidCreateChatDto from './modules/message/validation/createChat';
 import isValidCreateBookmarkDto from './modules/post/validation/createBookmark';
 import isValidCreateCommentDto from './modules/post/validation/createComment';
 import isValidCreatePostDto from './modules/post/validation/createPost';
@@ -21,6 +22,7 @@ const validation: Record<DtoType, DtoValidationFn> = {
   'create-post': isValidCreatePostDto,
   'create-comment': isValidCreateCommentDto,
   'create-bookmark': isValidCreateBookmarkDto,
+  'create-chat': isValidCreateChatDto,
 };
 
 export default validation;
