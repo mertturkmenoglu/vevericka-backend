@@ -10,12 +10,13 @@ const router = express.Router();
 const messageService = new MessageService();
 const messageController = new MessageController(messageService);
 
-// router.get(
-//   '/chat/:id',
-//   isAuth,
-//   (req, res, next) => authorize('get-chat', req, res, next),
-//   (req, res, next) => messageController.getChatById(req, res, next),
-// );
+router.post(
+  '/chat/:id',
+  isAuth,
+  (req, res, next) => authorize('get-chat', req, res, next),
+  (req, res, next) => validateDto('get-chat', req, res, next),
+  (req, res, next) => messageController.getChatById(req, res, next),
+);
 
 router.post(
   '/chat/',

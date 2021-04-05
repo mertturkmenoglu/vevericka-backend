@@ -1,6 +1,7 @@
 import { NextFunction, Request, Response } from 'express';
 import BadRequest from '../../../../errors/BadRequest';
 import InternalServerError from '../../../../errors/InternalServerError';
+import NotFound from '../../../../errors/NotFound';
 import Unauthorized from '../../../../errors/Unauthorized';
 import { Chat } from '../../../../models/Chat';
 import { User } from '../../../../models/User';
@@ -8,12 +9,41 @@ import HttpCodes from '../../../../utils/HttpCodes';
 import response from '../../../../utils/response';
 import BaseController from '../../interfaces/BaseController';
 import CreateChatDto from './dto/CreateChatDto';
+import GetChatDto from './dto/GetChatDto';
 import MessageService from './MessageService';
 
 class MessageController extends BaseController {
   constructor(readonly messageService: MessageService) {
     super();
     this.messageService = messageService;
+  }
+
+  // eslint-disable-next-line class-methods-use-this
+  async getChatById(req: Request, res: Response, next: NextFunction) {
+    const { id } = req.params;
+    const dto = req.body as GetChatDto;
+
+    if (!id) {
+      return next(new BadRequest('Id must be valid'));
+    }
+
+    const chat = await Chat.findById(id);
+
+    if (!chat) {
+      return next(new NotFound('Chat not found'));
+    }
+
+    const user = await User.findById(dto.userId);
+
+    if (!user) {
+      return next(new NotFound('User not found'));
+    }
+
+    if (!chat.users.includes(user.id)) {
+      return next(new Unauthorized('This user cannot view this chat'));
+    }
+
+    return res.json(response(chat));
   }
 
   // eslint-disable-next-line class-methods-use-this

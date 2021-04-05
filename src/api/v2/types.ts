@@ -18,7 +18,8 @@ export type AuthorizationType =
   | 'get-user-bookmarks'
   | 'delete-bookmark'
   | 'create-bookmark'
-  | 'create-chat';
+  | 'create-chat'
+  | 'get-chat';
 
 export type DtoType =
   | 'register'
@@ -31,4 +32,5 @@ export type DtoType =
   | 'create-post'
   | 'create-comment'
   | 'create-bookmark'
-  | 'create-chat';
+  | 'create-chat'
+  | 'get-chat';
