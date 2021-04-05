@@ -27,7 +27,10 @@ class MessageController extends BaseController {
       return next(new BadRequest('Id must be valid'));
     }
 
-    const chat = await Chat.findById(id);
+    const chat = await Chat
+      .findById(id)
+      .populate('users', 'username name image')
+      .populate('lastMessage');
 
     if (!chat) {
       return next(new NotFound('Chat not found'));
@@ -74,6 +77,24 @@ class MessageController extends BaseController {
     } catch (e) {
       return next(new InternalServerError('Server error: Cannot create chat'));
     }
+  }
+
+  // eslint-disable-next-line class-methods-use-this
+  async getUserChats(req: Request, res: Response, next: NextFunction) {
+    const { username } = req.params;
+
+    const user = await User.findOne({ username });
+
+    if (!user) {
+      return next(new NotFound('User not found'));
+    }
+
+    const chats = await Chat
+      .findOne({ users: { $elemMatch: { $eq: user.id } } })
+      .populate('users', 'username name image')
+      .populate('lastMessage');
+
+    return res.json(response(chats));
   }
 }
 

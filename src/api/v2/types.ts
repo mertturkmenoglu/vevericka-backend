@@ -19,7 +19,8 @@ export type AuthorizationType =
   | 'delete-bookmark'
   | 'create-bookmark'
   | 'create-chat'
-  | 'get-chat';
+  | 'get-chat'
+  | 'get-user-chats';
 
 export type DtoType =
   | 'register'

@@ -26,4 +26,11 @@ router.post(
   (req, res, next) => messageController.createChat(req, res, next),
 );
 
+router.post(
+  '/chat/user-chats/:username',
+  isAuth,
+  (req, res, next) => authorize('get-user-chats', req, res, next),
+  (req, res, next) => messageController.getUserChats(req, res, next),
+);
+
 export default router;
