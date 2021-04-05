@@ -90,7 +90,7 @@ class MessageController extends BaseController {
     }
 
     const chats = await Chat
-      .findOne({ users: { $elemMatch: { $eq: user.id } } })
+      .find({ users: { $elemMatch: { $eq: user.id } } })
       .populate('users', 'username name image')
       .populate('lastMessage');
 
