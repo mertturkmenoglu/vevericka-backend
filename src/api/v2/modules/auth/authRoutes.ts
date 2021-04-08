@@ -1,5 +1,6 @@
 import express from 'express';
 import rateLimit from 'express-rate-limit';
+import asyncHandler from 'express-async-handler';
 
 import AuthController from './AuthController';
 import UserRepository from '../user/UserRepository';
@@ -28,27 +29,27 @@ const rateLimiter = {
 router.post(
   '/register',
   rateLimiter.register,
-  (req, res, next) => validateDto('register', req, res, next),
-  (req, res, next) => authController.register(req, res, next),
+  asyncHandler(async (req, res, next) => validateDto('register', req, res, next)),
+  asyncHandler(async (req, res) => authController.register(req, res)),
 );
 
 router.post(
   '/login',
   rateLimiter.login,
-  (req, res, next) => validateDto('login', req, res, next),
-  (req, res, next) => authController.login(req, res, next),
+  asyncHandler(async (req, res, next) => validateDto('login', req, res, next)),
+  asyncHandler(async (req, res) => authController.login(req, res)),
 );
 
 router.post(
   '/send-password-reset-email',
-  (req, res, next) => validateDto('send-password-reset-email', req, res, next),
-  (req, res, next) => authController.sendPasswordResetEmail(req, res, next),
+  asyncHandler(async (req, res, next) => validateDto('send-password-reset-email', req, res, next)),
+  asyncHandler(async (req, res) => authController.sendPasswordResetEmail(req, res)),
 );
 
 router.post(
   '/reset-password',
-  (req, res, next) => validateDto('reset-password', req, res, next),
-  (req, res, next) => authController.resetPassword(req, res, next),
+  asyncHandler(async (req, res, next) => validateDto('reset-password', req, res, next)),
+  asyncHandler(async (req, res) => authController.resetPassword(req, res)),
 );
 
 export default router;
