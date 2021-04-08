@@ -22,6 +22,7 @@ const chatSchema = new mongoose.Schema<ChatDocument>({
   lastMessage: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Message',
+    default: null,
   },
   chatImage: {
     type: String,

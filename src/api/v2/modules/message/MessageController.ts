@@ -4,6 +4,8 @@ import InternalServerError from '../../../../errors/InternalServerError';
 import NotFound from '../../../../errors/NotFound';
 import Unauthorized from '../../../../errors/Unauthorized';
 import { Chat } from '../../../../models/Chat';
+// eslint-disable-next-line no-unused-vars
+import { Message } from '../../../../models/Message';
 import { User } from '../../../../models/User';
 import HttpCodes from '../../../../utils/HttpCodes';
 import response from '../../../../utils/response';
@@ -29,8 +31,7 @@ class MessageController extends BaseController {
 
     const chat = await Chat
       .findById(id)
-      .populate('users', 'username name image')
-      .populate('lastMessage');
+      .populate('users', 'username name image');
 
     if (!chat) {
       return next(new NotFound('Chat not found'));
@@ -44,6 +45,12 @@ class MessageController extends BaseController {
 
     if (!chat.users.includes(user.id)) {
       return next(new Unauthorized('This user cannot view this chat'));
+    }
+
+    if (chat.lastMessage !== null) {
+      console.log(Message.modelName);
+      const lastMessagePopulatedChat = await chat.populate('lastMessage');
+      return res.json(response(lastMessagePopulatedChat));
     }
 
     return res.json(response(chat));
@@ -60,7 +67,7 @@ class MessageController extends BaseController {
     const checkUsers = await Promise.all(dto.users.map((userId) => User.findById(userId)));
 
     // If any user does not exist
-    if (!checkUsers.includes(null)) {
+    if (checkUsers.includes(null)) {
       return next(new BadRequest('Chat users are not valid: User does not exist'));
     }
 
