@@ -1,4 +1,4 @@
-import isValidFollowUserDto from './modules/auth/validation/followUser';
+import isValidFollowUserDto from './modules/user/validation/followUser';
 import isValidLoginDto from './modules/auth/validation/login';
 import isValidRegisterDto from './modules/auth/validation/register';
 import isValidResetPasswordDto from './modules/auth/validation/resetPassword';
