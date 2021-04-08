@@ -16,7 +16,7 @@
   "author": "Mert <mertturkmenoglu99@gmail.com>",
   "license": "Apache",
   "husky": {
-    "hookes": {
+    "hooks": {
       "pre-commit": "lint-staged",
       "pre-push": "yarn run type-check"
     }
