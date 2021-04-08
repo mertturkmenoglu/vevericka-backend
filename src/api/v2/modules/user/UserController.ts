@@ -142,7 +142,7 @@ class UserController extends BaseController {
           .json(err('Invalid query parameter', HttpCodes.BAD_REQUEST));
       }
 
-      const result = this.userService.searchUsers(searchTerm);
+      const result = await this.userService.searchUsers(searchTerm);
 
       if (!result) {
         return res
