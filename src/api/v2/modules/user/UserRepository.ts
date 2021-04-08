@@ -48,8 +48,10 @@ class UserRepository {
 
   async findUserByUsernameSafe(username: string): Promise<UserDocument | null> {
     try {
-      const user = await User.findOne({ username });
-      return user;
+      return await User
+        .findOne({ username })
+        .populate('following', 'name username image')
+        .populate('followers', 'name username image');
     } catch (e) {
       this.logger.error(e);
       return null;
