@@ -6,5 +6,8 @@
   "ignore": [
     "src/**/*.spec.ts"
   ],
+  "events": {
+    "restart": "clear"
+  },
   "exec": "node_modules/.bin/ts-node src/index.ts"
 }
