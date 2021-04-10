@@ -1,57 +1,55 @@
-import express, { NextFunction, Request, Response } from 'express';
+import express from 'express';
+import { Container } from 'typedi';
+import asyncHandler from 'express-async-handler';
 import UserController from './UserController';
 import isAuth from '../../../../middlewares/isAuth';
-import UserRepository from './UserRepository';
-import UserService from './UserService';
+
 import authorize from '../authorization';
 import validateDto from '../validateDto';
 
 const router = express.Router();
-
-const userRepository = new UserRepository();
-const userService = new UserService(userRepository);
-const userController = new UserController(userService);
+const userController = Container.get(UserController);
 
 router.get(
   '/q',
   isAuth,
-  (req, res) => userController.searchUsersByQuery(req, res),
+  asyncHandler(async (req, res) => userController.searchUsersByQuery(req, res)),
 );
 
 router.get(
   '/username/:username',
   isAuth,
-  (req: Request, res: Response) => userController.getUserByUsername(req, res),
+  asyncHandler(async (req, res) => userController.getUserByUsername(req, res)),
 );
 
 router.get(
   '/:id',
   isAuth,
-  (req: Request, res: Response) => userController.getUserById(req, res),
+  asyncHandler(async (req, res) => userController.getUserById(req, res)),
 );
 
 router.post(
   '/follow',
   isAuth,
-  (req, res, next) => authorize('follow-user', req, res, next),
-  (req: Request, res: Response, next: NextFunction) => validateDto('follow-user', req, res, next),
-  (req: Request, res: Response) => userController.followUser(req, res),
+  asyncHandler(async (req, res, next) => authorize('follow-user', req, res, next)),
+  asyncHandler(async (req, res, next) => validateDto('follow-user', req, res, next)),
+  asyncHandler(async (req, res) => userController.followUser(req, res)),
 );
 
 router.post(
   '/unfollow',
   isAuth,
-  (req, res, next) => authorize('unfollow-user', req, res, next),
-  (req: Request, res: Response, next: NextFunction) => validateDto('unfollow-user', req, res, next),
-  (req: Request, res: Response) => userController.unfollowUser(req, res),
+  asyncHandler(async (req, res, next) => authorize('unfollow-user', req, res, next)),
+  asyncHandler(async (req, res, next) => validateDto('unfollow-user', req, res, next)),
+  asyncHandler(async (req, res) => userController.unfollowUser(req, res)),
 );
 
 router.put(
   '/',
   isAuth,
-  (req, res, next) => authorize('update-user', req, res, next),
-  (req, res, next) => validateDto('update-user', req, res, next),
-  (req, res) => userController.updateUser(req, res),
+  asyncHandler(async (req, res, next) => authorize('update-user', req, res, next)),
+  asyncHandler(async (req, res, next) => validateDto('update-user', req, res, next)),
+  asyncHandler(async (req, res) => userController.updateUser(req, res)),
 );
 
 export default router;

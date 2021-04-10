@@ -1,25 +1,24 @@
 import { Request, Response } from 'express';
+import { Service } from 'typedi';
 import UserService from './UserService';
-import err from '../../../../utils/err';
 import HttpCodes from '../../../../utils/HttpCodes';
 import response from '../../../../utils/response';
-import BaseController from '../../interfaces/BaseController';
 import FollowUserDto from './dto/FollowUserDto';
 import UnfollowUserDto from './dto/UnfollowUserDto';
 import UpdateUserDto from './dto/UpdateUserDto';
+import NotFound from '../../../../errors/NotFound';
+import BadRequest from '../../../../errors/BadRequest';
 
-class UserController extends BaseController {
-  constructor(readonly userService: UserService) {
-    super();
-    this.userService = userService;
-  }
+@Service()
+class UserController {
+  constructor(private readonly userService: UserService) { }
 
   async getUserByUsername(req: Request, res: Response) {
     const { username } = req.params;
     const user = await this.userService.getUserByUsername(username);
 
     if (!user) {
-      return res.status(HttpCodes.NOT_FOUND).json(err('User not found', HttpCodes.NOT_FOUND));
+      throw new NotFound('User not found');
     }
 
     return res.json(response(user));
@@ -30,7 +29,7 @@ class UserController extends BaseController {
     const user = await this.userService.getUserById(id);
 
     if (!user) {
-      return res.status(HttpCodes.NOT_FOUND).json(err('User not found', HttpCodes.NOT_FOUND));
+      throw new NotFound('User not found');
     }
 
     return res.json(response(user));
@@ -42,26 +41,20 @@ class UserController extends BaseController {
     const otherUser = await this.userService.getUserByUsername(dto.otherUsername);
 
     if (!thisUser || !otherUser) {
-      return res.status(HttpCodes.NOT_FOUND).json(err('User(s) not found', HttpCodes.NOT_FOUND));
+      throw new NotFound('User(s) not found');
     }
 
     // thisUser already follows otherUser
     if (thisUser.following.includes(otherUser.id)) {
-      return res.status(HttpCodes.BAD_REQUEST).json(err('Already following', HttpCodes.BAD_REQUEST));
+      throw new BadRequest('Already following');
     }
 
     thisUser.following.push(otherUser.id);
     otherUser.followers.push(thisUser.id);
 
-    try {
-      await thisUser.save();
-      await otherUser.save();
-      return res.status(HttpCodes.NO_CONTENT).end();
-    } catch (e) {
-      return res
-        .status(HttpCodes.INTERNAL_SERVER_ERROR)
-        .json(err('Server error: Cannot follow', HttpCodes.INTERNAL_SERVER_ERROR));
-    }
+    await thisUser.save();
+    await otherUser.save();
+    return res.status(HttpCodes.NO_CONTENT).end();
   }
 
   async unfollowUser(req: Request, res: Response) {
@@ -70,7 +63,7 @@ class UserController extends BaseController {
     const otherUser = await this.userService.getUserByUsername(dto.otherUsername);
 
     if (!thisUser || !otherUser) {
-      return res.status(HttpCodes.NOT_FOUND).json(err('User(s) not found', HttpCodes.NOT_FOUND));
+      throw new NotFound('User(s) not found');
     }
 
     /**
@@ -84,15 +77,9 @@ class UserController extends BaseController {
     // eslint-disable-next-line eqeqeq
     otherUser.followers = otherUser.followers.filter((id) => id != thisUser.id);
 
-    try {
-      await thisUser.save();
-      await otherUser.save();
-      return res.status(HttpCodes.NO_CONTENT).end();
-    } catch (e) {
-      return res
-        .status(HttpCodes.INTERNAL_SERVER_ERROR)
-        .json(err('Server error: Cannot follow', HttpCodes.INTERNAL_SERVER_ERROR));
-    }
+    await thisUser.save();
+    await otherUser.save();
+    return res.status(HttpCodes.NO_CONTENT).end();
   }
 
   async updateUser(req: Request, res: Response) {
@@ -100,9 +87,7 @@ class UserController extends BaseController {
     const user = await this.userService.getUserByUsername(dto.username);
 
     if (!user) {
-      return res
-        .status(HttpCodes.INTERNAL_SERVER_ERROR)
-        .json(err('Server error: User not found', HttpCodes.INTERNAL_SERVER_ERROR));
+      throw new NotFound('user not found');
     }
 
     user.name = dto.name || user.name;
@@ -120,42 +105,24 @@ class UserController extends BaseController {
     user.languages = dto.languages || user.languages;
     user.wishToSpeak = dto.wishToSpeak || user.wishToSpeak;
 
-    try {
-      const updatedUser = await user.save();
-      return res
-        .status(HttpCodes.OK)
-        .json(response(updatedUser));
-    } catch (e) {
-      return res
-        .status(HttpCodes.INTERNAL_SERVER_ERROR)
-        .json(err('Server error: Cannot update user', HttpCodes.INTERNAL_SERVER_ERROR));
-    }
+    const updatedUser = await user.save();
+    return res.json(response(updatedUser));
   }
 
   async searchUsersByQuery(req: Request, res: Response) {
-    try {
-      const { searchTerm } = req.query;
+    const { searchTerm } = req.query;
 
-      if (typeof searchTerm !== 'string') {
-        return res
-          .status(HttpCodes.BAD_REQUEST)
-          .json(err('Invalid query parameter', HttpCodes.BAD_REQUEST));
-      }
-
-      const result = await this.userService.searchUsers(searchTerm);
-
-      if (!result) {
-        return res
-          .status(HttpCodes.BAD_REQUEST)
-          .json(err('Malformed query', HttpCodes.BAD_REQUEST));
-      }
-
-      return res.json(response(result));
-    } catch (e) {
-      return res
-        .status(HttpCodes.BAD_REQUEST)
-        .json(err('Invalid query parameter', HttpCodes.BAD_REQUEST));
+    if (typeof searchTerm !== 'string') {
+      throw new BadRequest('Invalid query parameter');
     }
+
+    const result = await this.userService.searchUsers(searchTerm);
+
+    if (!result) {
+      throw new BadRequest('Malformed query');
+    }
+
+    return res.json(response(result));
   }
 }
 
