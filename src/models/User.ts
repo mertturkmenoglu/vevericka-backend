@@ -5,7 +5,7 @@ import * as argon2 from 'argon2';
 type Language = {
   language: string;
   proficiency: string;
-}
+};
 
 export type UserDocument = mongoose.Document & {
   username: string;
@@ -165,8 +165,7 @@ userSchema.pre('save', async function save() {
     return;
   }
 
-  const hashed = await argon2.hash(user.password);
-  user.password = hashed;
+  user.password = await argon2.hash(user.password);
 });
 
 export const User = mongoose.model<UserDocument>('User', userSchema);
