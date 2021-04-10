@@ -23,13 +23,9 @@ class AuthService {
     return !(user === null);
   }
 
-  // eslint-disable-next-line class-methods-use-this
-  generatePasswordResetCode() {
-    return crypto.randomBytes(4).toString('hex');
-  }
+  generatePasswordResetCode = () => crypto.randomBytes(4).toString('hex');
 
-  // eslint-disable-next-line class-methods-use-this
-  async sendPasswordResetEmail(email: string, passwordResetCode: string): Promise<Boolean> {
+  sendPasswordResetEmail = async (email: string, passwordResetCode: string): Promise<Boolean> => {
     sgMail.setApiKey(process.env.SENDGRID_API_KEY as string);
 
     const emailMsg = {
@@ -46,7 +42,7 @@ class AuthService {
     } catch (e) {
       return false;
     }
-  }
+  };
 }
 
 export default AuthService;
