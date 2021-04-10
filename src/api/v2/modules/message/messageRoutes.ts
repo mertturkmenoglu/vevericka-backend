@@ -1,36 +1,35 @@
 import express from 'express';
+import asyncHandler from 'express-async-handler';
+import { Container } from 'typedi';
 import isAuth from '../../../../middlewares/isAuth';
 import authorize from '../authorization';
 import validateDto from '../validateDto';
 import MessageController from './MessageController';
-import MessageService from './MessageService';
 
 const router = express.Router();
-
-const messageService = new MessageService();
-const messageController = new MessageController(messageService);
+const messageController = Container.get(MessageController);
 
 router.post(
   '/chat/:id',
   isAuth,
-  (req, res, next) => authorize('get-chat', req, res, next),
-  (req, res, next) => validateDto('get-chat', req, res, next),
-  (req, res, next) => messageController.getChatById(req, res, next),
+  asyncHandler(async (req, res, next) => authorize('get-chat', req, res, next)),
+  asyncHandler(async (req, res, next) => validateDto('get-chat', req, res, next)),
+  asyncHandler(async (req, res) => messageController.getChatById(req, res)),
 );
 
 router.post(
   '/chat/',
   isAuth,
-  (req, res, next) => authorize('create-chat', req, res, next),
-  (req, res, next) => validateDto('create-chat', req, res, next),
-  (req, res, next) => messageController.createChat(req, res, next),
+  asyncHandler(async (req, res, next) => authorize('create-chat', req, res, next)),
+  asyncHandler(async (req, res, next) => validateDto('create-chat', req, res, next)),
+  asyncHandler(async (req, res) => messageController.createChat(req, res)),
 );
 
 router.post(
   '/chat/user-chats/:username',
   isAuth,
-  (req, res, next) => authorize('get-user-chats', req, res, next),
-  (req, res, next) => messageController.getUserChats(req, res, next),
+  asyncHandler(async (req, res, next) => authorize('get-user-chats', req, res, next)),
+  asyncHandler(async (req, res) => messageController.getUserChats(req, res)),
 );
 
 export default router;

@@ -1,6 +1,6 @@
-import { NextFunction, Request, Response } from 'express';
+import { Request, Response } from 'express';
+import { Service } from 'typedi';
 import BadRequest from '../../../../errors/BadRequest';
-import InternalServerError from '../../../../errors/InternalServerError';
 import NotFound from '../../../../errors/NotFound';
 import Unauthorized from '../../../../errors/Unauthorized';
 import { Chat } from '../../../../models/Chat';
@@ -9,42 +9,36 @@ import { Message } from '../../../../models/Message';
 import { User } from '../../../../models/User';
 import HttpCodes from '../../../../utils/HttpCodes';
 import response from '../../../../utils/response';
-import BaseController from '../../interfaces/BaseController';
 import CreateChatDto from './dto/CreateChatDto';
 import GetChatDto from './dto/GetChatDto';
 import MessageService from './MessageService';
 
-class MessageController extends BaseController {
-  constructor(readonly messageService: MessageService) {
-    super();
-    this.messageService = messageService;
-  }
+@Service()
+class MessageController {
+  constructor(private readonly messageService: MessageService) { }
 
-  // eslint-disable-next-line class-methods-use-this
-  async getChatById(req: Request, res: Response, next: NextFunction) {
+  async getChatById(req: Request, res: Response) {
     const { id } = req.params;
     const dto = req.body as GetChatDto;
 
     if (!id) {
-      return next(new BadRequest('Id must be valid'));
+      throw new BadRequest('Id must be valid');
     }
 
-    const chat = await Chat
-      .findById(id)
-      .populate('users', 'username name image');
+    const chat = await this.messageService.getChatById(id);
 
     if (!chat) {
-      return next(new NotFound('Chat not found'));
+      throw new NotFound('Chat not found');
     }
 
     const user = await User.findById(dto.userId);
 
     if (!user) {
-      return next(new NotFound('User not found'));
+      throw new NotFound('User not found');
     }
 
     if (!chat.users.includes(user.id)) {
-      return next(new Unauthorized('This user cannot view this chat'));
+      throw new Unauthorized('This user cannot view this chat');
     }
 
     if (chat.lastMessage !== null) {
@@ -57,18 +51,17 @@ class MessageController extends BaseController {
   }
 
   // eslint-disable-next-line class-methods-use-this
-  async createChat(req: Request, res: Response, next: NextFunction) {
+  async createChat(req: Request, res: Response) {
     const dto = req.body as CreateChatDto;
 
     if (!dto.users.includes(dto.createdBy)) {
-      return next(new Unauthorized('User is not authorized to create this chat'));
+      throw new Unauthorized('User is not authorized to create this chat');
     }
 
-    const checkUsers = await Promise.all(dto.users.map((userId) => User.findById(userId)));
+    const isValid = this.messageService.areUsersValid(dto.users);
 
-    // If any user does not exist
-    if (checkUsers.includes(null)) {
-      return next(new BadRequest('Chat users are not valid: User does not exist'));
+    if (!isValid) {
+      throw new BadRequest('Chat users are not valid: One or more user(s) not found');
     }
 
     const chat = new Chat({
@@ -78,29 +71,21 @@ class MessageController extends BaseController {
       lastMessage: null,
     });
 
-    try {
-      const savedChat = await chat.save();
-      return res.status(HttpCodes.CREATED).json(response(savedChat));
-    } catch (e) {
-      return next(new InternalServerError('Server error: Cannot create chat'));
-    }
+    const savedChat = await chat.save();
+    return res.status(HttpCodes.CREATED).json(response(savedChat));
   }
 
   // eslint-disable-next-line class-methods-use-this
-  async getUserChats(req: Request, res: Response, next: NextFunction) {
+  async getUserChats(req: Request, res: Response) {
     const { username } = req.params;
 
     const user = await User.findOne({ username });
 
     if (!user) {
-      return next(new NotFound('User not found'));
+      throw new NotFound('User not found');
     }
 
-    const chats = await Chat
-      .find({ users: { $elemMatch: { $eq: user.id } } })
-      .populate('users', 'username name image')
-      .populate('lastMessage');
-
+    const chats = await this.messageService.getUserChats(user.id);
     return res.json(response(chats));
   }
 }
