@@ -3,7 +3,6 @@ import { Request, Response } from 'express';
 import { Service } from 'typedi';
 
 import PostService from './PostService';
-import err from '../../../../utils/err';
 import HttpCodes from '../../../../utils/HttpCodes';
 import response from '../../../../utils/response';
 import { User } from '../../../../models/User';
@@ -13,6 +12,8 @@ import { Comment } from '../../../../models/Comment';
 import CreateCommentDto from './dto/CreateCommentDto';
 import { Bookmark } from '../../../../models/Bookmark';
 import CreateBookmarkDto from './dto/CreateBookmarkDto';
+import BadRequest from '../../../../errors/BadRequest';
+import NotFound from '../../../../errors/NotFound';
 
 @Service()
 class PostController {
@@ -22,13 +23,13 @@ class PostController {
     const { id } = req.params;
 
     if (!id) {
-      return res.status(HttpCodes.BAD_REQUEST).json(err('Invalid post id', HttpCodes.BAD_REQUEST));
+      throw new BadRequest('Invalid post id');
     }
 
     const post = await this.postService.getPostById(id);
 
     if (!post) {
-      return res.status(HttpCodes.NOT_FOUND).json(err('Post not found', HttpCodes.NOT_FOUND));
+      throw new NotFound('Post not found');
     }
 
     return res.json(response(post));
@@ -38,7 +39,7 @@ class PostController {
     const user = await this.findUserByUsername(req.params.username);
 
     if (!user) {
-      return res.status(HttpCodes.NOT_FOUND).json(err('User not found', HttpCodes.NOT_FOUND));
+      throw new NotFound('User not found');
     }
 
     const posts = await this.postService.getUserPosts(user.id);
@@ -49,7 +50,7 @@ class PostController {
     const user = await this.findUserByUsername(req.params.username);
 
     if (!user) {
-      return res.status(HttpCodes.NOT_FOUND).json(err('User not found', HttpCodes.NOT_FOUND));
+      throw new NotFound('User not found');
     }
 
     const feed = await this.postService.getUserFeed(user);
@@ -65,50 +66,35 @@ class PostController {
       comments: [],
     });
 
-    try {
-      const savedPost = await post.save();
-      return res.status(HttpCodes.CREATED).json(response(savedPost));
-    } catch (e) {
-      return res.status(HttpCodes.INTERNAL_SERVER_ERROR)
-        .json(err('Server error: Cannot create post', HttpCodes.INTERNAL_SERVER_ERROR));
-    }
+    const savedPost = await post.save();
+    return res.status(HttpCodes.CREATED).json(response(savedPost));
   }
 
   async deletePost(req: Request, res: Response) {
     const postId = req.params.id;
 
-    try {
-      await Post.findByIdAndDelete(postId);
-      return res.status(HttpCodes.NO_CONTENT).end();
-    } catch (e) {
-      return res.status(HttpCodes.INTERNAL_SERVER_ERROR)
-        .json(err('Server error: Cannot delete post', HttpCodes.INTERNAL_SERVER_ERROR));
-    }
+    await Post.findByIdAndDelete(postId);
+    return res.status(HttpCodes.NO_CONTENT).end();
   }
 
   async deleteComment(req: Request, res: Response) {
     const commentId = req.params.id;
 
-    try {
-      await Comment.findByIdAndDelete(commentId);
-      return res.status(HttpCodes.NO_CONTENT).end();
-    } catch (e) {
-      return res.status(HttpCodes.INTERNAL_SERVER_ERROR)
-        .json(err('Server error: Cannot delete post', HttpCodes.INTERNAL_SERVER_ERROR));
-    }
+    await Comment.findByIdAndDelete(commentId);
+    return res.status(HttpCodes.NO_CONTENT).end();
   }
 
   async getCommentById(req: Request, res: Response) {
     const commentId = req.params.id;
 
     if (!commentId) {
-      return res.status(HttpCodes.BAD_REQUEST).json(err('Invalid comment id', HttpCodes.BAD_REQUEST));
+      throw new BadRequest('Invalid comment id');
     }
 
     const comment = await this.postService.getCommentById(commentId);
 
     if (!comment) {
-      return res.status(HttpCodes.NOT_FOUND).json(err('Comment not found', HttpCodes.NOT_FOUND));
+      throw new NotFound('Comment not found');
     }
 
     return res.json(response(comment));
@@ -119,8 +105,7 @@ class PostController {
     const post = await this.postService.getPostById(dto.postId);
 
     if (!post) {
-      return res.status(HttpCodes.NOT_FOUND)
-        .json(err('Post not found', HttpCodes.NOT_FOUND));
+      throw new NotFound('Post not found');
     }
 
     const comment = new Comment({
@@ -129,31 +114,25 @@ class PostController {
       content: dto.content,
     });
 
-    try {
-      const savedComment = await comment.save();
-      post.comments = [...post.comments, savedComment.id];
-      await post.save();
-      return res.status(HttpCodes.CREATED)
-        .json(response(savedComment));
-    } catch (e) {
-      return res.status(HttpCodes.INTERNAL_SERVER_ERROR)
-        .json(err('Server error: Cannot create comment', HttpCodes.INTERNAL_SERVER_ERROR));
-    }
+    const savedComment = await comment.save();
+    post.comments = [...post.comments, savedComment.id];
+
+    await post.save();
+    return res.status(HttpCodes.CREATED)
+      .json(response(savedComment));
   }
 
   async getBookmarkById(req: Request, res: Response) {
     const bookmarkId = req.params.id;
 
     if (!bookmarkId) {
-      return res.status(HttpCodes.BAD_REQUEST)
-        .json(err('Invalid bookmark id', HttpCodes.BAD_REQUEST));
+      throw new BadRequest('Invalid bookmark id');
     }
 
     const bookmark = await this.postService.getBookmarkById(bookmarkId);
 
     if (!bookmark) {
-      return res.status(HttpCodes.NOT_FOUND)
-        .json(err('Bookmark not found', HttpCodes.NOT_FOUND));
+      throw new NotFound('Bookmark not found');
     }
 
     return res.json(response(bookmark));
@@ -165,15 +144,13 @@ class PostController {
     const user = await User.findOne({ username });
 
     if (!user) {
-      return res.status(HttpCodes.NOT_FOUND)
-        .json(err('User not found', HttpCodes.NOT_FOUND));
+      throw new NotFound('User not found');
     }
 
     const bookmarks = await this.postService.getUserBookmarks(user.id);
 
     if (!bookmarks) {
-      return res.status(HttpCodes.NOT_FOUND)
-        .json(err('Bookmarks not found', HttpCodes.NOT_FOUND));
+      throw new NotFound('Bookmarks not found');
     }
 
     return res.json(response(bookmarks));
@@ -183,17 +160,11 @@ class PostController {
     const bookmarkId = req.params.id;
 
     if (!bookmarkId) {
-      return res.status(HttpCodes.BAD_REQUEST)
-        .json(err('Invalid bookmark id', HttpCodes.BAD_REQUEST));
+      throw new BadRequest('Invalid bookmark id');
     }
 
-    try {
-      await Bookmark.findByIdAndDelete(bookmarkId);
-      return res.status(HttpCodes.NO_CONTENT).end();
-    } catch (e) {
-      return res.status(HttpCodes.INTERNAL_SERVER_ERROR)
-        .json(err('Server error: Cannot delete bookmark', HttpCodes.INTERNAL_SERVER_ERROR));
-    }
+    await Bookmark.findByIdAndDelete(bookmarkId);
+    return res.status(HttpCodes.NO_CONTENT).end();
   }
 
   async createBookmark(req: Request, res: Response) {
@@ -201,8 +172,7 @@ class PostController {
     const post = await this.postService.getPostById(dto.postId);
 
     if (!post) {
-      return res.status(HttpCodes.NOT_FOUND)
-        .json(err('Post not found', HttpCodes.NOT_FOUND));
+      throw new NotFound('Post not found');
     }
 
     const bookmark = new Bookmark({
@@ -210,14 +180,8 @@ class PostController {
       belongsTo: dto.belongsTo,
     });
 
-    try {
-      const savedBookmark = await bookmark.save();
-      return res.status(HttpCodes.CREATED)
-        .json(response(savedBookmark));
-    } catch (e) {
-      return res.status(HttpCodes.INTERNAL_SERVER_ERROR)
-        .json(err('Server error: Cannot create bookmark', HttpCodes.INTERNAL_SERVER_ERROR));
-    }
+    const savedBookmark = await bookmark.save();
+    return res.status(HttpCodes.CREATED).json(response(savedBookmark));
   }
 
   private findUserByUsername = async (username?: string) => {
