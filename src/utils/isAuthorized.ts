@@ -17,11 +17,7 @@ const isAuthorized = (token: string, username: string): boolean => {
 
   const { username: tokenUsername } = verified as { username: string };
 
-  if (tokenUsername === username) {
-    return true;
-  }
-
-  return false;
+  return tokenUsername === username;
 };
 
 export default isAuthorized;

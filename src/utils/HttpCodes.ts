@@ -1,5 +1,4 @@
-/* eslint-disable no-unused-vars */
-// eslint-disable-next-line no-shadow
+// noinspection JSUnusedGlobalSymbols
 enum HttpCodes {
   OK = 200,
   CREATED = 201,
@@ -10,7 +9,7 @@ enum HttpCodes {
   TOO_MANY_REQUESTS = 429,
   INTERNAL_SERVER_ERROR = 500,
   NOT_IMPLEMENTED = 501,
-  SERVICE_UNAVAILABLE = 503
+  SERVICE_UNAVAILABLE = 503,
 }
 
 export default HttpCodes;

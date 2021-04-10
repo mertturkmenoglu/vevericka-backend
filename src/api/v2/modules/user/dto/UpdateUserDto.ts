@@ -1,12 +1,12 @@
 type Location = {
   city: string;
   country: string;
-}
+};
 
 type Language = {
   language: string;
   proficiency: string;
-}
+};
 
 interface UpdateUserDto {
   username: string;

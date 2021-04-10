@@ -7,8 +7,7 @@ const getTokenFromHeader = (req: Request): string | null => {
   }
 
   const header = req.headers.authorization.toString();
-  const token = getToken(header);
-  return token;
+  return getToken(header);
 };
 
 export default getTokenFromHeader;

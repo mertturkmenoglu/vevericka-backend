@@ -2,7 +2,7 @@ import { NextFunction, Request, Response } from 'express';
 import err from './err';
 import HttpCodes from './HttpCodes';
 
-// eslint-disable-next-line no-unused-vars
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const errorHandler = (e: Error, _req: Request, res: Response, _next: NextFunction) => {
   let code;
   if (e.name === 'BadRequestError') {

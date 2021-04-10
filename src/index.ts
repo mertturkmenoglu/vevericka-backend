@@ -13,6 +13,7 @@ import applicationConfig from './configs/ApplicationConfig';
 
 import Log from './utils/Log';
 import errorHandler from './utils/errorHandler';
+import apiV1Routes from './api/v1/routes';
 import authRoutes from './api/v2/modules/auth/authRoutes';
 import postRoutes from './api/v2/modules/post/postRoutes';
 import userRoutes from './api/v2/modules/user/userRoutes';
@@ -40,6 +41,7 @@ app.use(cors({
 app.use(morgan(morganConfig));
 
 // Application routes
+app.use('/api/v1', apiV1Routes);
 app.use('/api/v2/auth', authRoutes);
 app.use('/api/v2/post', postRoutes);
 app.use('/api/v2/user', userRoutes);
