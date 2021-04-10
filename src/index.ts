@@ -6,14 +6,12 @@ import mongoose from 'mongoose';
 import helmet from 'helmet';
 import cors from 'cors';
 import morgan from 'morgan';
-import expresStatusMonitor from 'express-status-monitor';
 
 import mongooseOptions from './configs/MongoConfig';
 import morganConfig from './configs/MorganConfig';
 import applicationConfig from './configs/ApplicationConfig';
 
 import Log from './utils/Log';
-import IS_DEV from './utils/isDev';
 import errorHandler from './utils/errorHandler';
 import authRoutes from './api/v2/modules/auth/authRoutes';
 import postRoutes from './api/v2/modules/post/postRoutes';
@@ -33,11 +31,6 @@ const main = async () => {
 
 // Application values
 app.set('trust proxy', 1);
-
-// Middlewares
-if (IS_DEV) {
-  app.use(expresStatusMonitor());
-}
 
 app.use(express.json());
 app.use(helmet());
