@@ -1,7 +1,9 @@
 /* eslint-disable class-methods-use-this */
+import { Service } from 'typedi';
 import { Chat, ChatDocument } from '../../../../models/Chat';
 import { User } from '../../../../models/User';
 
+@Service()
 class MessageService {
   async getChatById(id: string): Promise<ChatDocument | null> {
     return Chat
