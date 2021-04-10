@@ -11,6 +11,7 @@ import isValidCreatePostDto from './modules/post/validation/createPost';
 import isValidUnfollowUserDto from './modules/user/validation/unfollowUser';
 import isValidUpdateUserDto from './modules/user/validation/updateUser';
 import { DtoType, DtoValidationFn } from './types';
+import isValidGetChatMessagesDto from './modules/message/validation/getChatMessages';
 
 const validation: Record<DtoType, DtoValidationFn> = {
   register: isValidRegisterDto,
@@ -25,6 +26,7 @@ const validation: Record<DtoType, DtoValidationFn> = {
   'create-bookmark': isValidCreateBookmarkDto,
   'create-chat': isValidCreateChatDto,
   'get-chat': isValidGetChatDto,
+  'get-chat-messages': isValidGetChatMessagesDto,
 };
 
 export default validation;

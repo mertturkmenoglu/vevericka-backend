@@ -1,7 +1,7 @@
 /* eslint-disable class-methods-use-this */
 import { Service } from 'typedi';
 import { Chat, ChatDocument } from '../../../../models/Chat';
-import { User } from '../../../../models/User';
+import { User, UserDocument } from '../../../../models/User';
 
 @Service()
 class MessageService {
@@ -21,6 +21,10 @@ class MessageService {
       .find({ users: { $elemMatch: { $eq: userId } } })
       .populate('users', 'username name image')
       .populate('lastMessage');
+  }
+
+  async canViewChat(chat: ChatDocument, user: UserDocument) {
+    return chat.users.includes(user.id);
   }
 }
 

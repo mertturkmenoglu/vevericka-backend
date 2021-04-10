@@ -12,6 +12,7 @@ import response from '../../../../utils/response';
 import CreateChatDto from './dto/CreateChatDto';
 import GetChatDto from './dto/GetChatDto';
 import MessageService from './MessageService';
+import GetChatMessagesDto from './dto/GetChatMessagesDto';
 
 @Service()
 class MessageController {
@@ -75,7 +76,6 @@ class MessageController {
     return res.status(HttpCodes.CREATED).json(response(savedChat));
   }
 
-  // eslint-disable-next-line class-methods-use-this
   async getUserChats(req: Request, res: Response) {
     const { username } = req.params;
 
@@ -87,6 +87,32 @@ class MessageController {
 
     const chats = await this.messageService.getUserChats(user.id);
     return res.json(response(chats));
+  }
+
+  async getChatMessages(req: Request, res: Response) {
+    const dto = req.body as GetChatMessagesDto;
+    const { id } = req.params;
+
+    const chat = await Chat.findById(id);
+
+    if (!chat) {
+      throw new NotFound('Chat not found');
+    }
+
+    const user = await User.findOne({ username: dto.username });
+
+    if (!user) {
+      throw new NotFound('User not found');
+    }
+
+    const canViewChat = await this.messageService.canViewChat(chat, user);
+
+    if (!canViewChat) {
+      throw new Unauthorized('This user cannot view this chat');
+    }
+
+    const messages = await Message.find({ chatId: chat.id });
+    return res.json(response(messages));
   }
 }
 

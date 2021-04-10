@@ -32,4 +32,11 @@ router.post(
   asyncHandler(async (req, res) => messageController.getUserChats(req, res)),
 );
 
+router.post(
+  '/chat/messages/:id',
+  isAuth,
+  asyncHandler(async (req, res, next) => authorize('get-chat-messages', req, res, next)),
+  asyncHandler(async (req, res) => messageController.getChatMessages(req, res)),
+);
+
 export default router;

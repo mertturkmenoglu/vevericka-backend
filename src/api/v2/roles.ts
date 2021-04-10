@@ -86,6 +86,7 @@ const roles: Record<AuthorizationType, AuthValidateFn> = {
   },
   'get-chat': async (r) => r.body.username,
   'get-user-chats': async (r) => r.params.username,
+  'get-chat-messages': async (r) => r.body.username,
 };
 
 export default roles;
