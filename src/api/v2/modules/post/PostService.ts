@@ -1,13 +1,14 @@
+/* eslint-disable class-methods-use-this */
+import { Service } from 'typedi';
 import { Bookmark, BookmarkDocument } from '../../../../models/Bookmark';
 import { Comment, CommentDocument } from '../../../../models/Comment';
 import { PostDocument } from '../../../../models/Post';
 import { UserDocument } from '../../../../models/User';
 import PostRepository from './PostRepository';
 
+@Service()
 class PostService {
-  constructor(readonly postRepository: PostRepository) {
-    this.postRepository = postRepository;
-  }
+  constructor(private readonly postRepository: PostRepository) { }
 
   async getPostById(id: string): Promise<PostDocument | null> {
     return this.postRepository.findPostById(id);
@@ -22,17 +23,14 @@ class PostService {
     return this.postRepository.getUserFeed(users);
   }
 
-  // eslint-disable-next-line class-methods-use-this
   async getCommentById(id: string): Promise<CommentDocument | null> {
     return Comment.findById(id);
   }
 
-  // eslint-disable-next-line class-methods-use-this
   async getBookmarkById(id: string): Promise<BookmarkDocument | null> {
     return Bookmark.findById(id);
   }
 
-  // eslint-disable-next-line class-methods-use-this
   async getUserBookmarks(userId: string): Promise<BookmarkDocument[] | null> {
     return Bookmark
       .find({ belongsTo: userId })

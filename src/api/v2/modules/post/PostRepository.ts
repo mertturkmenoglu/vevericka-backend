@@ -1,6 +1,8 @@
+/* eslint-disable class-methods-use-this */
+import { Service } from 'typedi';
 import { Post, PostDocument } from '../../../../models/Post';
 
-/* eslint-disable class-methods-use-this */
+@Service()
 class PostRepository {
   async findPostById(id: string): Promise<PostDocument | null> {
     try {

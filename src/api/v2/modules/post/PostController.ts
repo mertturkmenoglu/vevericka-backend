@@ -1,9 +1,11 @@
+/* eslint-disable class-methods-use-this */
 import { Request, Response } from 'express';
+import { Service } from 'typedi';
+
 import PostService from './PostService';
 import err from '../../../../utils/err';
 import HttpCodes from '../../../../utils/HttpCodes';
 import response from '../../../../utils/response';
-import BaseController from '../../interfaces/BaseController';
 import { User } from '../../../../models/User';
 import CreatePostDto from './dto/CreatePostDto';
 import { Post } from '../../../../models/Post';
@@ -12,11 +14,9 @@ import CreateCommentDto from './dto/CreateCommentDto';
 import { Bookmark } from '../../../../models/Bookmark';
 import CreateBookmarkDto from './dto/CreateBookmarkDto';
 
-class PostController extends BaseController {
-  constructor(readonly postService: PostService) {
-    super();
-    this.postService = postService;
-  }
+@Service()
+class PostController {
+  constructor(private readonly postService: PostService) { }
 
   async getPostById(req: Request, res: Response) {
     const { id } = req.params;
@@ -35,13 +35,7 @@ class PostController extends BaseController {
   }
 
   async getUserPosts(req: Request, res: Response) {
-    const { username } = req.params;
-
-    if (!username) {
-      return res.status(HttpCodes.BAD_REQUEST).json(err('Invalid username', HttpCodes.BAD_REQUEST));
-    }
-
-    const user = await User.findOne({ username });
+    const user = await this.findUserByUsername(req.params.username);
 
     if (!user) {
       return res.status(HttpCodes.NOT_FOUND).json(err('User not found', HttpCodes.NOT_FOUND));
@@ -52,13 +46,7 @@ class PostController extends BaseController {
   }
 
   async getUserFeed(req: Request, res: Response) {
-    const { username } = req.params;
-
-    if (!username) {
-      return res.status(HttpCodes.BAD_REQUEST).json(err('Invalid username', HttpCodes.BAD_REQUEST));
-    }
-
-    const user = await User.findOne({ username });
+    const user = await this.findUserByUsername(req.params.username);
 
     if (!user) {
       return res.status(HttpCodes.NOT_FOUND).json(err('User not found', HttpCodes.NOT_FOUND));
@@ -68,7 +56,6 @@ class PostController extends BaseController {
     return res.json(response(feed));
   }
 
-  // eslint-disable-next-line class-methods-use-this
   async createPost(req: Request, res: Response) {
     const dto = req.body as CreatePostDto;
 
@@ -87,7 +74,6 @@ class PostController extends BaseController {
     }
   }
 
-  // eslint-disable-next-line class-methods-use-this
   async deletePost(req: Request, res: Response) {
     const postId = req.params.id;
 
@@ -100,7 +86,6 @@ class PostController extends BaseController {
     }
   }
 
-  // eslint-disable-next-line class-methods-use-this
   async deleteComment(req: Request, res: Response) {
     const commentId = req.params.id;
 
@@ -194,7 +179,6 @@ class PostController extends BaseController {
     return res.json(response(bookmarks));
   }
 
-  // eslint-disable-next-line class-methods-use-this
   async deleteBookmark(req: Request, res: Response) {
     const bookmarkId = req.params.id;
 
@@ -212,7 +196,6 @@ class PostController extends BaseController {
     }
   }
 
-  // eslint-disable-next-line class-methods-use-this
   async createBookmark(req: Request, res: Response) {
     const dto = req.body as CreateBookmarkDto;
     const post = await this.postService.getPostById(dto.postId);
@@ -236,6 +219,20 @@ class PostController extends BaseController {
         .json(err('Server error: Cannot create bookmark', HttpCodes.INTERNAL_SERVER_ERROR));
     }
   }
+
+  private findUserByUsername = async (username?: string) => {
+    if (!username) {
+      return null;
+    }
+
+    const user = await User.findOne({ username });
+
+    if (!user) {
+      return null;
+    }
+
+    return user;
+  };
 }
 
 export default PostController;
