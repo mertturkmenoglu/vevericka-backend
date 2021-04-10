@@ -1,47 +1,38 @@
-import { Logger } from 'winston';
+/* eslint-disable class-methods-use-this */
+import { Service } from 'typedi';
 import { User, UserDocument } from '../../../../models/User';
 
+// noinspection JSUnusedGlobalSymbols
+@Service()
 class UserRepository {
-  constructor(private readonly logger: Logger) {
-    this.logger = logger;
-  }
-
   async insertUser(user: UserDocument): Promise<UserDocument | null> {
     try {
-      const savedUser = await user.save();
-      return savedUser;
+      return await user.save();
     } catch (e) {
-      this.logger.error(e);
       return null;
     }
   }
 
   async findUserByIdUnsafe(id: string): Promise<UserDocument | null> {
     try {
-      const user = await User.findById(id, '+password');
-      return user;
+      return await User.findById(id, '+password');
     } catch (e) {
-      this.logger.error(e);
       return null;
     }
   }
 
   async findUserByIdSafe(id: string): Promise<UserDocument | null> {
     try {
-      const user = await User.findById(id);
-      return user;
+      return await User.findById(id);
     } catch (e) {
-      this.logger.error(e);
       return null;
     }
   }
 
   async findUserByUsernameUnsafe(username: string): Promise<UserDocument | null> {
     try {
-      const user = await User.findOne({ username }, '+password');
-      return user;
+      return await User.findOne({ username }, '+password');
     } catch (e) {
-      this.logger.error(e);
       return null;
     }
   }
@@ -53,17 +44,14 @@ class UserRepository {
         .populate('following', 'name username image')
         .populate('followers', 'name username image');
     } catch (e) {
-      this.logger.error(e);
       return null;
     }
   }
 
   async findUserByEmailUnsafe(email: string): Promise<UserDocument | null> {
     try {
-      const user = await User.findOne({ email }, '+password');
-      return user;
+      return await User.findOne({ email }, '+password');
     } catch (e) {
-      this.logger.error(e);
       return null;
     }
   }
@@ -73,21 +61,19 @@ class UserRepository {
     email: string,
   ): Promise<UserDocument | null> {
     try {
-      const user = User.findOne().or([{ username }, { email }]);
-      return user;
+      return await User.findOne()
+        .or([{ username }, { email }]);
     } catch (e) {
-      this.logger.error(e);
       return null;
     }
   }
 
   async searchUsers(query: string, limit = 100): Promise<UserDocument[] | null> {
     try {
-      return User
+      return await User
         .find({ username: { $regex: `.*${query}.*` } }, 'username name image')
         .limit(limit);
     } catch (e) {
-      this.logger.error(e);
       return null;
     }
   }

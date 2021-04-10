@@ -2,17 +2,13 @@ import express from 'express';
 import rateLimit from 'express-rate-limit';
 import asyncHandler from 'express-async-handler';
 
-import AuthController from './AuthController';
-import UserRepository from '../user/UserRepository';
-import AuthService from './AuthService';
+import { Container } from 'typedi';
 import validateDto from '../validateDto';
-import logger from '../../../../utils/winstonLogger';
+import AuthController from './AuthController';
 
 const router = express.Router();
 
-const userRepository = new UserRepository(logger);
-const authService = new AuthService(userRepository);
-const authController = new AuthController(authService);
+const authController = Container.get(AuthController);
 
 // Rate limiters
 const rateLimiter = {

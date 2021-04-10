@@ -1,27 +1,25 @@
 import { Request, Response } from 'express';
 import * as argon2 from 'argon2';
 import jwt from 'jsonwebtoken';
+import { Service } from 'typedi';
 
 import { User } from '../../../../models/User';
 import AuthService from './AuthService';
 import HttpCodes from '../../../../utils/HttpCodes';
-import BaseController from '../../interfaces/BaseController';
 import RegisterDto from './dto/RegisterDto';
 import LoginDto from './dto/LoginDto';
 import SendPasswordResetEmailDto from './dto/SendPasswordResetEmailDto';
 import ResetPasswordDto from './dto/ResetPasswordDto';
 import response from '../../../../utils/response';
-import app from '../../../../index';
+import { redis } from '../../../../redis';
 import { FORGET_PASSWORD_PREFIX } from '../../../../configs/RedisConfig';
 import BadRequest from '../../../../errors/BadRequest';
 import InternalServerError from '../../../../errors/InternalServerError';
 import NotFound from '../../../../errors/NotFound';
 
-class AuthController extends BaseController {
-  constructor(readonly authService: AuthService) {
-    super();
-    this.authService = authService;
-  }
+@Service()
+class AuthController {
+  constructor(private readonly authService: AuthService) { }
 
   async register(req: Request, res: Response) {
     const dto = req.body as RegisterDto;
@@ -90,7 +88,7 @@ class AuthController extends BaseController {
     }
 
     const passwordResetCode = this.authService.generatePasswordResetCode();
-    await app.redis.set(
+    await redis.set(
       FORGET_PASSWORD_PREFIX + passwordResetCode,
       user.id,
       'ex',
@@ -110,7 +108,7 @@ class AuthController extends BaseController {
     }
 
     const REDIS_KEY = FORGET_PASSWORD_PREFIX + dto.code;
-    const userId = await app.redis.get(REDIS_KEY);
+    const userId = await redis.get(REDIS_KEY);
 
     if (!userId) {
       throw new BadRequest('Password reset code is invalid');
@@ -123,7 +121,7 @@ class AuthController extends BaseController {
     user.password = dto.password;
 
     await user.save();
-    await app.redis.del(REDIS_KEY);
+    await redis.del(REDIS_KEY);
     return res.status(HttpCodes.NO_CONTENT).end();
   }
 }

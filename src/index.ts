@@ -6,25 +6,25 @@ import mongoose from 'mongoose';
 import helmet from 'helmet';
 import cors from 'cors';
 import morgan from 'morgan';
-import Redis from 'ioredis';
 import expresStatusMonitor from 'express-status-monitor';
 
 import mongooseOptions from './configs/MongoConfig';
 import morganConfig from './configs/MorganConfig';
 import applicationConfig from './configs/ApplicationConfig';
-import appV2Routes from './api/v2/routes';
+
 import Log from './utils/Log';
 import IS_DEV from './utils/isDev';
 import errorHandler from './utils/errorHandler';
+import authRoutes from './api/v2/modules/auth/authRoutes';
+import postRoutes from './api/v2/modules/post/postRoutes';
+import userRoutes from './api/v2/modules/user/userRoutes';
+import messageRoutes from './api/v2/modules/message/messageRoutes';
 
 // Load environment variables
 dotenvSafe.config();
 
 const app = express();
 const PORT = process.env.PORT || applicationConfig.PORT;
-
-// Connect to Redis
-const redis = new Redis(process.env.REDIS_URL as string);
 
 const main = async () => {
   // Connect to MongoDB
@@ -47,7 +47,10 @@ app.use(cors({
 app.use(morgan(morganConfig));
 
 // Application routes
-app.use('/api/v2', appV2Routes);
+app.use('/api/v2/auth', authRoutes);
+app.use('/api/v2/post', postRoutes);
+app.use('/api/v2/user', userRoutes);
+app.use('/api/v2/message', messageRoutes);
 
 // Error handler
 app.use(errorHandler);
@@ -60,7 +63,3 @@ main().then(() => {
   console.error(e);
   process.exit(1);
 });
-
-export default {
-  redis,
-};

@@ -3,13 +3,12 @@ import UserController from './UserController';
 import isAuth from '../../../../middlewares/isAuth';
 import UserRepository from './UserRepository';
 import UserService from './UserService';
-import logger from '../../../../utils/winstonLogger';
 import authorize from '../authorization';
 import validateDto from '../validateDto';
 
 const router = express.Router();
 
-const userRepository = new UserRepository(logger);
+const userRepository = new UserRepository();
 const userService = new UserService(userRepository);
 const userController = new UserController(userService);
 
