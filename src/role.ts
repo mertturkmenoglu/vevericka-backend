@@ -2,6 +2,7 @@ import { Request } from 'express';
 import { Post } from './models/Post';
 import { Comment } from './models/Comment';
 import { Bookmark } from './models/Bookmark';
+import { Chat } from './models/Chat';
 
 // noinspection JSUnusedGlobalSymbols
 export enum Role {
@@ -58,7 +59,15 @@ export const mapRoleToFn: Record<Role, AuthFn> = {
     return bookmark.belongsTo === userId;
   },
   CREATE_CHAT: async (r, _username, userId) => r.body.createdBy === userId,
-  GET_CHAT: async (r, username) => r.body.username === username,
+  GET_CHAT: async (r, _username, userId) => {
+    const chat = await Chat.findById(r.params.id);
+    if (!chat) return false;
+    return chat.users.includes(userId);
+  },
   GET_USER_CHATS: async (r, username) => r.params.username === username,
-  GET_CHAT_MESSAGES: async (r, username) => r.body.username === username,
+  GET_CHAT_MESSAGES: async (r, _username, userId) => {
+    const chat = await Chat.findById(r.params.id);
+    if (!chat) return false;
+    return chat.users.includes(userId);
+  },
 };
