@@ -7,7 +7,7 @@
       "es2017",
       "esnext.asynciterable"
     ],
-    "types": ["reflect-metadata", "node"],
+    "types": ["reflect-metadata", "node", "jest"],
     "skipLibCheck": true,
     "removeComments": true,
     "esModuleInterop": true,
@@ -30,8 +30,7 @@
     "resolveJsonModule": true
   },
   "exclude": [
-    "node_modules",
-    "**/*.test.ts"
+    "node_modules"
   ],
   "lib": [
     "es2015"
