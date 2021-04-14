@@ -14,7 +14,6 @@ import morganConfig from './configs/MorganConfig';
 import applicationConfig from './configs/ApplicationConfig';
 
 import Log from './utils/Log';
-import errorHandler from './utils/errorHandler';
 import AuthController from './controllers/AuthController';
 import UserController from './controllers/UserController';
 import Authorization from './middlewares/Authorization';
@@ -46,9 +45,6 @@ app.use(
   }),
 );
 app.use(morgan(morganConfig));
-
-// Error handler
-app.use(errorHandler);
 
 const main = async () => {
   // Connect to MongoDB
