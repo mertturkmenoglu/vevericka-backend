@@ -2,17 +2,12 @@ import crypto from 'crypto';
 
 import sgMail from '@sendgrid/mail';
 import { Service } from 'typedi';
-
-import { UserDocument } from '../../../../models/User';
-import UserRepository from '../user/UserRepository';
+import UserRepository from '../api/v2/modules/user/UserRepository';
+import { UserDocument } from '../models/User';
 
 @Service()
 class AuthService {
-  constructor(private readonly repository: UserRepository) { }
-
-  async createUser(user: UserDocument): Promise<UserDocument | null> {
-    return this.repository.insertUser(user);
-  }
+  constructor(private readonly repository: UserRepository) {}
 
   async getUserByEmail(email: string): Promise<UserDocument | null> {
     return this.repository.findUserByEmailUnsafe(email);

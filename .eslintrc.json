@@ -40,6 +40,7 @@
       "single"
     ],
     "linebreak-style": "off",
-    "import/extensions": "off"
+    "import/extensions": "off",
+    "object-curly-newline": "off"
   }
 }
