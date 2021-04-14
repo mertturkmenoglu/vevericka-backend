@@ -6,14 +6,7 @@ import { Service } from 'typedi';
 @Service()
 export class DocumentToJsonInterceptor implements InterceptorInterface {
   public intercept(_action: Action, result: any): any {
-    if (Array.isArray(result) && 'toJSON' in result[0]) {
-      return result.map((it) => it.toJSON());
-    }
-
-    if ('toJSON' in result) {
-      return result.toJSON();
-    }
-
-    return result;
+    if (!result) return result;
+    return JSON.parse(JSON.stringify(result));
   }
 }
