@@ -1,13 +1,11 @@
-/* eslint-disable class-methods-use-this */
 import { Service } from 'typedi';
-import { Post, PostDocument } from '../../../../models/Post';
+import { Post, PostDocument } from '../models/Post';
 
 @Service()
 class PostRepository {
   async findPostById(id: string): Promise<PostDocument | null> {
     try {
-      return await Post
-        .findById(id)
+      return await Post.findById(id)
         .populate('createdBy', 'username name image')
         .populate({
           path: 'comments',
@@ -23,8 +21,7 @@ class PostRepository {
 
   async findPostsByUsername(userId: string): Promise<PostDocument[] | null> {
     try {
-      return await Post
-        .find({ createdBy: userId })
+      return await Post.find({ createdBy: userId })
         .populate('createdBy', 'name username image')
         .sort({ createdAt: 'desc' });
     } catch (e) {
@@ -34,8 +31,7 @@ class PostRepository {
 
   async getUserFeed(users: string[]): Promise<PostDocument[] | null> {
     try {
-      return await Post
-        .find({ createdBy: { $in: users } })
+      return await Post.find({ createdBy: { $in: users } })
         .populate('createdBy', 'username name image')
         .sort({ createdAt: 'desc' });
     } catch (e) {

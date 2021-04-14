@@ -18,6 +18,7 @@ import errorHandler from './utils/errorHandler';
 import AuthController from './controllers/AuthController';
 import UserController from './controllers/UserController';
 import Authorization from './middlewares/Authorization';
+import PostController from './controllers/PostController';
 
 // Load environment variables
 dotenvSafe.config();
@@ -54,7 +55,7 @@ const main = async () => {
   // Initialize routing controllers
   useExpressServer(app, {
     authorizationChecker: Authorization,
-    controllers: [AuthController, UserController],
+    controllers: [AuthController, UserController, PostController],
   });
 
   // Start listening
