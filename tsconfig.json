@@ -7,7 +7,7 @@
       "es2017",
       "esnext.asynciterable"
     ],
-    "types": ["reflect-metadata"],
+    "types": ["reflect-metadata", "node"],
     "skipLibCheck": true,
     "removeComments": true,
     "esModuleInterop": true,
