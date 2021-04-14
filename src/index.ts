@@ -20,6 +20,7 @@ import Authorization from './middlewares/Authorization';
 import PostController from './controllers/PostController';
 import BookmarkController from './controllers/BookmarkController';
 import CommentController from './controllers/CommentController';
+import MessageController from './controllers/MessageController';
 
 // Load environment variables
 dotenvSafe.config();
@@ -59,6 +60,7 @@ const main = async () => {
       PostController,
       BookmarkController,
       CommentController,
+      MessageController,
     ],
   });
 
