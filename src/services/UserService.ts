@@ -1,10 +1,10 @@
 import { Service } from 'typedi';
-import { UserDocument } from '../../../../models/User';
-import UserRepository from './UserRepository';
+import UserRepository from '../repositories/UserRepository';
+import { UserDocument } from '../models/User';
 
 @Service()
 class UserService {
-  constructor(private readonly userRepository: UserRepository) { }
+  constructor(private readonly userRepository: UserRepository) {}
 
   async getUserByUsername(username: string): Promise<UserDocument | null> {
     return this.userRepository.findUserByUsernameSafe(username);

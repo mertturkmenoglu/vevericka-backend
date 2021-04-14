@@ -1,0 +1,23 @@
+// eslint-disable-next-line import/prefer-default-export
+export enum Language {
+  Chinese,
+  Spanish,
+  English,
+  Portuguese,
+  Russian,
+  Japanese,
+  Turkish,
+  Korean,
+  French,
+  German,
+  Italian,
+  Arabic,
+  Indonesian,
+  Polish,
+  Romanian,
+  Dutch,
+  Kurdish,
+  Greek,
+  Hungarian,
+  Czech,
+}

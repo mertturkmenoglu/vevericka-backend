@@ -1,52 +1,76 @@
-import { Request, Response } from 'express';
+import {
+  Authorized,
+  BadRequestError,
+  Body,
+  Get,
+  JsonController,
+  NotFoundError,
+  Param,
+  Post,
+  Put,
+  QueryParam,
+  UseBefore,
+} from 'routing-controllers';
 import { Service } from 'typedi';
-import UserService from './UserService';
-import HttpCodes from '../../../../utils/HttpCodes';
-import response from '../../../../utils/response';
-import FollowUserDto from './dto/FollowUserDto';
-import UnfollowUserDto from './dto/UnfollowUserDto';
-import UpdateUserDto from './dto/UpdateUserDto';
-import NotFound from '../../../../errors/NotFound';
-import BadRequest from '../../../../errors/BadRequest';
+import UserService from '../services/UserService';
+import FollowUserDto from '../dto/FollowUserDto';
+import IsAuth from '../middlewares/IsAuth';
+import { Role } from '../role';
+import UnfollowUserDto from '../dto/UnfollowUserDto';
+import UpdateUserDto from '../dto/UpdateUserDto';
 
+@JsonController('/api/v2/user')
 @Service()
 class UserController {
-  constructor(private readonly userService: UserService) { }
+  constructor(private readonly userService: UserService) {}
 
-  async getUserByUsername(req: Request, res: Response) {
-    const { username } = req.params;
+  @Get('/q')
+  async searchUsersByQuery(@QueryParam('searchTerm') searchTerm: string) {
+    const result = await this.userService.searchUsers(searchTerm);
+
+    if (!result) {
+      throw new BadRequestError('Malformed query');
+    }
+
+    return result;
+  }
+
+  @Get('/username/:username')
+  async getUserByUsername(@Param('username') username: string) {
     const user = await this.userService.getUserByUsername(username);
 
     if (!user) {
-      throw new NotFound('User not found');
+      throw new NotFoundError('User not found');
     }
 
-    return res.json(response(user));
+    return user;
   }
 
-  async getUserById(req: Request, res: Response) {
-    const { id } = req.params;
+  @Get('/:id')
+  async getUserById(@Param('id') id: string) {
     const user = await this.userService.getUserById(id);
 
     if (!user) {
-      throw new NotFound('User not found');
+      throw new NotFoundError('User not found');
     }
 
-    return res.json(response(user));
+    return user;
   }
 
-  async followUser(req: Request, res: Response) {
-    const dto = req.body as FollowUserDto;
+  @Post('/follow')
+  @UseBefore(IsAuth)
+  @Authorized(Role.FOLLOW_USER)
+  async followUser(@Body() dto: FollowUserDto) {
     const thisUser = await this.userService.getUserByUsername(dto.thisUsername);
     const otherUser = await this.userService.getUserByUsername(dto.otherUsername);
 
     if (!thisUser || !otherUser) {
-      throw new NotFound('User(s) not found');
+      throw new NotFoundError('User(s) not found');
     }
 
     // thisUser already follows otherUser
     if (thisUser.following.includes(otherUser.id)) {
-      throw new BadRequest('Already following');
+      throw new BadRequestError('Already following');
     }
 
     thisUser.following.push(otherUser.id);
@@ -54,16 +78,17 @@ class UserController {
 
     await thisUser.save();
     await otherUser.save();
-    return res.status(HttpCodes.NO_CONTENT).end();
   }
 
-  async unfollowUser(req: Request, res: Response) {
-    const dto = req.body as UnfollowUserDto;
+  @Post('/unfollow')
+  @UseBefore(IsAuth)
+  @Authorized(Role.UNFOLLOW_USER)
+  async unfollowUser(@Body() dto: UnfollowUserDto) {
     const thisUser = await this.userService.getUserByUsername(dto.thisUsername);
     const otherUser = await this.userService.getUserByUsername(dto.otherUsername);
 
     if (!thisUser || !otherUser) {
-      throw new NotFound('User(s) not found');
+      throw new NotFoundError('User(s) not found');
     }
 
     /**
@@ -79,15 +104,17 @@ class UserController {
 
     await thisUser.save();
     await otherUser.save();
-    return res.status(HttpCodes.NO_CONTENT).end();
   }
 
-  async updateUser(req: Request, res: Response) {
-    const dto = req.body as UpdateUserDto;
+  // noinspection DuplicatedCode
+  @Put('/')
+  @UseBefore(IsAuth)
+  @Authorized(Role.UPDATE_USER)
+  async updateUser(@Body() dto: UpdateUserDto) {
     const user = await this.userService.getUserByUsername(dto.username);
 
     if (!user) {
-      throw new NotFound('user not found');
+      throw new NotFoundError('User not found');
     }
 
     user.name = dto.name || user.name;
@@ -102,27 +129,16 @@ class UserController {
     user.twitter = dto.twitter || user.twitter;
     user.bio = dto.bio || user.bio;
     user.gender = dto.gender || user.gender;
-    user.languages = dto.languages || user.languages;
     user.wishToSpeak = dto.wishToSpeak || user.wishToSpeak;
 
-    const updatedUser = await user.save();
-    return res.json(response(updatedUser));
-  }
-
-  async searchUsersByQuery(req: Request, res: Response) {
-    const { searchTerm } = req.query;
-
-    if (typeof searchTerm !== 'string') {
-      throw new BadRequest('Invalid query parameter');
+    if (dto.languages) {
+      user.languages = dto.languages.map((it) => ({
+        language: it.language.toString(),
+        proficiency: it.proficiency.toString(),
+      }));
     }
 
-    const result = await this.userService.searchUsers(searchTerm);
-
-    if (!result) {
-      throw new BadRequest('Malformed query');
-    }
-
-    return res.json(response(result));
+    return user.save();
   }
 }
 

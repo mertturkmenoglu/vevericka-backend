@@ -41,6 +41,7 @@
     ],
     "linebreak-style": "off",
     "import/extensions": "off",
-    "object-curly-newline": "off"
+    "object-curly-newline": "off",
+    "class-methods-use-this": "off"
   }
 }

@@ -2,7 +2,7 @@ import crypto from 'crypto';
 
 import sgMail from '@sendgrid/mail';
 import { Service } from 'typedi';
-import UserRepository from '../api/v2/modules/user/UserRepository';
+import UserRepository from '../repositories/UserRepository';
 import { UserDocument } from '../models/User';
 
 @Service()
