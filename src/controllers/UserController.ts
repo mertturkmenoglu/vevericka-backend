@@ -10,6 +10,7 @@ import {
   Put,
   QueryParam,
   UseBefore,
+  UseInterceptor,
 } from 'routing-controllers';
 import { Service } from 'typedi';
 import UserService from '../services/UserService';
@@ -18,8 +19,10 @@ import IsAuth from '../middlewares/IsAuth';
 import { Role } from '../role';
 import UnfollowUserDto from '../dto/UnfollowUserDto';
 import UpdateUserDto from '../dto/UpdateUserDto';
+import { DocumentToJsonInterceptor } from '../interceptors/DocumentToJsonInterceptor';
 
 @JsonController('/api/v2/user')
+@UseInterceptor(DocumentToJsonInterceptor)
 @Service()
 class UserController {
   constructor(private readonly userService: UserService) {}

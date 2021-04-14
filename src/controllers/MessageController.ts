@@ -10,6 +10,7 @@ import {
   Post,
   UnauthorizedError,
   UseBefore,
+  UseInterceptor,
 } from 'routing-controllers';
 import { Service } from 'typedi';
 import IsAuth from '../middlewares/IsAuth';
@@ -18,8 +19,10 @@ import { Message } from '../models/Message';
 import MessageService from '../services/MessageService';
 import CreateChatDto from '../dto/CreateChatDto';
 import { Chat } from '../models/Chat';
+import { DocumentToJsonInterceptor } from '../interceptors/DocumentToJsonInterceptor';
 
 @JsonController('/api/v2/message')
+@UseInterceptor(DocumentToJsonInterceptor)
 @Service()
 class MessageController {
   constructor(private readonly messageService: MessageService) {}
@@ -74,6 +77,7 @@ class MessageController {
     const exists = await this.messageService.userExistsByUsername(username);
 
     if (!exists) {
+      console.log('line 80', exists);
       throw new NotFoundError('User not found');
     }
 

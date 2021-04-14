@@ -9,6 +9,7 @@ import {
   Param,
   Post,
   UseBefore,
+  UseInterceptor,
 } from 'routing-controllers';
 import { Service } from 'typedi';
 import IsAuth from '../middlewares/IsAuth';
@@ -17,8 +18,10 @@ import { User } from '../models/User';
 import { Bookmark } from '../models/Bookmark';
 import CreateBookmarkDto from '../dto/CreateBookmarkDto';
 import BookmarkService from '../services/BookmarkService';
+import { DocumentToJsonInterceptor } from '../interceptors/DocumentToJsonInterceptor';
 
 @JsonController('/api/v2/bookmark')
+@UseInterceptor(DocumentToJsonInterceptor)
 @Service()
 class BookmarkController {
   constructor(private readonly bookmarkService: BookmarkService) {}

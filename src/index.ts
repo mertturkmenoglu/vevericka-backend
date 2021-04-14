@@ -54,6 +54,9 @@ const main = async () => {
   // Initialize routing controllers
   useExpressServer(app, {
     authorizationChecker: Authorization,
+    classToPlainTransformOptions: {
+      enableCircularCheck: true,
+    },
     controllers: [
       AuthController,
       UserController,

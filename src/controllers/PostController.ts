@@ -9,6 +9,7 @@ import {
   Param,
   Post,
   UseBefore,
+  UseInterceptor,
 } from 'routing-controllers';
 import { Service } from 'typedi';
 import IsAuth from '../middlewares/IsAuth';
@@ -17,8 +18,10 @@ import { Role } from '../role';
 import { User } from '../models/User';
 import { Post as PostModel } from '../models/Post';
 import CreatePostDto from '../dto/CreatePostDto';
+import { DocumentToJsonInterceptor } from '../interceptors/DocumentToJsonInterceptor';
 
 @JsonController('/api/v2/post')
+@UseInterceptor(DocumentToJsonInterceptor)
 @Service()
 class PostController {
   constructor(private readonly postService: PostService) {}

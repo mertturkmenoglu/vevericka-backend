@@ -9,6 +9,7 @@ import {
   Param,
   Post,
   UseBefore,
+  UseInterceptor,
 } from 'routing-controllers';
 import { Service } from 'typedi';
 import IsAuth from '../middlewares/IsAuth';
@@ -16,8 +17,10 @@ import { Role } from '../role';
 import CreateCommentDto from '../dto/CreateCommentDto';
 import { Comment } from '../models/Comment';
 import CommentService from '../services/CommentService';
+import { DocumentToJsonInterceptor } from '../interceptors/DocumentToJsonInterceptor';
 
 @JsonController('/api/v2/comment')
+@UseInterceptor(DocumentToJsonInterceptor)
 @Service()
 class CommentController {
   constructor(private readonly commentService: CommentService) {}

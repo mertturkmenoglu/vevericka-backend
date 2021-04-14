@@ -1,4 +1,4 @@
-import { IsDate, MaxLength, MinLength, ValidateIf, ValidateNested } from 'class-validator';
+import { MaxLength, MinLength, ValidateIf, ValidateNested } from 'class-validator';
 import Language from './UpdateUserLanguage';
 import Location from './UpdateUserLocation';
 
@@ -33,7 +33,7 @@ class UpdateUserDto {
   features?: string[];
 
   @ValidateIf((it) => it.bdate)
-  @IsDate()
+  @MinLength(1)
   bdate?: Date;
 
   @ValidateIf((it) => it.location)
