@@ -55,6 +55,7 @@ class BookmarkController {
     return bookmarks;
   }
 
+  @HttpCode(201)
   @Post('/')
   @UseBefore(IsAuth)
   @Authorized(Role.CREATE_BOOKMARK)

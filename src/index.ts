@@ -20,6 +20,7 @@ import UserController from './controllers/UserController';
 import Authorization from './middlewares/Authorization';
 import PostController from './controllers/PostController';
 import BookmarkController from './controllers/BookmarkController';
+import CommentController from './controllers/CommentController';
 
 // Load environment variables
 dotenvSafe.config();
@@ -56,7 +57,13 @@ const main = async () => {
   // Initialize routing controllers
   useExpressServer(app, {
     authorizationChecker: Authorization,
-    controllers: [AuthController, UserController, PostController, BookmarkController],
+    controllers: [
+      AuthController,
+      UserController,
+      PostController,
+      BookmarkController,
+      CommentController,
+    ],
   });
 
   // Start listening
