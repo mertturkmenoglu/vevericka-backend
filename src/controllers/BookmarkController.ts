@@ -77,12 +77,14 @@ class BookmarkController {
     return bookmark.save();
   }
 
-  @HttpCode(204)
   @Delete('/:id')
   @UseBefore(IsAuth)
   @Authorized(Role.DELETE_BOOKMARK)
   async deleteBookmark(@Param('id') id: string) {
-    await Bookmark.findByIdAndDelete(id);
+    await Bookmark.findByIdAndDelete(id.toString());
+    return {
+      message: 'deleted',
+    };
   }
 }
 

@@ -56,7 +56,7 @@ export const mapRoleToFn: Record<Role, AuthFn> = {
   DELETE_BOOKMARK: async (r, _username, userId) => {
     const bookmark = await Bookmark.findById(r.params.id);
     if (!bookmark) return false;
-    return bookmark.belongsTo === userId;
+    return bookmark.belongsTo.toString() === userId;
   },
   CREATE_CHAT: async (r, _username, userId) => r.body.createdBy === userId,
   GET_CHAT: async (r, _username, userId) => {
