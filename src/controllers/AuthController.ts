@@ -7,7 +7,6 @@ import {
   Post,
   Res,
   NotFoundError,
-  UseInterceptor,
 } from 'routing-controllers';
 import * as argon2 from 'argon2';
 import jwt from 'jsonwebtoken';
@@ -21,7 +20,6 @@ import SendPasswordResetEmailDto from '../dto/SendPasswordResetEmailDto';
 import { redis } from '../redis';
 import { FORGET_PASSWORD_PREFIX } from '../configs/RedisConfig';
 import ResetPasswordDto from '../dto/ResetPasswordDto';
-import { DocumentToJsonInterceptor } from '../interceptors/DocumentToJsonInterceptor';
 
 // // Rate limiters
 // const rateLimiter = {
@@ -36,7 +34,6 @@ import { DocumentToJsonInterceptor } from '../interceptors/DocumentToJsonInterce
 // };
 
 @JsonController('/api/v2/auth')
-@UseInterceptor(DocumentToJsonInterceptor)
 @Service()
 class AuthController {
   constructor(private readonly authService: AuthService) {}
@@ -92,8 +89,8 @@ class AuthController {
     });
 
     const bearer = `Bearer ${jwtToken}`;
-
-    return res.set('authorization', bearer).status(200).json(payload);
+    res.header('authorization', bearer);
+    return res.json(payload);
   }
 
   @HttpCode(200)
