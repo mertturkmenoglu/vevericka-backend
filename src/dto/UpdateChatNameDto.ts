@@ -1,6 +1,6 @@
 import { MinLength } from 'class-validator';
 
-class CreateChatDto {
+class UpdateChatNameDto {
   @MinLength(1)
   chat!: string;
 
@@ -8,4 +8,4 @@ class CreateChatDto {
   chatName!: string;
 }
 
-export default CreateChatDto;
+export default UpdateChatNameDto;
