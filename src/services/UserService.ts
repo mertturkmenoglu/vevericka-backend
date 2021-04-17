@@ -17,6 +17,10 @@ class UserService {
   async searchUsers(query: string) {
     return this.userRepository.searchUsers(query);
   }
+
+  async getUserByUsernameNotPopulated(username: string): Promise<UserDocument | null> {
+    return this.userRepository.findUserByUsernameSafeNotPopulated(username);
+  }
 }
 
 export default UserService;

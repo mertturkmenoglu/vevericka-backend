@@ -87,8 +87,8 @@ class UserController {
   @UseBefore(IsAuth)
   @Authorized(Role.UNFOLLOW_USER)
   async unfollowUser(@Body() dto: UnfollowUserDto) {
-    const thisUser = await this.userService.getUserByUsername(dto.thisUsername);
-    const otherUser = await this.userService.getUserByUsername(dto.otherUsername);
+    const thisUser = await this.userService.getUserByUsernameNotPopulated(dto.thisUsername);
+    const otherUser = await this.userService.getUserByUsernameNotPopulated(dto.otherUsername);
 
     if (!thisUser || !otherUser) {
       throw new NotFoundError('User(s) not found');
@@ -107,6 +107,10 @@ class UserController {
 
     await thisUser.save();
     await otherUser.save();
+
+    return {
+      message: 'Unfollowed',
+    };
   }
 
   // noinspection DuplicatedCode

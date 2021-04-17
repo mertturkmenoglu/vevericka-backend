@@ -31,6 +31,14 @@ class UserRepository {
     }
   }
 
+  async findUserByUsernameSafeNotPopulated(username: string): Promise<UserDocument | null> {
+    try {
+      return await User.findOne({ username });
+    } catch (e) {
+      return null;
+    }
+  }
+
   async findUserByIdUnsafe(id: string): Promise<UserDocument | null> {
     try {
       return await User.findById(id, '+password');
