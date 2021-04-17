@@ -20,6 +20,7 @@ import MessageService from '../services/MessageService';
 import CreateChatDto from '../dto/CreateChatDto';
 import { Chat } from '../models/Chat';
 import { DocumentToJsonInterceptor } from '../interceptors/DocumentToJsonInterceptor';
+import CreateMessageDto from '../dto/CreateMessageDto';
 
 @JsonController('/api/v2/message')
 @UseInterceptor(DocumentToJsonInterceptor)
@@ -94,7 +95,20 @@ class MessageController {
       throw new NotFoundError('Chat not found');
     }
 
-    return Message.find({ chatId: chat.id });
+    return this.messageService.getChatMessages(chat.id);
+  }
+
+  @Post('/')
+  @UseBefore(IsAuth)
+  @Authorized(Role.CREATE_MESSAGE)
+  async createMessage(@Body() dto: CreateMessageDto) {
+    const message = await this.messageService.createMessage(dto);
+
+    if (!message) {
+      throw new BadRequestError('Message body is not valid');
+    }
+
+    return message;
   }
 }
 

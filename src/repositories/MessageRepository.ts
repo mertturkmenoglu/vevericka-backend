@@ -1,5 +1,7 @@
 import { Service } from 'typedi';
 import { Chat } from '../models/Chat';
+import CreateMessageDto from '../dto/CreateMessageDto';
+import { Message, MessageDocument } from '../models/Message';
 
 @Service()
 class MessageRepository {
@@ -11,6 +13,29 @@ class MessageRepository {
     return Chat.find({ users: { $elemMatch: { $eq: id } } })
       .populate('users', 'username name image')
       .populate('lastMessage');
+  }
+
+  async addMessage(dto: CreateMessageDto): Promise<MessageDocument | null> {
+    try {
+      const message = new Message({
+        sender: dto.sender,
+        content: dto.content,
+        chat: dto.chat,
+        readBy: [],
+      });
+
+      return await message.save();
+    } catch (e) {
+      return null;
+    }
+  }
+
+  async getChatMessages(chatId: string) {
+    try {
+      return await Message.find({ chat: chatId }).populate('sender', 'name username image');
+    } catch (e) {
+      return [];
+    }
   }
 }
 

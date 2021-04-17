@@ -4,7 +4,6 @@ import { Comment } from './models/Comment';
 import { Bookmark } from './models/Bookmark';
 import { Chat } from './models/Chat';
 
-// noinspection JSUnusedGlobalSymbols
 export enum Role {
   FOLLOW_USER = 'FOLLOW_USER',
   UNFOLLOW_USER = 'UNFOLLOW_USER',
@@ -22,6 +21,7 @@ export enum Role {
   GET_CHAT = 'GET_CHAT',
   GET_USER_CHATS = 'GET_USER_CHATS',
   GET_CHAT_MESSAGES = 'GET_CHAT_MESSAGES',
+  CREATE_MESSAGE = 'CREATE_MESSAGE',
 }
 
 type AuthFn = (req: Request, username: string, userId: string) => Promise<boolean>;
@@ -68,6 +68,16 @@ export const mapRoleToFn: Record<Role, AuthFn> = {
   GET_CHAT_MESSAGES: async (r, _username, userId) => {
     const chat = await Chat.findById(r.params.id);
     if (!chat) return false;
+    return chat.users.includes(userId);
+  },
+  CREATE_MESSAGE: async (r, _username, userId) => {
+    const isUserValid = r.body.sender.toString() === userId;
+
+    if (!isUserValid) return false;
+
+    const chat = await Chat.findById(r.body.chat);
+    if (!chat) return false;
+
     return chat.users.includes(userId);
   },
 };

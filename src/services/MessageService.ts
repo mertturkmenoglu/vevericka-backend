@@ -1,6 +1,7 @@
 import { Service } from 'typedi';
 import UserRepository from '../repositories/UserRepository';
 import MessageRepository from '../repositories/MessageRepository';
+import CreateMessageDto from '../dto/CreateMessageDto';
 
 @Service()
 class MessageService {
@@ -31,6 +32,14 @@ class MessageService {
       users.map((userId) => this.userRepository.findUserByIdSafe(userId)),
     );
     return !result.includes(null);
+  }
+
+  async createMessage(dto: CreateMessageDto) {
+    return this.messageRepository.addMessage(dto);
+  }
+
+  async getChatMessages(chatId: string) {
+    return this.messageRepository.getChatMessages(chatId);
   }
 }
 
