@@ -8,6 +8,7 @@ import {
   NotFoundError,
   Param,
   Post,
+  Put,
   UnauthorizedError,
   UseBefore,
   UseInterceptor,
@@ -21,6 +22,7 @@ import CreateChatDto from '../dto/CreateChatDto';
 import { Chat } from '../models/Chat';
 import { DocumentToJsonInterceptor } from '../interceptors/DocumentToJsonInterceptor';
 import CreateMessageDto from '../dto/CreateMessageDto';
+import UpdateChatNameDto from '../dto/UpdateChatNameDto';
 
 @JsonController('/api/v2/message')
 @UseInterceptor(DocumentToJsonInterceptor)
@@ -109,6 +111,19 @@ class MessageController {
     }
 
     return message;
+  }
+
+  @Put('/update-chat-name')
+  @UseBefore(IsAuth)
+  @Authorized(Role.UPDATE_CHAT_NAME)
+  async updateChatName(@Body() dto: UpdateChatNameDto) {
+    const chat = await this.messageService.changeChatName(dto);
+
+    if (!chat) {
+      throw new BadRequestError('Chat is not valid');
+    }
+
+    return chat;
   }
 }
 

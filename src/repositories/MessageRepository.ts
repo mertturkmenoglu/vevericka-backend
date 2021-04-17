@@ -37,6 +37,17 @@ class MessageRepository {
       return [];
     }
   }
+
+  async updateChatName(chatId: string, newChatName: string) {
+    try {
+      const chat = await Chat.findById(chatId);
+      if (!chat) return null;
+      chat.chatName = newChatName;
+      return await chat.save();
+    } catch (e) {
+      return null;
+    }
+  }
 }
 
 export default MessageRepository;

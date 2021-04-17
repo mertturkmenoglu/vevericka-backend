@@ -2,6 +2,7 @@ import { Service } from 'typedi';
 import UserRepository from '../repositories/UserRepository';
 import MessageRepository from '../repositories/MessageRepository';
 import CreateMessageDto from '../dto/CreateMessageDto';
+import UpdateChatNameDto from '../dto/UpdateChatNameDto';
 
 @Service()
 class MessageService {
@@ -40,6 +41,10 @@ class MessageService {
 
   async getChatMessages(chatId: string) {
     return this.messageRepository.getChatMessages(chatId);
+  }
+
+  async changeChatName(dto: UpdateChatNameDto) {
+    return this.messageRepository.updateChatName(dto.chat, dto.chatName);
   }
 }
 
