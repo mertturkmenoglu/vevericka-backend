@@ -18,6 +18,10 @@ class BookmarkRepository {
         },
       });
   }
+
+  async deleteBookmarksByPostId(postId: string) {
+    await Bookmark.deleteMany({ postId });
+  }
 }
 
 export default BookmarkRepository;

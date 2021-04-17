@@ -1,5 +1,5 @@
 import { Service } from 'typedi';
-import { Post, PostDocument } from '../models/Post';
+import { Post as PostModel, Post, PostDocument } from '../models/Post';
 
 @Service()
 class PostRepository {
@@ -37,6 +37,10 @@ class PostRepository {
     } catch (e) {
       return null;
     }
+  }
+
+  async deletePost(postId: string) {
+    await PostModel.findByIdAndDelete(postId);
   }
 }
 

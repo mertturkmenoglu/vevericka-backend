@@ -10,6 +10,10 @@ class CommentRepository {
   async deleteComment(id: string) {
     await Comment.findByIdAndDelete(id);
   }
+
+  async deleteCommentsByPostId(postId: string) {
+    await Comment.deleteMany({ postId });
+  }
 }
 
 export default CommentRepository;
