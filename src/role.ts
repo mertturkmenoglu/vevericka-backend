@@ -39,7 +39,7 @@ export const mapRoleToFn: Record<Role, AuthFn> = {
 
     if (!post) return false;
 
-    return post.createdBy === userId;
+    return post.createdBy.toString() === userId;
   },
   DELETE_COMMENT: async (r, _username, userId) => {
     const comment = await Comment.findById(r.params.id);

@@ -82,7 +82,16 @@ class PostController {
   @UseBefore(IsAuth)
   @Authorized(Role.DELETE_POST)
   async deletePost(@Param('id') id: string) {
-    await PostModel.findByIdAndDelete(id);
+    try {
+      await PostModel.findByIdAndDelete(id);
+      return {
+        message: 'deleted',
+      };
+    } catch (e) {
+      return {
+        message: 'Cannot delete',
+      };
+    }
   }
 
   private findUserByUsername = async (username?: string) => {
