@@ -80,7 +80,6 @@ class MessageController {
     const exists = await this.messageService.userExistsByUsername(username);
 
     if (!exists) {
-      console.log('line 80', exists);
       throw new NotFoundError('User not found');
     }
 

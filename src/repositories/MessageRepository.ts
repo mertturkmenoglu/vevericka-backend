@@ -12,7 +12,8 @@ class MessageRepository {
   async getUserChats(id: string) {
     return Chat.find({ users: { $elemMatch: { $eq: id } } })
       .populate('users', 'username name image')
-      .populate('lastMessage');
+      .populate('lastMessage')
+      .sort({ updatedAt: -1 });
   }
 
   async addMessage(dto: CreateMessageDto): Promise<MessageDocument | null> {
