@@ -24,6 +24,7 @@ import { DocumentToJsonInterceptor } from '../interceptors/DocumentToJsonInterce
 import CreateMessageDto from '../dto/CreateMessageDto';
 import UpdateChatNameDto from '../dto/UpdateChatNameDto';
 import AddUserToChatDto from '../dto/AddUserToChatDto';
+import RemoveUserFromChatDto from '../dto/RemoveUserFromChatDto';
 
 @JsonController('/api/v2/message')
 @UseInterceptor(DocumentToJsonInterceptor)
@@ -135,6 +136,21 @@ class MessageController {
     if (!response) {
       return {
         message: 'Cannot add user to chat',
+      };
+    }
+
+    return response;
+  }
+
+  @Put('/chat/remove-user')
+  @UseBefore(IsAuth)
+  @Authorized(Role.CHAT_REMOVE_USER)
+  async removeUserFromChat(@Body() dto: RemoveUserFromChatDto) {
+    const response = await this.messageService.removeUserFromChat(dto);
+
+    if (!response) {
+      return {
+        message: 'Cannot remove user from chat',
       };
     }
 

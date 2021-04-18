@@ -3,6 +3,7 @@ import { Chat } from '../models/Chat';
 import CreateMessageDto from '../dto/CreateMessageDto';
 import { Message, MessageDocument } from '../models/Message';
 import AddUserToChatDto from '../dto/AddUserToChatDto';
+import RemoveUserFromChatDto from '../dto/RemoveUserFromChatDto';
 
 @Service()
 class MessageRepository {
@@ -76,6 +77,22 @@ class MessageRepository {
       chat.users.push(dto.userId);
       if (chat.users.length > 2) {
         chat.isGroupChat = true;
+      }
+      return await chat.save();
+    } catch (e) {
+      return null;
+    }
+  }
+
+  async removeUserFromChat(dto: RemoveUserFromChatDto) {
+    try {
+      const chat = await Chat.findById(dto.chatId);
+      if (!chat) return null;
+      if (!chat.users.includes(dto.userId)) return null;
+      // eslint-disable-next-line eqeqeq
+      chat.users = chat.users.filter((id) => id != dto.userId);
+      if (chat.users.length <= 2) {
+        chat.isGroupChat = false;
       }
       return await chat.save();
     } catch (e) {

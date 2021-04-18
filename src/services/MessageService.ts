@@ -4,6 +4,7 @@ import MessageRepository from '../repositories/MessageRepository';
 import CreateMessageDto from '../dto/CreateMessageDto';
 import UpdateChatNameDto from '../dto/UpdateChatNameDto';
 import AddUserToChatDto from '../dto/AddUserToChatDto';
+import RemoveUserFromChatDto from '../dto/RemoveUserFromChatDto';
 
 @Service()
 class MessageService {
@@ -77,6 +78,26 @@ class MessageService {
 
     return {
       message: 'User added to chat',
+    };
+  }
+
+  async removeUserFromChat(dto: RemoveUserFromChatDto) {
+    if (!(await this.messageRepository.doesChatIncludeUser(dto.chatId, dto.userId))) {
+      return {
+        message: 'User is not in chat',
+      };
+    }
+
+    const response = await this.messageRepository.removeUserFromChat(dto);
+
+    if (!response) {
+      return {
+        message: 'Cannot remove user from chat',
+      };
+    }
+
+    return {
+      message: 'User removed from chat',
     };
   }
 }
