@@ -2,6 +2,7 @@ import { Service } from 'typedi';
 import { Chat } from '../models/Chat';
 import CreateMessageDto from '../dto/CreateMessageDto';
 import { Message, MessageDocument } from '../models/Message';
+import AddUserToChatDto from '../dto/AddUserToChatDto';
 
 @Service()
 class MessageRepository {
@@ -55,6 +56,27 @@ class MessageRepository {
       const chat = await Chat.findById(message.chat);
       if (!chat) return null;
       chat.lastMessage = message.id;
+      return await chat.save();
+    } catch (e) {
+      return null;
+    }
+  }
+
+  async doesChatIncludeUser(chatId: string, userId: string): Promise<boolean> {
+    const chat = await Chat.findById(chatId);
+    if (!chat) return false;
+    return chat.users.includes(userId);
+  }
+
+  async addUserToChat(dto: AddUserToChatDto) {
+    try {
+      const chat = await Chat.findById(dto.chatId);
+      if (!chat) return null;
+      if (chat.users.includes(dto.userId)) return null;
+      chat.users.push(dto.userId);
+      if (chat.users.length > 2) {
+        chat.isGroupChat = true;
+      }
       return await chat.save();
     } catch (e) {
       return null;

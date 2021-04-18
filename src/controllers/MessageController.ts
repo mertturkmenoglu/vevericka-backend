@@ -23,6 +23,7 @@ import { Chat } from '../models/Chat';
 import { DocumentToJsonInterceptor } from '../interceptors/DocumentToJsonInterceptor';
 import CreateMessageDto from '../dto/CreateMessageDto';
 import UpdateChatNameDto from '../dto/UpdateChatNameDto';
+import AddUserToChatDto from '../dto/AddUserToChatDto';
 
 @JsonController('/api/v2/message')
 @UseInterceptor(DocumentToJsonInterceptor)
@@ -123,6 +124,21 @@ class MessageController {
     }
 
     return chat;
+  }
+
+  @Put('/chat/add-user')
+  @UseBefore(IsAuth)
+  @Authorized(Role.CHAT_ADD_USER)
+  async addUserToChat(@Body() dto: AddUserToChatDto) {
+    const response = await this.messageService.addUserToChat(dto);
+
+    if (!response) {
+      return {
+        message: 'Cannot add user to chat',
+      };
+    }
+
+    return response;
   }
 }
 

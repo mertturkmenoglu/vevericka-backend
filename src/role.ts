@@ -23,6 +23,7 @@ export enum Role {
   GET_CHAT_MESSAGES = 'GET_CHAT_MESSAGES',
   CREATE_MESSAGE = 'CREATE_MESSAGE',
   UPDATE_CHAT_NAME = 'UPDATE_CHAT_NAME',
+  CHAT_ADD_USER = 'CHAT_ADD_USER',
 }
 
 type AuthFn = (req: Request, username: string, userId: string) => Promise<boolean>;
@@ -83,6 +84,12 @@ export const mapRoleToFn: Record<Role, AuthFn> = {
   },
   UPDATE_CHAT_NAME: async (r, _username, userId) => {
     const chat = await Chat.findById(r.body.chat);
+    if (!chat) return false;
+
+    return chat.users.includes(userId);
+  },
+  CHAT_ADD_USER: async (r, _username, userId) => {
+    const chat = await Chat.findById(r.body.chatId);
     if (!chat) return false;
 
     return chat.users.includes(userId);

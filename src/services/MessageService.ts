@@ -3,6 +3,7 @@ import UserRepository from '../repositories/UserRepository';
 import MessageRepository from '../repositories/MessageRepository';
 import CreateMessageDto from '../dto/CreateMessageDto';
 import UpdateChatNameDto from '../dto/UpdateChatNameDto';
+import AddUserToChatDto from '../dto/AddUserToChatDto';
 
 @Service()
 class MessageService {
@@ -57,6 +58,26 @@ class MessageService {
 
   async changeChatName(dto: UpdateChatNameDto) {
     return this.messageRepository.updateChatName(dto.chat, dto.chatName);
+  }
+
+  async addUserToChat(dto: AddUserToChatDto) {
+    if (await this.messageRepository.doesChatIncludeUser(dto.chatId, dto.userId)) {
+      return {
+        message: 'User already in chat',
+      };
+    }
+
+    const response = await this.messageRepository.addUserToChat(dto);
+
+    if (!response) {
+      return {
+        message: 'Cannot add user to chat',
+      };
+    }
+
+    return {
+      message: 'User added to chat',
+    };
   }
 }
 
