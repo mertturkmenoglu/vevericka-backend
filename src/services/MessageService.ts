@@ -36,7 +36,19 @@ class MessageService {
   }
 
   async createMessage(dto: CreateMessageDto) {
-    return this.messageRepository.addMessage(dto);
+    const message = await this.messageRepository.addMessage(dto);
+
+    if (!message) {
+      return null;
+    }
+
+    const result = await this.messageRepository.updateChatLastMessage(message);
+
+    if (!result) {
+      return null;
+    }
+
+    return message;
   }
 
   async getChatMessages(chatId: string) {

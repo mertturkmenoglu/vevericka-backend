@@ -48,6 +48,17 @@ class MessageRepository {
       return null;
     }
   }
+
+  async updateChatLastMessage(message: MessageDocument) {
+    try {
+      const chat = await Chat.findById(message.chat);
+      if (!chat) return null;
+      chat.lastMessage = message.id;
+      return await chat.save();
+    } catch (e) {
+      return null;
+    }
+  }
 }
 
 export default MessageRepository;
