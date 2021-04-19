@@ -2,6 +2,7 @@ import {
   Authorized,
   BadRequestError,
   Body,
+  Delete,
   Get,
   HttpCode,
   JsonController,
@@ -155,6 +156,16 @@ class MessageController {
     }
 
     return response;
+  }
+
+  @Delete('/chat/:id')
+  @UseBefore(IsAuth)
+  @Authorized(Role.DELETE_CHAT)
+  async deleteChat(@Param('id') id: string) {
+    await this.messageService.deleteChat(id);
+    return {
+      message: 'Chat deleted',
+    };
   }
 }
 

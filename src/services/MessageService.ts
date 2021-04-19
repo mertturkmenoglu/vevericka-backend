@@ -100,6 +100,11 @@ class MessageService {
       message: 'User removed from chat',
     };
   }
+
+  async deleteChat(id: string) {
+    await this.messageRepository.deleteChat(id);
+    await this.messageRepository.deleteMessagesByChatId(id);
+  }
 }
 
 export default MessageService;

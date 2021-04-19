@@ -99,6 +99,22 @@ class MessageRepository {
       return null;
     }
   }
+
+  async deleteChat(id: string) {
+    try {
+      return await Chat.findByIdAndDelete(id);
+    } catch (e) {
+      return null;
+    }
+  }
+
+  async deleteMessagesByChatId(chatId: string) {
+    try {
+      return await Message.deleteMany({ chat: chatId });
+    } catch (e) {
+      return null;
+    }
+  }
 }
 
 export default MessageRepository;

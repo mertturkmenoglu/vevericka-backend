@@ -25,6 +25,7 @@ export enum Role {
   UPDATE_CHAT_NAME = 'UPDATE_CHAT_NAME',
   CHAT_ADD_USER = 'CHAT_ADD_USER',
   CHAT_REMOVE_USER = 'CHAT_REMOVE_USER',
+  DELETE_CHAT = 'DELETE_CHAT',
 }
 
 type AuthFn = (req: Request, username: string, userId: string) => Promise<boolean>;
@@ -97,6 +98,12 @@ export const mapRoleToFn: Record<Role, AuthFn> = {
   },
   CHAT_REMOVE_USER: async (r, _username, userId) => {
     const chat = await Chat.findById(r.body.chatId);
+    if (!chat) return false;
+
+    return chat.users.includes(userId);
+  },
+  DELETE_CHAT: async (r, _username, userId) => {
+    const chat = await Chat.findById(r.params.id);
     if (!chat) return false;
 
     return chat.users.includes(userId);
