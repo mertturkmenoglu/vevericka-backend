@@ -111,6 +111,9 @@ class AuthController {
     );
 
     await this.authService.sendPasswordResetEmail(dto.email, passwordResetCode);
+    return {
+      message: 'Email sent',
+    };
   }
 
   @Post('/reset-password')

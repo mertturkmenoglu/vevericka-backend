@@ -118,6 +118,41 @@
           }
         }
       }
+    },
+    "/auth/send-password-reset-email": {
+      "post": {
+        "tags": ["Authentication"],
+        "summary": "Send password reset email",
+        "description": "Sends a password reset code email to user",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "description": "Send Password Reset Email Dto",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/SendPasswordResetEmailDto"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successfully sent password reset email",
+            "schema": {
+              "$ref": "#/definitions/SendPasswordResetEmailSuccessResponse"
+            }
+          },
+          "404": {
+            "description": "User does not exist"
+          }
+        }
+      }
     }
   },
   "definitions": {
@@ -174,6 +209,24 @@
           "type": "string"
         },
         "username": {
+          "type": "string"
+        }
+      }
+    },
+    "SendPasswordResetEmailDto": {
+      "type": "object",
+      "properties": {
+        "email": {
+          "type": "string",
+          "format": "email",
+          "minLength": 1
+        }
+      }
+    },
+    "SendPasswordResetEmailSuccessResponse": {
+      "type": "object",
+      "properties": {
+        "message": {
           "type": "string"
         }
       }
