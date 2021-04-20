@@ -77,6 +77,47 @@
           }
         }
       }
+    },
+    "/auth/login": {
+      "post": {
+        "tags": ["Authentication"],
+        "summary": "Logs user into the system",
+        "description": "Log user into the system",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "description": "Login Dto",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/LoginDto"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successfully logged in",
+            "headers": {
+              "authorization": {
+                "type": "string",
+                "description": "JWT"
+              }
+            },
+            "schema": {
+              "$ref": "#/definitions/LoginSuccessResponse"
+            }
+          },
+          "401": {
+            "description": "Cannot login"
+          }
+        }
+      }
     }
   },
   "definitions": {
@@ -108,6 +149,31 @@
       "type": "object",
       "properties": {
         "id": {
+          "type": "string"
+        }
+      }
+    },
+    "LoginDto": {
+      "type": "object",
+      "properties": {
+        "email": {
+          "type": "string",
+          "format": "email",
+          "minLength": 1
+        },
+        "password": {
+          "type": "string",
+          "minLength": 8
+        }
+      }
+    },
+    "LoginSuccessResponse": {
+      "type": "object",
+      "properties": {
+        "userId": {
+          "type": "string"
+        },
+        "username": {
           "type": "string"
         }
       }
