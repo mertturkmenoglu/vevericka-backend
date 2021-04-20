@@ -1,0 +1,116 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "version": "2.0.0",
+    "title": "Vevericka Backend",
+    "description": "Vevericka Backend Services monorepo",
+    "license": {
+      "name": "Apache",
+      "url": "https://www.apache.org/licenses/LICENSE-2.0"
+    },
+    "contact": {
+      "email": "contactvevericka@gmail.com"
+    }
+  },
+  "basePath": "/api/v2",
+  "tags": [
+    {
+      "name": "Authentication",
+      "description": "Vevericka Authentication Service"
+    },
+    {
+      "name": "User",
+      "description": "Vevericka User Info Service"
+    },
+    {
+      "name": "Post",
+      "description": "Vevericka Post Service"
+    },
+    {
+      "name": "Bookmark",
+      "description": "Vevericka Bookmark Service"
+    },
+    {
+      "name": "Comment",
+      "description": "Vevericka Comment Service"
+    },
+    {
+      "name": "Message",
+      "description": "Vevericka Message Service"
+    }
+  ],
+  "consumes": [
+    "application/json"
+  ],
+  "produces": [
+    "application/json"
+  ],
+  "paths": {
+    "/auth/register": {
+      "post": {
+        "tags": ["Authentication"],
+        "summary": "Register action",
+        "description": "Register a new user",
+        "consumes": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "description": "Register Dto",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/RegisterDto"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successfully registered",
+            "schema": {
+              "$ref": "#/definitions/RegisterResponse"
+            }
+          },
+          "401": {
+            "description": "User already exists"
+          }
+        }
+      }
+    }
+  },
+  "definitions": {
+    "RegisterDto": {
+      "type": "object",
+      "properties": {
+        "username": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 32
+        },
+        "email": {
+          "type": "string",
+          "format": "email",
+          "minLength": 1,
+          "maxLength": 255
+        },
+        "password": {
+          "type": "string",
+          "minLength": 8
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "RegisterResponse": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        }
+      }
+    }
+  }
+}

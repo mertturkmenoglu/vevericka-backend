@@ -6,9 +6,11 @@ import mongoose from 'mongoose';
 import helmet from 'helmet';
 import cors from 'cors';
 import morgan from 'morgan';
-
+import swaggerUI from 'swagger-ui-express';
 import { useContainer, useExpressServer } from 'routing-controllers';
 import { Container } from 'typedi';
+
+import swaggerDocument from './swagger.json';
 import mongooseOptions from './configs/MongoConfig';
 import morganConfig from './configs/MorganConfig';
 import applicationConfig from './configs/ApplicationConfig';
@@ -66,6 +68,15 @@ const main = async () => {
       MessageController,
     ],
   });
+
+  // Enable Swagger Documentation at /docs route
+  app.use(
+    '/docs',
+    swaggerUI.serve,
+    swaggerUI.setup(swaggerDocument, {
+      explorer: true,
+    }),
+  );
 
   // Start listening
   app.listen(PORT, () => {
