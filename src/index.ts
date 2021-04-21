@@ -1,16 +1,19 @@
 import 'reflect-metadata';
 
+import fs from 'fs';
+import path from 'path';
+
 import express from 'express';
 import dotenvSafe from 'dotenv-safe';
 import mongoose from 'mongoose';
 import helmet from 'helmet';
 import cors from 'cors';
 import morgan from 'morgan';
-import swaggerUI from 'swagger-ui-express';
+import swaggerUI, { JsonObject } from 'swagger-ui-express';
+import yaml from 'js-yaml';
 import { useContainer, useExpressServer } from 'routing-controllers';
 import { Container } from 'typedi';
 
-import swaggerDocument from './swagger.json';
 import mongooseOptions from './configs/MongoConfig';
 import morganConfig from './configs/MorganConfig';
 import applicationConfig from './configs/ApplicationConfig';
@@ -68,6 +71,9 @@ const main = async () => {
       MessageController,
     ],
   });
+
+  const filePath = path.join(__dirname, 'swagger.yml');
+  const swaggerDocument = yaml.load(fs.readFileSync(filePath, 'utf-8')) as JsonObject;
 
   // Enable Swagger Documentation at /docs route
   app.use(

@@ -1,0 +1,200 @@
+swagger: '2.0'
+info:
+  version: 2.0.0
+  title: Vevericka Backend
+  description: Vevericka Backend Services monorepo
+  license:
+    name: Apache
+    url: https://www.apache.org/licenses/LICENSE-2.0
+  contact:
+    email: contactvevericka@gmail.com
+basePath: /api/v2
+tags:
+  - name: Authentication
+    description: Vevericka Authentication Service
+  - name: User
+    description: Vevericka User Info Service
+  - name: Post
+    description: Vevericka Post Service
+  - name: Bookmark
+    description: Vevericka Bookmark Service
+  - name: Comment
+    description: Vevericka Comment Service
+  - name: Message
+    description: Vevericka Message Service
+consumes:
+  - application/json
+produces:
+  - application/json
+paths:
+  /auth/register:
+    post:
+      tags:
+        - Authentication
+      summary: Register action
+      description: Register a new user
+      consumes:
+        - application/json
+      parameters:
+        - in: body
+          name: body
+          description: Register Dto
+          required: true
+          schema:
+            "$ref": "#/definitions/RegisterDto"
+      responses:
+        '201':
+          description: Successfully registered
+          schema:
+            "$ref": "#/definitions/RegisterSuccessResponse"
+        '400':
+          description: User already exists
+  /auth/login:
+    post:
+      tags:
+        - Authentication
+      summary: Logs user into the system
+      description: Log user into the system
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - in: body
+          name: body
+          description: Login Dto
+          required: true
+          schema:
+            "$ref": "#/definitions/LoginDto"
+      responses:
+        '200':
+          description: Successfully logged in
+          headers:
+            authorization:
+              type: string
+              description: JWT
+          schema:
+            "$ref": "#/definitions/LoginSuccessResponse"
+        '400':
+          description: Cannot login
+  /auth/send-password-reset-email:
+    post:
+      tags:
+        - Authentication
+      summary: Send password reset email
+      description: Sends a password reset code email to user
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - in: body
+          name: body
+          description: Send Password Reset Email Dto
+          required: true
+          schema:
+            "$ref": "#/definitions/SendPasswordResetEmailDto"
+      responses:
+        '200':
+          description: Successfully sent password reset email
+          schema:
+            "$ref": "#/definitions/SendPasswordResetEmailSuccessResponse"
+        '404':
+          description: User does not exist
+  /auth/reset-password:
+    post:
+      tags:
+        - Authentication
+      summary: Reset password
+      description: Reset a user's password with a password reset code
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - in: body
+          name: body
+          description: Reset Password Dto
+          required: true
+          schema:
+            "$ref": "#/definitions/ResetPasswordDto"
+      responses:
+        '200':
+          description: Successfully completed
+          schema:
+            "$ref": "#/definitions/ResetPasswordSuccessResponse"
+        '400':
+          description: Password reset code is invalid
+        '404':
+          description: User not found
+definitions:
+  RegisterDto:
+    type: object
+    properties:
+      username:
+        type: string
+        minLength: 1
+        maxLength: 32
+      email:
+        type: string
+        format: email
+        minLength: 1
+        maxLength: 255
+      password:
+        type: string
+        minLength: 8
+      name:
+        type: string
+        minLength: 1
+  RegisterSuccessResponse:
+    type: object
+    properties:
+      id:
+        type: string
+  LoginDto:
+    type: object
+    properties:
+      email:
+        type: string
+        format: email
+        minLength: 1
+      password:
+        type: string
+        minLength: 8
+  LoginSuccessResponse:
+    type: object
+    properties:
+      userId:
+        type: string
+      username:
+        type: string
+  SendPasswordResetEmailDto:
+    type: object
+    properties:
+      email:
+        type: string
+        format: email
+        minLength: 1
+  SendPasswordResetEmailSuccessResponse:
+    type: object
+    properties:
+      message:
+        type: string
+  ResetPasswordDto:
+    type: object
+    properties:
+      email:
+        type: string
+        format: email
+        minLength: 1
+      password:
+        type: string
+        minLength: 1
+      code:
+        type: string
+        minLength: 1
+  ResetPasswordSuccessResponse:
+    type: object
+    properties:
+      message:
+        type: string
