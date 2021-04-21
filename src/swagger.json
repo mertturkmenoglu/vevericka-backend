@@ -66,13 +66,13 @@
           }
         ],
         "responses": {
-          "200": {
+          "201": {
             "description": "Successfully registered",
             "schema": {
               "$ref": "#/definitions/RegisterSuccessResponse"
             }
           },
-          "401": {
+          "400": {
             "description": "User already exists"
           }
         }
@@ -113,7 +113,7 @@
               "$ref": "#/definitions/LoginSuccessResponse"
             }
           },
-          "401": {
+          "400": {
             "description": "Cannot login"
           }
         }
@@ -150,6 +150,44 @@
           },
           "404": {
             "description": "User does not exist"
+          }
+        }
+      }
+    },
+    "/auth/reset-password": {
+      "post": {
+        "tags": ["Authentication"],
+        "summary": "Reset password",
+        "description": "Reset a user's password with a password reset code",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "description": "Reset Password Dto",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/ResetPasswordDto"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successfully completed",
+            "schema": {
+              "$ref": "#/definitions/ResetPasswordSuccessResponse"
+            }
+          },
+          "400": {
+            "description": "Password reset code is invalid"
+          },
+          "404": {
+            "description": "User not found"
           }
         }
       }
@@ -224,6 +262,32 @@
       }
     },
     "SendPasswordResetEmailSuccessResponse": {
+      "type": "object",
+      "properties": {
+        "message": {
+          "type": "string"
+        }
+      }
+    },
+    "ResetPasswordDto": {
+      "type": "object",
+      "properties": {
+        "email": {
+          "type": "string",
+          "format": "email",
+          "minLength": 1
+        },
+        "password": {
+          "type": "string",
+          "minLength": 1
+        },
+        "code": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "ResetPasswordSuccessResponse": {
       "type": "object",
       "properties": {
         "message": {

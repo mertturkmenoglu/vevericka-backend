@@ -121,7 +121,7 @@ class AuthController {
     const user = await this.authService.getUserByEmail(dto.email);
 
     if (!user) {
-      throw new BadRequestError('User does not exist');
+      throw new NotFoundError('User does not exist');
     }
 
     const REDIS_KEY = FORGET_PASSWORD_PREFIX + dto.code;
@@ -139,6 +139,10 @@ class AuthController {
 
     await user.save();
     await redis.del(REDIS_KEY);
+
+    return {
+      message: 'Successful',
+    };
   }
 }
 
