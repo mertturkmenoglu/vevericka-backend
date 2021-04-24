@@ -46,7 +46,10 @@ class PostRepository {
 
   async getPostsByTag(tag: string) {
     try {
-      return await Post.find({ hashtags: { $elemMatch: { $eq: tag } } });
+      return await Post.find({ hashtags: { $elemMatch: { $eq: tag } } }).populate(
+        'createdBy',
+        'name username image',
+      );
     } catch (e) {
       return null;
     }
@@ -54,17 +57,38 @@ class PostRepository {
 
   async getPostsSortByCommentCount() {
     try {
-      return await Post.aggregate<PostDocument>([
-        {
-          $unwind: '$comments',
-        },
-        {
-          $sortByCount: '$comments',
-        },
-        {
-          $limit: 100,
-        },
-      ]);
+      return await Post.aggregate()
+        .unwind('comments')
+        .sortByCount('_id')
+        .lookup({
+          from: 'posts',
+          localField: '_id',
+          foreignField: '_id',
+          as: 'post',
+        })
+        .unwind('post')
+        .lookup({
+          from: 'users',
+          localField: 'post.createdBy',
+          foreignField: '_id',
+          as: 'post.createdBy',
+        })
+        .unwind('post.createdBy')
+        .project({
+          _id: '$post._id',
+          comments: '$post.comments',
+          createdBy: {
+            _id: '$post.createdBy._id',
+            name: '$post.createdBy.name',
+            username: '$post.createdBy.username',
+            image: '$post.createdBy.image',
+          },
+          hashtags: '$post.hashtags',
+          mentions: '$post.mentions',
+          content: '$post.content',
+          createdAt: '$post.createdAt',
+          updatedAt: '$post.updatedAt',
+        });
     } catch (e) {
       return null;
     }
