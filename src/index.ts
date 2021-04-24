@@ -27,6 +27,7 @@ import BookmarkController from './controllers/BookmarkController';
 import CommentController from './controllers/CommentController';
 import MessageController from './controllers/MessageController';
 import ExploreController from './controllers/ExploreController';
+import NotificationController from './controllers/NotificationController';
 
 // Load environment variables
 dotenvSafe.config();
@@ -71,6 +72,7 @@ const main = async () => {
       CommentController,
       MessageController,
       ExploreController,
+      NotificationController,
     ],
   });
 

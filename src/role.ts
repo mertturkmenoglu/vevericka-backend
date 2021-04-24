@@ -3,6 +3,7 @@ import { Post } from './models/Post';
 import { Comment } from './models/Comment';
 import { Bookmark } from './models/Bookmark';
 import { Chat } from './models/Chat';
+import { Notification } from './models/Notification';
 
 export enum Role {
   FOLLOW_USER = 'FOLLOW_USER',
@@ -26,6 +27,11 @@ export enum Role {
   CHAT_ADD_USER = 'CHAT_ADD_USER',
   CHAT_REMOVE_USER = 'CHAT_REMOVE_USER',
   DELETE_CHAT = 'DELETE_CHAT',
+  GET_NOTIFICATION = 'GET_NOTIFICATION',
+  GET_NOTIFICATIONS = 'GET_NOTIFICATIONS',
+  CREATE_NOTIFICATION = 'CREATE_NOTIFICATION',
+  UPDATE_NOTIFICATION = 'UPDATE_NOTIFICATION',
+  DELETE_NOTIFICATION = 'DELETE_NOTIFICATION',
 }
 
 type AuthFn = (req: Request, username: string, userId: string) => Promise<boolean>;
@@ -107,5 +113,25 @@ export const mapRoleToFn: Record<Role, AuthFn> = {
     if (!chat) return false;
 
     return chat.users.includes(userId);
+  },
+  GET_NOTIFICATION: async (r, _username, userId) => {
+    const notification = await Notification.findById(r.params.id);
+    if (!notification) return false;
+
+    return notification.target.toString() === userId;
+  },
+  GET_NOTIFICATIONS: async (r, username) => username === r.params.username,
+  CREATE_NOTIFICATION: async (r, _username, userId) => r.body.origin === userId,
+  UPDATE_NOTIFICATION: async (r, _username, userId) => {
+    const notification = await Notification.findById(r.params.id);
+    if (!notification) return false;
+
+    return notification.target.toString() === userId;
+  },
+  DELETE_NOTIFICATION: async (r, _username, userId) => {
+    const notification = await Notification.findById(r.params.id);
+    if (!notification) return false;
+
+    return notification.target.toString() === userId;
   },
 };

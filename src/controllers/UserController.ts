@@ -81,6 +81,12 @@ class UserController {
 
     await thisUser.save();
     await otherUser.save();
+
+    await this.userService.createFollowNotification(thisUser.username, thisUser.id, otherUser.id);
+
+    return {
+      message: 'Success',
+    };
   }
 
   @Post('/unfollow')
