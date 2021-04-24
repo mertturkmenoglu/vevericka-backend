@@ -16,7 +16,6 @@ import IsAuth from '../middlewares/IsAuth';
 import PostService from '../services/PostService';
 import { Role } from '../role';
 import { User } from '../models/User';
-import { Post as PostModel } from '../models/Post';
 import CreatePostDto from '../dto/CreatePostDto';
 import { DocumentToJsonInterceptor } from '../interceptors/DocumentToJsonInterceptor';
 
@@ -68,13 +67,15 @@ class PostController {
   @UseBefore(IsAuth)
   @Authorized(Role.CREATE_POST)
   async createPost(@Body() dto: CreatePostDto) {
-    const post = new PostModel({
-      createdBy: dto.createdBy,
-      content: dto.content,
-      comments: [],
-    });
+    const post = await this.postService.createPost(dto);
 
-    return post.save();
+    if (!post) {
+      return {
+        message: 'Cannot create post',
+      };
+    }
+
+    return post;
   }
 
   @HttpCode(204)
