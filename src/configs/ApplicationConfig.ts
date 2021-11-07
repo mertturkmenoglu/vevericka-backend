@@ -1,5 +1,5 @@
-const PORT: number = 5000;
+const DEFAULT_PORT: number = 5000;
 
 export default {
-  PORT,
+  PORT: DEFAULT_PORT,
 };
