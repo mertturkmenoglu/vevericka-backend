@@ -14,26 +14,20 @@ import yaml from 'js-yaml';
 import { useContainer, useExpressServer } from 'routing-controllers';
 import { Container } from 'typedi';
 
-import mongooseOptions from './configs/MongoConfig';
-import morganConfig from './configs/MorganConfig';
-import applicationConfig from './configs/ApplicationConfig';
+import MongoConfig from './configs/MongoConfig';
+import MorganConfig from './configs/MorganConfig';
+import ApplicationConfig from './configs/ApplicationConfig';
 
 import Log from './utils/Log';
-import AuthController from './controllers/AuthController';
-import UserController from './controllers/UserController';
 import Authorization from './middlewares/Authorization';
-import PostController from './controllers/PostController';
-import BookmarkController from './controllers/BookmarkController';
-import CommentController from './controllers/CommentController';
-import MessageController from './controllers/MessageController';
-import ExploreController from './controllers/ExploreController';
-import NotificationController from './controllers/NotificationController';
+import ApplicationModule from './ApplicationModule';
+import SwaggerConfig from './configs/SwaggerConfig';
 
 // Load environment variables
 dotenvSafe.config();
 
 // Read port information
-const PORT = process.env.PORT || applicationConfig.DEFAULT_PORT;
+const PORT = process.env.PORT || ApplicationConfig.DEFAULT_PORT;
 
 // Linking TypeDI and routing controllers
 useContainer(Container);
@@ -42,49 +36,40 @@ useContainer(Container);
 const app = express();
 
 // Set trust proxy value to 1 to enable rate limiting
-app.set('trust proxy', 1);
+app.set('trust proxy', ApplicationConfig.TRUST_PROXY);
 
 // Initialize Express middlewares
 app.use(express.json());
 app.use(helmet());
 app.use(
   cors({
-    exposedHeaders: ['authorization'],
+    exposedHeaders: ApplicationConfig.EXPOSED_HEADERS,
   }),
 );
-app.use(morgan(morganConfig));
+app.use(morgan(MorganConfig.morganFormat));
 
 const main = async () => {
   // Connect to MongoDB
-  await mongoose.connect(process.env.MONGO_URI as string, mongooseOptions);
+  await mongoose.connect(process.env.MONGO_URI as string, MongoConfig.mongooseOptions);
 
   // Initialize routing controllers
   useExpressServer(app, {
     authorizationChecker: Authorization,
     classToPlainTransformOptions: {
-      enableCircularCheck: true,
+      enableCircularCheck: ApplicationConfig.IS_CIRCULAR_CHECK_ENABLED,
     },
-    controllers: [
-      AuthController,
-      UserController,
-      PostController,
-      BookmarkController,
-      CommentController,
-      MessageController,
-      ExploreController,
-      NotificationController,
-    ],
+    controllers: ApplicationModule.controllers,
   });
 
-  const filePath = path.join(__dirname, 'swagger.yml');
+  const filePath = path.join(__dirname, SwaggerConfig.SWAGGER_FILENAME);
   const swaggerDocument = yaml.load(fs.readFileSync(filePath, 'utf-8')) as JsonObject;
 
   // Enable Swagger Documentation at /docs route
   app.use(
-    '/docs',
+    SwaggerConfig.SWAGGER_ROUTE,
     swaggerUI.serve,
     swaggerUI.setup(swaggerDocument, {
-      explorer: true,
+      explorer: SwaggerConfig.IS_EXPLORER_ENABLED,
     }),
   );
 
