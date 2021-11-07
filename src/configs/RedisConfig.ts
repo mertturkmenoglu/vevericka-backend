@@ -1,2 +1,5 @@
-// eslint-disable-next-line import/prefer-default-export
-export const FORGET_PASSWORD_PREFIX = 'forget-password:';
+const FORGET_PASSWORD_PREFIX = 'forget-password:';
+
+export default {
+  FORGET_PASSWORD_PREFIX,
+};

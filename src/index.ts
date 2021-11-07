@@ -33,7 +33,7 @@ import NotificationController from './controllers/NotificationController';
 dotenvSafe.config();
 
 // Read port information
-const PORT = process.env.PORT || applicationConfig.PORT;
+const PORT = process.env.PORT || applicationConfig.DEFAULT_PORT;
 
 // Linking TypeDI and routing controllers
 useContainer(Container);
