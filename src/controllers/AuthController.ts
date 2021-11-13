@@ -17,8 +17,8 @@ import { User } from '../models/User';
 import AuthService from '../services/AuthService';
 import LoginDto from '../dto/LoginDto';
 import SendPasswordResetEmailDto from '../dto/SendPasswordResetEmailDto';
-import { redis } from '../redis';
-import { FORGET_PASSWORD_PREFIX } from '../configs/RedisConfig';
+import Redis from '../redis';
+import RedisConfig from '../configs/RedisConfig';
 import ResetPasswordDto from '../dto/ResetPasswordDto';
 
 // // Rate limiters
@@ -36,7 +36,7 @@ import ResetPasswordDto from '../dto/ResetPasswordDto';
 @JsonController('/api/v2/auth')
 @Service()
 class AuthController {
-  constructor(private readonly authService: AuthService) {}
+  constructor(private readonly authService: AuthService) { }
 
   @HttpCode(201)
   @Post('/register')
@@ -103,11 +103,11 @@ class AuthController {
     }
 
     const passwordResetCode = this.authService.generatePasswordResetCode();
-    await redis.set(
-      FORGET_PASSWORD_PREFIX + passwordResetCode,
+    await Redis.client.set(
+      RedisConfig.FORGET_PASSWORD_PREFIX + passwordResetCode,
       user.id,
       'ex',
-      1000 * 60 * 60 * 3, // 3 hours
+      RedisConfig.FORGET_PASSWORD_EXPIRATION,
     );
 
     await this.authService.sendPasswordResetEmail(dto.email, passwordResetCode);
@@ -124,8 +124,8 @@ class AuthController {
       throw new NotFoundError('User does not exist');
     }
 
-    const REDIS_KEY = FORGET_PASSWORD_PREFIX + dto.code;
-    const userId = await redis.get(REDIS_KEY);
+    const REDIS_KEY = RedisConfig.FORGET_PASSWORD_PREFIX + dto.code;
+    const userId = await Redis.client.get(REDIS_KEY);
 
     if (!userId) {
       throw new BadRequestError('Password reset code is invalid');
@@ -138,7 +138,7 @@ class AuthController {
     user.password = dto.password;
 
     await user.save();
-    await redis.del(REDIS_KEY);
+    await Redis.client.del(REDIS_KEY);
 
     return {
       message: 'Successful',

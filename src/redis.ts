@@ -1,4 +1,13 @@
 import Redis from 'ioredis';
+import dotenvSafe from 'dotenv-safe';
 
-// eslint-disable-next-line import/prefer-default-export
-export const redis = new Redis(process.env.REDIS_URL as string);
+// Load environment variables
+dotenvSafe.config();
+
+const client = new Redis(process.env.REDIS_URL as string, {
+  connectTimeout: 10000,
+});
+
+export default {
+  client,
+};
