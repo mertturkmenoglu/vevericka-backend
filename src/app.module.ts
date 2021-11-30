@@ -5,6 +5,7 @@ import { AuthModule } from './auth/auth.module';
 import { User } from './user/user.entity';
 import { UserModule } from './user/user.module';
 import { BookmarkModule } from './bookmark/bookmark.module';
+import { ExploreModule } from './explore/explore.module';
 
 @Module({
   imports: [
@@ -21,6 +22,7 @@ import { BookmarkModule } from './bookmark/bookmark.module';
     AuthModule,
     UserModule,
     BookmarkModule,
+    ExploreModule,
   ],
   controllers: [],
   providers: [],

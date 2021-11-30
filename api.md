@@ -6,29 +6,6 @@ DELETE /comment/:id
 POST /comment/:id/like
 POST /comment/:id/unlike
 
-# Get popular tags
-
-?time=[today,yesterday,week,month,year,all]&page=1&pageSize=25&location=[global,local]
-GET /explore/tags
-
-# Get a tag
-
-GET /explore/tag/:id
-
-# Get posts related to a tag
-
-GET /explore/tag/:id/posts
-
-# Get popular people
-
-GET /explore/people
-
-# Get popular posts
-
-GET /explore/posts
-
----
-
 # Get Chat group
 
 GET /message/chat/:id
