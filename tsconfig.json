@@ -1,20 +1,13 @@
 {
   "compilerOptions": {
     "module": "commonjs",
-    "lib": [
-      "dom",
-      "es6",
-      "es2017",
-      "esnext.asynciterable"
-    ],
+    "lib": ["dom", "es6", "es2017", "esnext.asynciterable"],
     "types": ["reflect-metadata", "node", "jest"],
     "skipLibCheck": true,
     "removeComments": true,
     "esModuleInterop": true,
-    "target": "es6",
     "moduleResolution": "node",
     "sourceMap": true,
-    "outDir": "dist",
     "strict": true,
     "strictNullChecks": true,
     "strictFunctionTypes": true,
@@ -23,16 +16,19 @@
     "noImplicitThis": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
-    "noFallthroughCasesInSwitch": true,
-    "allowSyntheticDefaultImports": true,
+    "resolveJsonModule": true,
+    "declaration": true,
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
-    "resolveJsonModule": true
+    "allowSyntheticDefaultImports": true,
+    "target": "es2017",
+    "outDir": "./dist",
+    "baseUrl": "./",
+    "incremental": true,
+    "strictBindCallApply": false,
+    "forceConsistentCasingInFileNames": false,
+    "noFallthroughCasesInSwitch": false
   },
-  "exclude": [
-    "node_modules"
-  ],
-  "lib": [
-    "es2015"
-  ]
+  "exclude": ["node_modules", "src/v2"],
+  "lib": ["es2015"]
 }
