@@ -52,10 +52,12 @@ export class AuthService {
     return match;
   }
 
-  async getBearerToken(id: number, username: string): Promise<string> {
+  async getBearerToken(id: number, username: string, email: string, image: string): Promise<string> {
     const payload = {
       id,
       username,
+      email,
+      image,
     };
 
     const jwtToken = this.jwtService.sign(payload, {

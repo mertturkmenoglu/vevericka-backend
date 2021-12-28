@@ -46,7 +46,7 @@ export class AuthController {
       return new UnauthorizedException('Email or password is wrong');
     }
 
-    const bearerToken = await this.authService.getBearerToken(user.id, user.username);
+    const bearerToken = await this.authService.getBearerToken(user.id, user.username, user.email, user.image);
 
     res.header('authorization', bearerToken);
     return res.json({
