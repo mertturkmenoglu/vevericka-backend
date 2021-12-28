@@ -14,6 +14,7 @@ async function bootstrap() {
 
   const config = new DocumentBuilder()
     .addServer('/api')
+    .addBearerAuth()
     .setTitle('Vevericka')
     .setDescription('Vevericka backend services')
     .setVersion('3.0')
