@@ -1,5 +1,5 @@
 import { IStringConstraint } from "src/types/IStringConstraint";
-import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
+import { Column, CreateDateColumn, Entity, Index, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 // import { Location } from "./location.model";
 
 type UserField =
@@ -33,12 +33,14 @@ export class User {
   id!: number;
 
   @Column({ unique: true, length: UserConstraints.username.max, nullable: false })
+  @Index({ spatial: true })
   username!: string;
 
   @Column({ unique: true, length: UserConstraints.email.max, nullable: false })
+  @Index({ spatial: true })
   email!: string;
 
-  @Column({ nullable: false })
+  @Column({ nullable: false, select: false })
   password!: string;
 
   @Column({ length: UserConstraints.name.max, nullable: false })
@@ -78,6 +80,14 @@ export class User {
 
   @Column({ nullable: true, length: 32 })
   gender?: string;
+
+  @Column()
+  @CreateDateColumn()
+  createdAt!: Date;
+
+  @Column()
+  @UpdateDateColumn()
+  updatedAt!: Date;
 
   // languages: Language[];
   // wishToSpeak: string[];
