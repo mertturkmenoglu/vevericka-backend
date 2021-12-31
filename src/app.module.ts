@@ -8,6 +8,9 @@ import { BookmarkModule } from './bookmark/bookmark.module';
 import { ExploreModule } from './explore/explore.module';
 import { Auth } from './auth/auth.entity';
 import { Tag } from './explore/tag.entity';
+import { SpeakingLanguage } from './user/speaking-language.entity';
+import { WishToSpeakLanguage } from './user/wish-to-speak-language.entity';
+import { Hobby } from './user/hobby.entity';
 
 @Module({
   imports: [
@@ -20,7 +23,7 @@ import { Tag } from './explore/tag.entity';
       username: process.env.POSTGRES_USER,
       password: process.env.POSTGRES_PASSWORD,
       database: process.env.POSTGRES_DB,
-      entities: [User, Auth, Tag],
+      entities: [User, Auth, Tag, SpeakingLanguage, WishToSpeakLanguage, Hobby],
       synchronize: true,
     }),
     AuthModule,

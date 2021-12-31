@@ -1,5 +1,6 @@
-import { Controller, Get, Param } from '@nestjs/common';
-import { ApiConsumes, ApiOkResponse, ApiProduces, ApiTags } from '@nestjs/swagger';
+import { Controller, Get, Param, UseGuards } from '@nestjs/common';
+import { ApiBearerAuth, ApiConsumes, ApiOkResponse, ApiProduces, ApiTags } from '@nestjs/swagger';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { ExploreService } from './explore.service';
 
 @ApiTags('explore')
@@ -18,6 +19,8 @@ export class ExploreController {
     return this.exploreService.testFunction();
   }
 
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
   @Get('/tag/:id')
   async getTagById(@Param('id') id: string) {
     return id;
