@@ -1,4 +1,26 @@
-import { Controller } from '@nestjs/common';
+import { Controller, Get, NotFoundException, Param } from '@nestjs/common';
+import { ApiConsumes, ApiProduces, ApiTags } from '@nestjs/swagger';
+import { User } from './user.entity';
+import { UserService } from './user.service';
 
-@Controller('user')
-export class UserController {}
+@ApiTags('user')
+@ApiConsumes('application/json')
+@ApiProduces('application/json')
+@Controller({
+  version: '3',
+  path: 'user',
+})
+export class UserController {
+  constructor(private userService: UserService) { }
+
+  @Get('/:username')
+  async getUserByUsername(@Param('username') username: string): Promise<User> {
+    const user = await this.userService.getUserByUsername(username);
+
+    if (!user) {
+      throw new NotFoundException(`User not found: ${username}`);
+    }
+
+    return user;
+  }
+}

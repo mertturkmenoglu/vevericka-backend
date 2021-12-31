@@ -1,6 +1,7 @@
 import { IStringConstraint } from "src/types/IStringConstraint";
-import { Column, CreateDateColumn, Entity, Index, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
+import { Column, CreateDateColumn, Entity, Index, JoinColumn, OneToMany, OneToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 import { Hobby } from "./hobby.entity";
+import { Location } from "./location.entity";
 import { SpeakingLanguage } from "./speaking-language.entity";
 import { WishToSpeakLanguage } from "./wish-to-speak-language.entity";
 
@@ -110,6 +111,13 @@ export class User {
     cascade: true,
   })
   features!: Hobby[];
+
+  @OneToOne(() => Location, {
+    onDelete: 'CASCADE',
+    cascade: true,
+  })
+  @JoinColumn()
+  location!: Location;
 
   @CreateDateColumn()
   createdAt!: Date;
