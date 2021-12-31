@@ -31,5 +31,5 @@ export class RegisterDto {
 
   @ApiPropertyOptional({ nullable: true })
   @IsString()
-  image?: string = 'profile.png';
+  image: string = 'profile.png';
 }
