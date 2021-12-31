@@ -1,5 +1,6 @@
-import { Controller, Get, NotFoundException, Param } from '@nestjs/common';
+import { Controller, Get, NotFoundException, Param, UseGuards } from '@nestjs/common';
 import { ApiConsumes, ApiProduces, ApiTags } from '@nestjs/swagger';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { User } from './user.entity';
 import { UserService } from './user.service';
 
@@ -13,6 +14,7 @@ import { UserService } from './user.service';
 export class UserController {
   constructor(private userService: UserService) { }
 
+  @UseGuards(JwtAuthGuard)
   @Get('/:username')
   async getUserByUsername(@Param('username') username: string): Promise<User> {
     const user = await this.userService.getUserByUsername(username);
