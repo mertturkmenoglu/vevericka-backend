@@ -6,6 +6,8 @@ import { User } from './user/user.entity';
 import { UserModule } from './user/user.module';
 import { BookmarkModule } from './bookmark/bookmark.module';
 import { ExploreModule } from './explore/explore.module';
+import { Auth } from './auth/auth.entity';
+import { Tag } from './explore/tag.entity';
 
 @Module({
   imports: [
@@ -18,7 +20,7 @@ import { ExploreModule } from './explore/explore.module';
       username: process.env.POSTGRES_USER,
       password: process.env.POSTGRES_PASSWORD,
       database: process.env.POSTGRES_DB,
-      entities: [User],
+      entities: [User, Auth, Tag],
       synchronize: true,
     }),
     AuthModule,
