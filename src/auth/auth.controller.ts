@@ -6,6 +6,7 @@ import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
 import { LocalAuthGuard } from './guards/local-auth.guard';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
+import { Auth } from './auth.entity';
 
 @ApiTags('auth')
 @ApiConsumes('application/json')
@@ -20,7 +21,7 @@ export class AuthController {
   @Post('register')
   @ApiCreatedResponse({ status: 201, description: 'User registered successfully' })
   @ApiBadRequestResponse({ status: 400 })
-  async register(@Body() dto: RegisterDto): Promise<number> {
+  async register(@Body() dto: RegisterDto): Promise<Omit<Auth, "password">> {
     const doesUserExist = await this.authService.doesUserExist(dto.username, dto.email);
 
     if (doesUserExist) {
@@ -28,23 +29,25 @@ export class AuthController {
     }
 
     const savedUser = await this.authService.saveUser(dto);
-    return savedUser.id;
+    return savedUser;
   }
 
   @UseGuards(LocalAuthGuard)
   @Post('login')
   async login(@Body() dto: LoginDto, @Res() res: Response) {
-    const user = await this.authService.findUserByEmailSelectPassword(dto.email);
+    const auth = await this.authService.findUserByEmail(dto.email);
 
-    if (!user) {
-      return new NotFoundException(`User not found with email: ${dto.email}`);
+    if (!auth) {
+      throw new NotFoundException(`User not found with email: ${dto.email}`);
     }
 
-    const doPasswordsMatch = await this.authService.doPasswordsMatch(dto.password, user.password);
+    const doPasswordsMatch = await this.authService.doPasswordsMatch(dto.password, auth.password);
 
     if (!doPasswordsMatch) {
-      return new UnauthorizedException('Email or password is wrong');
+      throw new UnauthorizedException('Email or password is wrong');
     }
+
+    const user = auth.user;
 
     const bearerToken = await this.authService.getBearerToken(user.id, user.username, user.email, user.image);
 
@@ -52,6 +55,9 @@ export class AuthController {
     return res.json({
       id: user.id,
       username: user.username,
+      email: user.email,
+      image: user.image,
+      token: bearerToken,
     });
   }
 
