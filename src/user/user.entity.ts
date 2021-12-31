@@ -1,3 +1,4 @@
+import { Post } from "src/post/post.entity";
 import { IStringConstraint } from "src/types/IStringConstraint";
 import { Column, CreateDateColumn, Entity, Index, JoinColumn, OneToMany, OneToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 import { Hobby } from "./hobby.entity";
@@ -118,6 +119,12 @@ export class User {
   })
   @JoinColumn()
   location!: Location;
+
+  @OneToMany(() => Post, (post) => post.user, {
+    onDelete: 'CASCADE',
+    cascade: true
+  })
+  posts!: Post[];
 
   @CreateDateColumn()
   createdAt!: Date;

@@ -12,6 +12,8 @@ import { SpeakingLanguage } from './user/speaking-language.entity';
 import { WishToSpeakLanguage } from './user/wish-to-speak-language.entity';
 import { Hobby } from './user/hobby.entity';
 import { Location } from './user/location.entity';
+import { PostModule } from './post/post.module';
+import { Post } from './post/post.entity';
 
 @Module({
   imports: [
@@ -24,13 +26,14 @@ import { Location } from './user/location.entity';
       username: process.env.POSTGRES_USER,
       password: process.env.POSTGRES_PASSWORD,
       database: process.env.POSTGRES_DB,
-      entities: [User, Auth, Tag, SpeakingLanguage, WishToSpeakLanguage, Hobby, Location],
+      entities: [User, Auth, Tag, SpeakingLanguage, WishToSpeakLanguage, Hobby, Location, Post],
       synchronize: true,
     }),
     AuthModule,
     UserModule,
     BookmarkModule,
     ExploreModule,
+    PostModule,
   ],
   controllers: [],
   providers: [],
