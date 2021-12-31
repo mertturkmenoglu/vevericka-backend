@@ -1,6 +1,5 @@
 import { IStringConstraint } from "src/types/IStringConstraint";
-import { Column, CreateDateColumn, Entity, Index, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
-// import { Location } from "./location.model";
+import { Column, Entity, Index, PrimaryGeneratedColumn } from "typeorm";
 
 type UserField =
   | 'username'
@@ -37,58 +36,12 @@ export class User {
   username!: string;
 
   @Column({ unique: true, length: UserConstraints.email.max, nullable: false })
-  @Index({ spatial: true })
+  @Index()
   email!: string;
-
-  @Column({ nullable: false, select: false })
-  password!: string;
 
   @Column({ length: UserConstraints.name.max, nullable: false })
   name!: string;
 
   @Column({ nullable: false, default: 'profile.png' })
   image!: string;
-
-  // @Column({ array: true, default: [] })
-  // hobbies!: string[];
-
-  // @Column({ array: true, default: [] })
-  // features!: string[];
-
-  @Column({ nullable: true })
-  bdate?: Date;
-
-  // // followers: string[];
-  // // following: string[];
-  // @Column({ nullable: true })
-  // location?: Location;
-
-  @Column({ nullable: true, length: 128 })
-  job?: string;
-
-  @Column({ nullable: true, length: 64 })
-  school?: string;
-
-  @Column({ nullable: true, length: 64 })
-  website?: string;
-
-  @Column({ nullable: true, length: 64 })
-  twitter?: string;
-
-  @Column({ nullable: true, length: 256 })
-  bio?: string;
-
-  @Column({ nullable: true, length: 32 })
-  gender?: string;
-
-  @Column()
-  @CreateDateColumn()
-  createdAt!: Date;
-
-  @Column()
-  @UpdateDateColumn()
-  updatedAt!: Date;
-
-  // languages: Language[];
-  // wishToSpeak: string[];
 }

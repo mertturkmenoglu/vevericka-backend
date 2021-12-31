@@ -1,4 +1,5 @@
-import { Column, CreateDateColumn, Entity, PrimaryColumn, UpdateDateColumn } from "typeorm";
+import { Column, CreateDateColumn, Entity, JoinColumn, OneToOne, PrimaryColumn, UpdateDateColumn } from "typeorm";
+import { User } from "../user/user.entity";
 
 @Entity()
 export class Auth {
@@ -7,6 +8,10 @@ export class Auth {
 
   @Column()
   password!: string;
+
+  @OneToOne(() => User, { cascade: true, onDelete: 'CASCADE' })
+  @JoinColumn()
+  user!: User;
 
   @Column()
   @CreateDateColumn()
