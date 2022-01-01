@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { JwtService } from '@nestjs/jwt';
 import { Repository } from 'typeorm';
@@ -6,6 +6,7 @@ import * as argon2 from 'argon2';
 import { RegisterDto } from './dto/register.dto';
 import { Auth } from './auth.entity';
 import { User } from '../user/user.entity';
+import { AsyncResult } from 'src/types/AsyncResult';
 
 @Injectable()
 export class AuthService {
@@ -15,17 +16,19 @@ export class AuthService {
     private jwtService: JwtService,
   ) { }
 
-  async doesUserExist(username: string, email: string): Promise<boolean> {
+  async doesUserExist(username: string, email: string): AsyncResult<boolean> {
     const user = await this.authRepository.createQueryBuilder('auth')
       .leftJoinAndSelect('auth.user', 'user')
       .where('auth.email = :email', { email })
       .orWhere('user.username = :username', { username })
       .getOne();
 
-    return user !== undefined;
+    return {
+      data: user !== undefined,
+    };
   }
 
-  async saveUser(dto: RegisterDto): Promise<Omit<Auth, 'password'>> {
+  async saveUser(dto: RegisterDto): AsyncResult<Omit<Auth, 'password'>> {
     const hashed = await argon2.hash(dto.password, { type: argon2.argon2i });
     const auth = new Auth();
     auth.email = dto.email;
@@ -43,20 +46,33 @@ export class AuthService {
 
     const { password, ...rest } = saved;
 
-    return rest;
+    return {
+      data: rest,
+    };
   }
 
-  async findUserByEmail(email: string): Promise<Auth | undefined> {
+  async findUserByEmail(email: string): AsyncResult<Auth> {
     const user = await this.authRepository.findOne({ where: [{ email }], relations: ['user'] },);
-    return user;
+
+    if (!user) {
+      return {
+        exception: new NotFoundException(`User not found: ${email}`),
+      };
+    }
+
+    return {
+      data: user,
+    };
   }
 
-  async doPasswordsMatch(plain: string, hashed: string): Promise<boolean> {
+  async doPasswordsMatch(plain: string, hashed: string): AsyncResult<boolean> {
     const match = await argon2.verify(hashed, plain, { type: argon2.argon2i });
-    return match;
+    return {
+      data: match,
+    };
   }
 
-  async getBearerToken(id: number, username: string, email: string, image: string): Promise<string> {
+  async getBearerToken(id: number, username: string, email: string, image: string): AsyncResult<string> {
     const payload = {
       id,
       username,
@@ -70,10 +86,22 @@ export class AuthService {
     });
 
     const bearerToken = `Bearer ${jwtToken}`;
-    return bearerToken;
+    return {
+      data: bearerToken,
+    };
   }
 
-  async get(email: string): Promise<Auth | undefined> {
-    return await this.authRepository.findOne({ where: { email } });
+  async get(email: string): AsyncResult<Auth> {
+    const user = await this.authRepository.findOne({ where: { email } });
+
+    if (!user) {
+      return {
+        exception: new NotFoundException(`User not found: ${email}`),
+      };
+    }
+
+    return {
+      data: user,
+    };
   }
 }

@@ -17,12 +17,12 @@ export class UserController {
   @UseGuards(JwtAuthGuard)
   @Get('/:username')
   async getUserByUsername(@Param('username') username: string): Promise<User> {
-    const user = await this.userService.getUserByUsername(username);
+    const { data, exception } = await this.userService.getUserByUsername(username);
 
-    if (!user) {
-      throw new NotFoundException(`User not found: ${username}`);
+    if (!data) {
+      throw exception;
     }
 
-    return user;
+    return data;
   }
 }

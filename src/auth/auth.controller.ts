@@ -1,4 +1,4 @@
-import { BadRequestException, Body, Controller, Get, NotFoundException, Post, UnauthorizedException, Res, UseGuards, Param } from '@nestjs/common';
+import { BadRequestException, Body, Controller, Get, NotFoundException, Post, UnauthorizedException, Res, UseGuards, Param, InternalServerErrorException } from '@nestjs/common';
 import { ApiTags, ApiConsumes, ApiProduces, ApiCreatedResponse, ApiBadRequestResponse, ApiBearerAuth } from '@nestjs/swagger';
 import { Response } from 'express';
 import { AuthService } from './auth.service';
@@ -22,26 +22,31 @@ export class AuthController {
   @ApiCreatedResponse({ status: 201, description: 'User registered successfully' })
   @ApiBadRequestResponse({ status: 400 })
   async register(@Body() dto: RegisterDto): Promise<Omit<Auth, "password">> {
-    const doesUserExist = await this.authService.doesUserExist(dto.username, dto.email);
+    const { data: doesUserExist } = await this.authService.doesUserExist(dto.username, dto.email);
 
     if (doesUserExist) {
       throw new BadRequestException('User already exists');
     }
 
-    const savedUser = await this.authService.saveUser(dto);
-    return savedUser;
+    const { data } = await this.authService.saveUser(dto);
+
+    if (!data) {
+      throw new InternalServerErrorException('Cannot register');
+    }
+
+    return data;
   }
 
   @UseGuards(LocalAuthGuard)
   @Post('login')
   async login(@Body() dto: LoginDto, @Res() res: Response) {
-    const auth = await this.authService.findUserByEmail(dto.email);
+    const { data: auth, exception } = await this.authService.findUserByEmail(dto.email);
 
     if (!auth) {
-      throw new NotFoundException(`User not found with email: ${dto.email}`);
+      throw exception;
     }
 
-    const doPasswordsMatch = await this.authService.doPasswordsMatch(dto.password, auth.password);
+    const { data: doPasswordsMatch } = await this.authService.doPasswordsMatch(dto.password, auth.password);
 
     if (!doPasswordsMatch) {
       throw new UnauthorizedException('Email or password is wrong');
@@ -49,7 +54,11 @@ export class AuthController {
 
     const user = auth.user;
 
-    const bearerToken = await this.authService.getBearerToken(user.id, user.username, user.email, user.image);
+    const { data: bearerToken } = await this.authService.getBearerToken(user.id, user.username, user.email, user.image);
+
+    if (!bearerToken) {
+      throw new InternalServerErrorException('Cannot login');
+    }
 
     res.header('authorization', bearerToken);
     return res.json({
