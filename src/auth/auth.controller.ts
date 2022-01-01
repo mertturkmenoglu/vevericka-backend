@@ -1,5 +1,23 @@
-import { BadRequestException, Body, Controller, Get, NotFoundException, Post, UnauthorizedException, Res, UseGuards, Param, InternalServerErrorException } from '@nestjs/common';
-import { ApiTags, ApiConsumes, ApiProduces, ApiCreatedResponse, ApiBadRequestResponse, ApiBearerAuth } from '@nestjs/swagger';
+import {
+  BadRequestException,
+  Body,
+  Controller,
+  Get,
+  Post,
+  UnauthorizedException,
+  Res,
+  UseGuards,
+  Param,
+  InternalServerErrorException,
+} from '@nestjs/common';
+import {
+  ApiTags,
+  ApiConsumes,
+  ApiProduces,
+  ApiCreatedResponse,
+  ApiBadRequestResponse,
+  ApiBearerAuth,
+} from '@nestjs/swagger';
 import { Response } from 'express';
 import { AuthService } from './auth.service';
 import { RegisterDto } from './dto/register.dto';
@@ -16,12 +34,12 @@ import { Auth } from './auth.entity';
   path: 'auth',
 })
 export class AuthController {
-  constructor(private authService: AuthService) { }
+  constructor(private authService: AuthService) {}
 
   @Post('register')
   @ApiCreatedResponse({ status: 201, description: 'User registered successfully' })
   @ApiBadRequestResponse({ status: 400 })
-  async register(@Body() dto: RegisterDto): Promise<Omit<Auth, "password">> {
+  async register(@Body() dto: RegisterDto): Promise<Omit<Auth, 'password'>> {
     const { data: doesUserExist } = await this.authService.doesUserExist(dto.username, dto.email);
 
     if (doesUserExist) {
@@ -46,7 +64,10 @@ export class AuthController {
       throw exception;
     }
 
-    const { data: doPasswordsMatch } = await this.authService.doPasswordsMatch(dto.password, auth.password);
+    const { data: doPasswordsMatch } = await this.authService.doPasswordsMatch(
+      dto.password,
+      auth.password,
+    );
 
     if (!doPasswordsMatch) {
       throw new UnauthorizedException('Email or password is wrong');
@@ -54,7 +75,12 @@ export class AuthController {
 
     const user = auth.user;
 
-    const { data: bearerToken } = await this.authService.getBearerToken(user.id, user.username, user.email, user.image);
+    const { data: bearerToken } = await this.authService.getBearerToken(
+      user.id,
+      user.username,
+      user.email,
+      user.image,
+    );
 
     if (!bearerToken) {
       throw new InternalServerErrorException('Cannot login');

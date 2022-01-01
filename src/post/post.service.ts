@@ -11,7 +11,7 @@ export class PostService {
     @InjectRepository(Post)
     private readonly postRepository: Repository<Post>,
     private readonly userService: UserService,
-  ) { }
+  ) {}
 
   async getPostById(id: string): Promise<Post | null> {
     const post = await this.postRepository.findOne(id);
@@ -24,22 +24,26 @@ export class PostService {
   }
 
   async createPost(dto: CreatePostDto): Promise<Post | null> {
-    const user = await this.userService.getUserByUsername(dto.username);
+    const { data: user, exception } = await this.userService.getUserByUsername(dto.username);
 
     if (!user) {
-      return null;
+      throw exception;
     }
 
     const post = new Post();
     post.content = dto.content;
     post.user = user;
 
-    const saved = await this.postRepository.save(post);
-    return saved;
+    return await this.postRepository.save(post);
   }
 
-  async getPostsByUsername(username: string, page: number, pageSize: number): Promise<[posts: Omit<Post, 'user'>[], totalRecords: number]> {
-    const [posts, totalRecords] = await this.postRepository.createQueryBuilder('post')
+  async getPostsByUsername(
+    username: string,
+    page: number,
+    pageSize: number,
+  ): Promise<[posts: Omit<Post, 'user'>[], totalRecords: number]> {
+    const [posts, totalRecords] = await this.postRepository
+      .createQueryBuilder('post')
       .leftJoinAndSelect('post.user', 'user')
       .where('user.username = :username', { username })
       .addOrderBy('post.createdAt', 'ASC')
@@ -48,9 +52,10 @@ export class PostService {
       .getManyAndCount();
 
     const omitUser = posts.map((post) => {
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const { user, ...rest } = post;
       return rest;
-    })
+    });
 
     return [omitUser, totalRecords];
   }

@@ -1,4 +1,4 @@
-import { Controller, Get, NotFoundException, Param, UseGuards } from '@nestjs/common';
+import { Controller, Get, Param, UseGuards } from '@nestjs/common';
 import { ApiConsumes, ApiProduces, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { User } from './user.entity';
@@ -12,7 +12,7 @@ import { UserService } from './user.service';
   path: 'user',
 })
 export class UserController {
-  constructor(private userService: UserService) { }
+  constructor(private userService: UserService) {}
 
   @UseGuards(JwtAuthGuard)
   @Get('/:username')
