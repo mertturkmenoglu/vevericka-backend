@@ -1,6 +1,7 @@
-import { Module } from '@nestjs/common';
+import { CacheModule, Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { ThrottlerModule } from '@nestjs/throttler';
 import { AuthModule } from './auth/auth.module';
 import { User } from './user/user.entity';
 import { UserModule } from './user/user.module';
@@ -14,6 +15,7 @@ import { Hobby } from './user/hobby.entity';
 import { Location } from './user/location.entity';
 import { PostModule } from './post/post.module';
 import { Post } from './post/post.entity';
+import { Following } from './user/following.entity';
 
 @Module({
   imports: [
@@ -26,9 +28,14 @@ import { Post } from './post/post.entity';
       username: process.env.POSTGRES_USER,
       password: process.env.POSTGRES_PASSWORD,
       database: process.env.POSTGRES_DB,
-      entities: [User, Auth, Tag, SpeakingLanguage, WishToSpeakLanguage, Hobby, Location, Post],
+      entities: [User, Auth, Tag, SpeakingLanguage, WishToSpeakLanguage, Hobby, Location, Post, Following],
       synchronize: true,
     }),
+    ThrottlerModule.forRoot({
+      ttl: 60,
+      limit: 10,
+    }),
+    CacheModule.register(),
     AuthModule,
     UserModule,
     BookmarkModule,

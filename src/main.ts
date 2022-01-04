@@ -3,6 +3,7 @@ import { ValidationPipe, VersioningType } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import helmet from 'helmet';
+import compression from 'compression';
 
 import { AppModule } from './app.module';
 
@@ -29,6 +30,8 @@ async function bootstrap() {
   app.useGlobalPipes(new ValidationPipe());
 
   app.use(helmet());
+
+  app.use(compression());
 
   await app.listen(5000);
 }
