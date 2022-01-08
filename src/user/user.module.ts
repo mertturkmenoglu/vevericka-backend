@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { CacheModule, Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Hobby } from './hobby.entity';
 import { Location } from './location.entity';
@@ -9,7 +9,10 @@ import { UserService } from './user.service';
 import { WishToSpeakLanguage } from './wish-to-speak-language.entity';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([User, SpeakingLanguage, WishToSpeakLanguage, Hobby, Location])],
+  imports: [
+    TypeOrmModule.forFeature([User, SpeakingLanguage, WishToSpeakLanguage, Hobby, Location]),
+    CacheModule.register(),
+  ],
   controllers: [UserController],
   providers: [UserService],
   exports: [TypeOrmModule, UserService]

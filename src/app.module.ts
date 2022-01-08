@@ -15,7 +15,6 @@ import { Hobby } from './user/hobby.entity';
 import { Location } from './user/location.entity';
 import { PostModule } from './post/post.module';
 import { Post } from './post/post.entity';
-import { Following } from './user/following.entity';
 
 @Module({
   imports: [
@@ -28,7 +27,7 @@ import { Following } from './user/following.entity';
       username: process.env.POSTGRES_USER,
       password: process.env.POSTGRES_PASSWORD,
       database: process.env.POSTGRES_DB,
-      entities: [User, Auth, Tag, SpeakingLanguage, WishToSpeakLanguage, Hobby, Location, Post, Following],
+      entities: [User, Auth, Tag, SpeakingLanguage, WishToSpeakLanguage, Hobby, Location, Post],
       synchronize: true,
     }),
     ThrottlerModule.forRoot({

@@ -1,4 +1,4 @@
-import { Controller, Get, Param, UseGuards } from '@nestjs/common';
+import { Controller, Get, Param, UseGuards, UseInterceptors, CacheInterceptor } from '@nestjs/common';
 import { ApiConsumes, ApiProduces, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { User } from './user.entity';
@@ -7,12 +7,13 @@ import { UserService } from './user.service';
 @ApiTags('user')
 @ApiConsumes('application/json')
 @ApiProduces('application/json')
+@UseInterceptors(CacheInterceptor)
 @Controller({
   version: '3',
   path: 'user',
 })
 export class UserController {
-  constructor(private userService: UserService) {}
+  constructor(private userService: UserService) { }
 
   @UseGuards(JwtAuthGuard)
   @Get('/:username')
