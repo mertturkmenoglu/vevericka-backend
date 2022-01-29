@@ -1,0 +1,6 @@
+export enum LanguageProficiency {
+  ELEMENTARY = 'ELEMENTARY',
+  INTERMEDIATE = 'INTERMEDIATE',
+  PROFESSIONAL = 'PROFESSIONAL',
+  NATIVE = 'NATIVE',
+};

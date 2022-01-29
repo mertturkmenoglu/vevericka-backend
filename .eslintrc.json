@@ -1,44 +1,21 @@
 {
-  "env": {
-    "browser": true,
-    "es2021": true,
-    "jest": true
-  },
-  "extends": [
-    "eslint:recommended",
-    "airbnb-typescript/base"
-  ],
   "parser": "@typescript-eslint/parser",
   "parserOptions": {
-    "ecmaVersion": 12,
-    "sourceType": "module",
-    "project": [
-      "./tsconfig.json"
-    ]
+    "project": "tsconfig.json",
+    "sourceType": "module"
   },
-  "plugins": [
-    "@typescript-eslint"
-  ],
-  "settings": {
-    "import/resolver": {
-      "node": {
-        "extensions": [
-          ".js",
-          ".ts"
-        ]
-      }
-    }
+  "plugins": ["@typescript-eslint/eslint-plugin"],
+  "extends": ["plugin:@typescript-eslint/recommended", "plugin:prettier/recommended"],
+  "root": true,
+  "env": {
+    "node": true,
+    "jest": true
   },
+  "ignorePatterns": [".eslintrc.js"],
   "rules": {
     "no-console": "off",
-    "indent": [
-      "error",
-      2
-    ],
-    "quotes": [
-      "error",
-      "single"
-    ],
+    "indent": ["error", 2],
+    "quotes": ["error", "single"],
     "linebreak-style": "off",
     "import/extensions": "off",
     "object-curly-newline": "off",

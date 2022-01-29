@@ -6,4 +6,6 @@ const mongooseOptions: ConnectOptions = {
   useCreateIndex: true,
 };
 
-export default mongooseOptions;
+export default {
+  mongooseOptions
+};

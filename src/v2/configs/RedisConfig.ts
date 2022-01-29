@@ -1,0 +1,8 @@
+const FORGET_PASSWORD_PREFIX = 'forget-password:';
+
+const FORGET_PASSWORD_EXPIRATION = 1000 * 60 * 60 * 3; // 3 hours
+
+export default {
+  FORGET_PASSWORD_PREFIX,
+  FORGET_PASSWORD_EXPIRATION,
+};
