@@ -15,6 +15,7 @@ import { Hobby } from './user/hobby.entity';
 import { Location } from './user/location.entity';
 import { PostModule } from './post/post.module';
 import { Post } from './post/post.entity';
+import { BlogModule } from './blog/blog.module';
 
 @Module({
   imports: [
@@ -40,8 +41,10 @@ import { Post } from './post/post.entity';
     BookmarkModule,
     ExploreModule,
     PostModule,
+    BlogModule,
   ],
   controllers: [],
   providers: [],
 })
+// eslint-disable-next-line prettier/prettier
 export class AppModule { }
