@@ -1,4 +1,12 @@
-import { Body, Controller, Get, NotFoundException, Param, Post as PostRoute, Query } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  NotFoundException,
+  Param,
+  Post as PostRoute,
+  Query,
+} from '@nestjs/common';
 import { ApiTags, ApiConsumes, ApiProduces } from '@nestjs/swagger';
 import { PaginatedResults } from 'src/types/PaginatedResult';
 import { CreatePostDto } from './dto/create-post.dto';
@@ -13,7 +21,7 @@ import { PostService } from './post.service';
   path: 'post',
 })
 export class PostController {
-  constructor(private readonly postService: PostService) { }
+  constructor(private readonly postService: PostService) {}
 
   @Get('/:id')
   async getPostById(@Param('id') id: string): Promise<Post> {
@@ -39,10 +47,14 @@ export class PostController {
   @Get('/user/:username')
   async getPostsByUsername(
     @Param('username') username: string,
-    @Query('page') page: number = 1,
-    @Query('pageSize') pageSize: number = 20,
+    @Query('page') page = 1,
+    @Query('pageSize') pageSize = 20,
   ): Promise<PaginatedResults<Omit<Post, 'user'>[]>> {
-    const [posts, totalRecords] = await this.postService.getPostsByUsername(username, page, pageSize);
+    const [posts, totalRecords] = await this.postService.getPostsByUsername(
+      username,
+      page,
+      pageSize,
+    );
 
     if (!posts) {
       throw new NotFoundException(`User not found: ${username}`);
