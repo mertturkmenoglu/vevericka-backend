@@ -1,6 +1,14 @@
-import { BadRequestException, Controller, Get, NotFoundException, Query } from '@nestjs/common';
+import {
+  BadRequestException,
+  Controller,
+  DefaultValuePipe,
+  Get,
+  NotFoundException,
+  Query,
+} from '@nestjs/common';
 import { ApiConsumes, ApiOkResponse, ApiProduces, ApiTags } from '@nestjs/swagger';
 import { BlogService } from './blog.service';
+import { ApiLocale } from '../types/locale.type';
 import { Playlist } from './playlist.model';
 
 @ApiTags('blog')
@@ -18,8 +26,10 @@ export class BlogController {
   @ApiOkResponse({
     description: 'Get the latest monthly playlist',
   })
-  async getLatestPlaylist(): Promise<Playlist> {
-    const latest = await this.blogService.getLatestPlaylist();
+  async getLatestPlaylist(
+    @Query('lang', new DefaultValuePipe('en')) lang: ApiLocale = 'en',
+  ): Promise<Playlist> {
+    const latest = await this.blogService.getLatestPlaylist(lang);
 
     if (latest === null) {
       throw new NotFoundException('Cannot find the latest monthly playlist');

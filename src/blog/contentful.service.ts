@@ -1,9 +1,12 @@
 import { Injectable } from '@nestjs/common';
 import { ContentfulClientApi, createClient } from 'contentful';
+import { ContentfulLocale } from '../types/locale.type';
 import { Playlist } from './playlist.model';
 
 @Injectable()
 export class ContentfulService {
+  private _locale: ContentfulLocale = 'en-US';
+
   private get client(): ContentfulClientApi {
     return createClient({
       space: process.env.CONTENTFUL_SPACE_ID as string,
@@ -12,9 +15,18 @@ export class ContentfulService {
     });
   }
 
+  public set locale(value: ContentfulLocale) {
+    this._locale = value;
+  }
+
+  public get locale() {
+    return this._locale;
+  }
+
   private async getAllPlaylists(): Promise<Playlist[]> {
     const res = await this.client.getEntries<Playlist>({
       content_type: 'monthlyPlaylist',
+      locale: this.locale,
     });
 
     return res.items.map((it) => it.fields);
