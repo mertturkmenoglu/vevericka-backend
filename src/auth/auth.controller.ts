@@ -22,7 +22,7 @@ import { Response } from 'express';
 import { AuthService } from './auth.service';
 import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
-import { LocalAuthGuard } from './guards/local-auth.guard';
+// import { LocalAuthGuard } from './guards/local-auth.guard';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
 import { Auth } from './auth.entity';
 
@@ -34,7 +34,8 @@ import { Auth } from './auth.entity';
   path: 'auth',
 })
 export class AuthController {
-  constructor(private authService: AuthService) {}
+  // eslint-disable-next-line prettier/prettier
+  constructor(private authService: AuthService) { }
 
   @Post('register')
   @ApiCreatedResponse({ status: 201, description: 'User registered successfully' })
@@ -55,7 +56,6 @@ export class AuthController {
     return data;
   }
 
-  @UseGuards(LocalAuthGuard)
   @Post('login')
   async login(@Body() dto: LoginDto, @Res() res: Response) {
     const { data: auth, exception } = await this.authService.findUserByEmail(dto.email);
