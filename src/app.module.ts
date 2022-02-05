@@ -16,6 +16,7 @@ import { Location } from './user/location.entity';
 import { PostModule } from './post/post.module';
 import { Post } from './post/post.entity';
 import { BlogModule } from './blog/blog.module';
+import { AssetModule } from './asset/asset.module';
 
 @Module({
   imports: [
@@ -42,6 +43,7 @@ import { BlogModule } from './blog/blog.module';
     ExploreModule,
     PostModule,
     BlogModule,
+    AssetModule,
   ],
   controllers: [],
   providers: [],

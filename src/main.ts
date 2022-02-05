@@ -4,11 +4,19 @@ import { NestFactory } from '@nestjs/core';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import helmet from 'helmet';
 import compression from 'compression';
+import morgan from 'morgan';
 
 import { AppModule } from './app.module';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create(AppModule, {
+    cors: {
+      origin: '*',
+      methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+      preflightContinue: false,
+      optionsSuccessStatus: 204,
+    },
+  });
 
   app.enableVersioning({
     type: VersioningType.URI,
@@ -30,6 +38,8 @@ async function bootstrap() {
   app.useGlobalPipes(new ValidationPipe());
 
   app.use(helmet());
+
+  app.use(morgan('dev'));
 
   app.use(compression());
 
