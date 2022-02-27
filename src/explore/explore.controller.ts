@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 import { Controller, Get, Param, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth, ApiConsumes, ApiOkResponse, ApiProduces, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
@@ -8,13 +9,16 @@ import { ExploreService } from './explore.service';
 @ApiProduces('application/json')
 @Controller({
   version: '3',
-  path: 'explore'
+  path: 'explore',
 })
 export class ExploreController {
   constructor(private exploreService: ExploreService) { }
 
   @Get('/tags')
-  @ApiOkResponse({ description: 'Get popular tags ?time=[today,yesterday,week,month,year,all]&page=1&pageSize=25&location=[global,local]' })
+  @ApiOkResponse({
+    description:
+      'Get popular tags ?time=[today,yesterday,week,month,year,all]&page=1&pageSize=25&location=[global,local]',
+  })
   async getPopularTags() {
     return this.exploreService.testFunction();
   }

@@ -35,12 +35,18 @@ import { Auth } from './auth.entity';
 })
 export class AuthController {
   // eslint-disable-next-line prettier/prettier
-  constructor(private authService: AuthService) { }
+  constructor(private authService: AuthService) {}
 
   @Post('register')
   @ApiCreatedResponse({ status: 201, description: 'User registered successfully' })
   @ApiBadRequestResponse({ status: 400 })
   async register(@Body() dto: RegisterDto): Promise<Omit<Auth, 'password'>> {
+    const isBetaCodeOk = this.authService.checkBetaCode(dto.betaCode);
+
+    if (!isBetaCodeOk) {
+      throw new BadRequestException('Beta code is not valid');
+    }
+
     const { data: doesUserExist } = await this.authService.doesUserExist(dto.username, dto.email);
 
     if (doesUserExist) {

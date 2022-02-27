@@ -1,3 +1,5 @@
+/* eslint-disable indent */
+/* eslint-disable @typescript-eslint/no-inferrable-types */
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { IsLowercase, MaxLength, IsEmail, MinLength, IsString, IsNotEmpty } from 'class-validator';
 import { UserConstraints } from '../../user/user.entity';
@@ -32,4 +34,10 @@ export class RegisterDto {
   @ApiPropertyOptional({ nullable: true })
   @IsString()
   image: string = 'profile.png';
+
+  @MinLength(6)
+  @MaxLength(6)
+  @IsNotEmpty()
+  @IsString()
+  betaCode!: string;
 }

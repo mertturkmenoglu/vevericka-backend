@@ -14,10 +14,11 @@ export class AuthService {
     @InjectRepository(Auth)
     private readonly authRepository: Repository<Auth>,
     private jwtService: JwtService,
-  ) { }
+  ) {}
 
   async doesUserExist(username: string, email: string): AsyncResult<boolean> {
-    const user = await this.authRepository.createQueryBuilder('auth')
+    const user = await this.authRepository
+      .createQueryBuilder('auth')
       .leftJoinAndSelect('auth.user', 'user')
       .where('auth.email = :email', { email })
       .orWhere('user.username = :username', { username })
@@ -44,6 +45,7 @@ export class AuthService {
 
     const saved = await this.authRepository.save(auth);
 
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { password, ...rest } = saved;
 
     return {
@@ -52,7 +54,7 @@ export class AuthService {
   }
 
   async findUserByEmail(email: string): AsyncResult<Auth> {
-    const user = await this.authRepository.findOne({ where: [{ email }], relations: ['user'] },);
+    const user = await this.authRepository.findOne({ where: [{ email }], relations: ['user'] });
 
     if (!user) {
       return {
@@ -72,7 +74,12 @@ export class AuthService {
     };
   }
 
-  async getBearerToken(id: number, username: string, email: string, image: string): AsyncResult<string> {
+  async getBearerToken(
+    id: number,
+    username: string,
+    email: string,
+    image: string,
+  ): AsyncResult<string> {
     const payload = {
       id,
       username,
@@ -103,5 +110,9 @@ export class AuthService {
     return {
       data: user,
     };
+  }
+
+  checkBetaCode(betaCode: string): boolean {
+    return betaCode === process.env.BETA_REGISTER_CODE;
   }
 }
