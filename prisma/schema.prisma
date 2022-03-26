@@ -79,14 +79,14 @@ model Speaking {
 model WishToSpeak {
   id          Int           @id @default(autoincrement())
   language    Language
-  user        User          @relation(fields: [userId], references: [id])
+  user        User          @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId      Int
 }
 
 model Hobby {
   id      Int     @id @default(autoincrement())
   hobby   String  @db.VarChar(64)
-  user    User    @relation(fields: [userId], references: [id])
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId  Int
 }
 
@@ -94,7 +94,7 @@ model Feature {
   id          Int     @id @default(autoincrement())
   feature     String  @db.VarChar(64)
   description String  @db.VarChar(255)
-  user        User    @relation(fields: [userId], references: [id])
+  user        User    @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId      Int
 }
 
@@ -106,7 +106,7 @@ model Post {
   content   String    @db.VarChar(255)
 
   // Relations
-  user      User      @relation(name: "UserPosts", fields: [userId], references: [id])
+  user      User      @relation(name: "UserPosts", fields: [userId], references: [id], onDelete: Cascade)
   userId    Int
   dislikes  User[]    @relation(name: "UserDislikes")
   likes     User[]    @relation(name: "UserLikes")
@@ -126,9 +126,9 @@ model Comment {
   content   String    @db.VarChar(255)
 
   // Relations
-  user      User      @relation(name: "UserComments", fields: [userId], references: [id])
+  user      User      @relation(name: "UserComments", fields: [userId], references: [id], onDelete: Cascade)
   userId    Int
-  post      Post      @relation(name: "PostComments", fields: [postId], references: [id])
+  post      Post      @relation(name: "PostComments", fields: [postId], references: [id], onDelete: Cascade)
   postId    Int
 
   // Meta

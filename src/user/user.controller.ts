@@ -9,13 +9,17 @@ import {
   Body,
   HttpCode,
   Delete,
+  ParseIntPipe,
 } from '@nestjs/common';
 import { ApiConsumes, ApiProduces, ApiTags } from '@nestjs/swagger';
-import { Language, Speaking, User } from '@prisma/client';
+import { Feature, Hobby, Language, Speaking, User, WishToSpeak } from '@prisma/client';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { Followee } from './data/followee.type';
 import { Follower } from './data/follower.type';
+import { CreateFeatureDto } from './dto/create-feature.dto';
+import { CreateHobbyDto } from './dto/create-hobby.dto';
 import { CreateSpeakingLanguageDto } from './dto/create-speaking-language.dto';
+import { CreateWishToSpeakLanguageDto } from './dto/create-wish-to-speak-language.dto';
 import { FollowUserDto } from './dto/follow-user.dto';
 import { SetProfilePictureDto } from './dto/set-profile-picture.dto';
 import { UnfollowUserDto } from './dto/unfollow-user.dto';
@@ -109,7 +113,7 @@ export class UserController {
 
   @UseGuards(JwtAuthGuard)
   @PostMapping('/:username/speaking')
-  @HttpCode(204)
+  @HttpCode(201)
   async addSpeakingLanguage(
     @Param('username') username: string,
     @Body() dto: CreateSpeakingLanguageDto,
@@ -135,82 +139,148 @@ export class UserController {
     }
   }
 
-  // @UseGuards(JwtAuthGuard)
-  // @Get('/:username/wish-to-speak')
-  // async getWishToSpeakLanguagesByUsername(
-  //   @Param('username') username: string,
-  // ): Promise<WishToSpeak[]> {
-  //   const { data, exception } = await this.userService.getWishToSpeakLanguagesByUsername(username);
+  @UseGuards(JwtAuthGuard)
+  @Get('/:username/wish-to-speak')
+  async getWishToSpeakLanguagesByUsername(
+    @Param('username') username: string,
+  ): Promise<WishToSpeak[]> {
+    const { data, exception } = await this.userService.getWishToSpeakLanguagesByUsername(username);
 
-  //   if (!data) {
-  //     throw exception;
-  //   }
+    if (!data) {
+      throw exception;
+    }
 
-  //   return data;
-  // }
+    return data;
+  }
 
-  // @UseGuards(JwtAuthGuard)
-  // @Get('/:username/languages')
-  // async getLanguagesByUsername(@Param('username') username: string): Promise<{
-  //   speaking: Speaking[];
-  //   wishToSpeak: WishToSpeak[];
-  // }> {
-  //   const { data, exception } = await this.userService.getLanguagesByUsername(username);
+  @UseGuards(JwtAuthGuard)
+  @PostMapping('/:username/wish-to-speak')
+  @HttpCode(201)
+  async addWishToSpeakLanguage(
+    @Param('username') username: string,
+    @Body() dto: CreateWishToSpeakLanguageDto,
+  ): Promise<void> {
+    const { data, exception } = await this.userService.addWishToSpeakLanguage(username, dto);
 
-  //   if (!data) {
-  //     throw exception;
-  //   }
+    if (!data) {
+      throw exception;
+    }
+  }
 
-  //   return data;
-  // }
+  @UseGuards(JwtAuthGuard)
+  @Delete('/:username/wish-to-speak/:lang')
+  @HttpCode(204)
+  async deleteWishToSpeakLanguage(
+    @Param('username') username: string,
+    @Param('lang') lang: Language,
+  ): Promise<void> {
+    const { data, exception } = await this.userService.deleteWishToSpeakLanguage(username, lang);
 
-  // @UseGuards(JwtAuthGuard)
-  // @Get('/:username/hobbies')
-  // async getHobbiesByUsername(@Param('username') username: string): Promise<Hobby[]> {
-  //   const { data, exception } = await this.userService.getHobbiesByUsername(username);
+    if (!data) {
+      throw exception;
+    }
+  }
 
-  //   if (!data) {
-  //     throw exception;
-  //   }
+  @UseGuards(JwtAuthGuard)
+  @Get('/:username/languages')
+  async getLanguagesByUsername(@Param('username') username: string): Promise<{
+    speaking: Speaking[];
+    wishToSpeak: WishToSpeak[];
+  }> {
+    const { data, exception } = await this.userService.getLanguagesByUsername(username);
 
-  //   return data;
-  // }
+    if (!data) {
+      throw exception;
+    }
 
-  // @UseGuards(JwtAuthGuard)
-  // @Get('/:username/features')
-  // async getFeaturesByUsername(@Param('username') username: string): Promise<Feature[]> {
-  //   const { data, exception } = await this.userService.getFeaturesByUsername(username);
+    return data;
+  }
 
-  //   if (!data) {
-  //     throw exception;
-  //   }
+  @UseGuards(JwtAuthGuard)
+  @Get('/:username/hobbies')
+  async getHobbiesByUsername(@Param('username') username: string): Promise<Hobby[]> {
+    const { data, exception } = await this.userService.getHobbiesByUsername(username);
 
-  //   return data;
-  // }
+    if (!data) {
+      throw exception;
+    }
 
-  // @UseGuards(JwtAuthGuard)
-  // @Get('/:username/posts')
-  // async getPostsByUsername(@Param('username') username: string): Promise<Post[]> {
-  //   const { data, exception } = await this.userService.getPostsByUsername(username);
+    return data;
+  }
 
-  //   if (!data) {
-  //     throw exception;
-  //   }
+  @UseGuards(JwtAuthGuard)
+  @PostMapping('/:username/hobbies')
+  @HttpCode(201)
+  async addHobby(@Param('username') username: string, @Body() dto: CreateHobbyDto): Promise<void> {
+    const { data, exception } = await this.userService.addHobby(username, dto);
 
-  //   return data;
-  // }
+    if (!data) {
+      throw exception;
+    }
+  }
 
-  // @UseGuards(JwtAuthGuard)
-  // @PostMapping('/:username/feature')
-  // async addFeature(@Param('username') username: string, @Body() dto: CreateFeatureDto) {
-  //   const { data, exception } = await this.userService.addFeature(username, dto);
+  @UseGuards(JwtAuthGuard)
+  @Delete('/:username/hobbies/:id')
+  @HttpCode(204)
+  async deleteHobby(@Param('id', ParseIntPipe) id: number): Promise<void> {
+    const { data, exception } = await this.userService.deleteHobby(id);
 
-  //   if (!data) {
-  //     throw exception;
-  //   }
+    if (!data) {
+      throw exception;
+    }
+  }
 
-  //   return data;
-  // }
+  @UseGuards(JwtAuthGuard)
+  @Get('/:username/features')
+  async getFeaturesByUsername(@Param('username') username: string): Promise<Feature[]> {
+    const { data, exception } = await this.userService.getFeaturesByUsername(username);
+
+    if (!data) {
+      throw exception;
+    }
+
+    return data;
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @PostMapping('/:username/features')
+  @HttpCode(201)
+  async addFeature(
+    @Param('username') username: string,
+    @Body() dto: CreateFeatureDto,
+  ): Promise<void> {
+    const { data, exception } = await this.userService.addFeature(username, dto);
+
+    if (!data) {
+      throw exception;
+    }
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Delete('/:username/features/:id')
+  @HttpCode(204)
+  async deleteFeature(@Param('id', ParseIntPipe) featureId: number): Promise<void> {
+    const { data, exception } = await this.userService.deleteFeature(featureId);
+
+    if (!data) {
+      throw exception;
+    }
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Get('/:username/hobby-and-features')
+  async getHobbiesAndFeaturesByUsername(@Param('username') username: string): Promise<{
+    hobbies: Hobby[];
+    features: Feature[];
+  }> {
+    const { data, exception } = await this.userService.getHobbiesAndFeaturesByUsername(username);
+
+    if (!data) {
+      throw exception;
+    }
+
+    return data;
+  }
 
   @UseGuards(JwtAuthGuard)
   @PostMapping('/:username/profile-picture')

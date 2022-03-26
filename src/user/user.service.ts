@@ -2,12 +2,15 @@ import { HttpException, Injectable, NotFoundException } from '@nestjs/common';
 import { AsyncResult } from '../types/AsyncResult';
 import { SetProfilePictureDto } from './dto/set-profile-picture.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { Language, Speaking, User } from '@prisma/client';
+import { Feature, Hobby, Language, Speaking, User, WishToSpeak } from '@prisma/client';
 import { Follower } from './data/follower.type';
 import FollowUserDto from 'dist/v2/dto/FollowUserDto';
 import { UnfollowUserDto } from './dto/unfollow-user.dto';
 import { Followee } from './data/followee.type';
 import { CreateSpeakingLanguageDto } from './dto/create-speaking-language.dto';
+import { CreateWishToSpeakLanguageDto } from './dto/create-wish-to-speak-language.dto';
+import { CreateHobbyDto } from './dto/create-hobby.dto';
+import { CreateFeatureDto } from './dto/create-feature.dto';
 
 @Injectable()
 export class UserService {
@@ -275,6 +278,233 @@ export class UserService {
 
     return {
       data: true,
+    };
+  }
+
+  async getWishToSpeakLanguagesByUsername(username: string): AsyncResult<WishToSpeak[]> {
+    const queryResult = await this.prisma.wishToSpeak.findMany({
+      where: {
+        user: {
+          username,
+        },
+      },
+    });
+
+    return {
+      data: queryResult,
+    };
+  }
+
+  async addWishToSpeakLanguage(
+    username: string,
+    dto: CreateWishToSpeakLanguageDto,
+  ): AsyncResult<boolean> {
+    await this.prisma.user.update({
+      where: {
+        username,
+      },
+      data: {
+        wishToSpeak: {
+          create: {
+            ...dto,
+          },
+        },
+      },
+    });
+
+    return {
+      data: true,
+    };
+  }
+
+  async deleteWishToSpeakLanguage(username: string, lang: Language): AsyncResult<boolean> {
+    const langQuery = await this.prisma.user.findUnique({
+      where: {
+        username,
+      },
+      include: {
+        wishToSpeak: true,
+      },
+    });
+
+    const langId = langQuery?.wishToSpeak.find((lng) => lng.language === lang)?.id;
+
+    await this.prisma.wishToSpeak.delete({
+      where: {
+        id: langId,
+      },
+    });
+
+    return {
+      data: true,
+    };
+  }
+
+  async getLanguagesByUsername(username: string): AsyncResult<{
+    speaking: Speaking[];
+    wishToSpeak: WishToSpeak[];
+  }> {
+    const queryResult = await this.prisma.user.findUnique({
+      where: {
+        username,
+      },
+      include: {
+        wishToSpeak: true,
+        speaking: true,
+      },
+    });
+
+    if (!queryResult) {
+      return {
+        exception: new HttpException('Cannot get languages', 400),
+      };
+    }
+
+    const { speaking, wishToSpeak } = queryResult;
+
+    return {
+      data: {
+        wishToSpeak,
+        speaking,
+      },
+    };
+  }
+
+  async getHobbiesByUsername(username: string): AsyncResult<Hobby[]> {
+    const queryResult = await this.prisma.user.findUnique({
+      where: {
+        username,
+      },
+      include: {
+        hobbies: true,
+      },
+    });
+
+    if (!queryResult) {
+      return {
+        exception: new HttpException('Cannot get hobbies', 400),
+      };
+    }
+
+    const { hobbies } = queryResult;
+
+    return {
+      data: hobbies,
+    };
+  }
+
+  async addHobby(username: string, dto: CreateHobbyDto): AsyncResult<boolean> {
+    await this.prisma.user.update({
+      where: {
+        username,
+      },
+      data: {
+        hobbies: {
+          create: {
+            ...dto,
+          },
+        },
+      },
+    });
+
+    return {
+      data: true,
+    };
+  }
+
+  async deleteHobby(hobbyId: number): AsyncResult<boolean> {
+    await this.prisma.hobby.delete({
+      where: {
+        id: hobbyId,
+      },
+    });
+
+    return {
+      data: true,
+    };
+  }
+
+  async getFeaturesByUsername(username: string): AsyncResult<Feature[]> {
+    const queryResult = await this.prisma.user.findUnique({
+      where: {
+        username,
+      },
+      include: {
+        features: true,
+      },
+    });
+
+    if (!queryResult) {
+      return {
+        exception: new HttpException('Cannot get features', 400),
+      };
+    }
+
+    const { features } = queryResult;
+
+    return {
+      data: features,
+    };
+  }
+
+  async addFeature(username: string, dto: CreateFeatureDto): AsyncResult<boolean> {
+    await this.prisma.user.update({
+      where: {
+        username,
+      },
+      data: {
+        features: {
+          create: {
+            ...dto,
+          },
+        },
+      },
+    });
+
+    return {
+      data: true,
+    };
+  }
+
+  async deleteFeature(featureId: number): AsyncResult<boolean> {
+    await this.prisma.feature.delete({
+      where: {
+        id: featureId,
+      },
+    });
+
+    return {
+      data: true,
+    };
+  }
+
+  async getHobbiesAndFeaturesByUsername(username: string): AsyncResult<{
+    hobbies: Hobby[];
+    features: Feature[];
+  }> {
+    const queryResult = await this.prisma.user.findUnique({
+      where: {
+        username,
+      },
+      include: {
+        hobbies: true,
+        features: true,
+      },
+    });
+
+    if (!queryResult) {
+      return {
+        exception: new HttpException('Cannot get hobbies and features', 400),
+      };
+    }
+
+    const { hobbies, features } = queryResult;
+
+    return {
+      data: {
+        hobbies,
+        features,
+      },
     };
   }
 
