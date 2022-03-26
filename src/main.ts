@@ -7,6 +7,7 @@ import compression from 'compression';
 import morgan from 'morgan';
 
 import { AppModule } from './app.module';
+import { PrismaService } from './prisma/prisma.service';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
@@ -42,6 +43,9 @@ async function bootstrap() {
   app.use(morgan('dev'));
 
   app.use(compression());
+
+  const prismaService = app.get(PrismaService);
+  await prismaService.enableShutdownHooks(app);
 
   await app.listen(process.env.PORT || 5000);
 }

@@ -8,9 +8,9 @@ import {
   Query,
 } from '@nestjs/common';
 import { ApiTags, ApiConsumes, ApiProduces } from '@nestjs/swagger';
+import { Post } from '@prisma/client';
 import { PaginatedResults } from 'src/types/PaginatedResult';
 import { CreatePostDto } from './dto/create-post.dto';
-import { Post } from './post.entity';
 import { PostService } from './post.service';
 
 @ApiTags('post')
@@ -24,7 +24,7 @@ export class PostController {
   constructor(private readonly postService: PostService) {}
 
   @Get('/:id')
-  async getPostById(@Param('id') id: string): Promise<Post> {
+  async getPostById(@Param('id') id: number): Promise<Post> {
     const post = await this.postService.getPostById(id);
 
     if (!post) {

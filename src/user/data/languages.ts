@@ -1,5 +1,5 @@
-import { LanguageKey } from "./language-key.enum";
-import { LanguageName } from "./language-name.enum";
+import { LanguageKey } from './language-key.enum';
+import { LanguageName } from './language-name.enum';
 
 export const languages: Record<LanguageKey, LanguageName> = {
   AR: LanguageName.ARABIC,
@@ -22,4 +22,4 @@ export const languages: Record<LanguageKey, LanguageName> = {
   RU: LanguageName.RUSSIAN,
   TR: LanguageName.TURKISH,
   ZH: LanguageName.CHINESE,
-}
+};

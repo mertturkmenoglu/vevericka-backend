@@ -24,7 +24,7 @@ import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
 // import { LocalAuthGuard } from './guards/local-auth.guard';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
-import { Auth } from './auth.entity';
+import { Auth } from '@prisma/client';
 
 @ApiTags('auth')
 @ApiConsumes('application/json')

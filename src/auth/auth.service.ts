@@ -1,49 +1,54 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
 import { JwtService } from '@nestjs/jwt';
-import { Repository } from 'typeorm';
 import * as argon2 from 'argon2';
 import { RegisterDto } from './dto/register.dto';
-import { Auth } from './auth.entity';
-import { User } from '../user/user.entity';
 import { AsyncResult } from 'src/types/AsyncResult';
+import { PrismaService } from 'src/prisma/prisma.service';
+import { Auth, User } from '@prisma/client';
 
 @Injectable()
 export class AuthService {
-  constructor(
-    @InjectRepository(Auth)
-    private readonly authRepository: Repository<Auth>,
-    private jwtService: JwtService,
-  ) {}
+  // eslint-disable-next-line prettier/prettier
+  constructor(private readonly prisma: PrismaService, private jwtService: JwtService) { }
 
   async doesUserExist(username: string, email: string): AsyncResult<boolean> {
-    const user = await this.authRepository
-      .createQueryBuilder('auth')
-      .leftJoinAndSelect('auth.user', 'user')
-      .where('auth.email = :email', { email })
-      .orWhere('user.username = :username', { username })
-      .getOne();
+    const user = await this.prisma.auth.count({
+      where: {
+        OR: [
+          {
+            email,
+          },
+          {
+            user: {
+              username,
+            },
+          },
+        ],
+      },
+    });
 
     return {
-      data: user !== undefined,
+      data: user > 0,
     };
   }
 
   async saveUser(dto: RegisterDto): AsyncResult<Omit<Auth, 'password'>> {
     const hashed = await argon2.hash(dto.password, { type: argon2.argon2i });
-    const auth = new Auth();
-    auth.email = dto.email;
-    auth.password = hashed;
 
-    const user = new User();
-    user.email = dto.email;
-    user.username = dto.username;
-    user.name = dto.name;
-    user.image = dto.image;
-
-    auth.user = user;
-
-    const saved = await this.authRepository.save(auth);
+    const saved = await this.prisma.auth.create({
+      data: {
+        email: dto.email,
+        password: hashed,
+        user: {
+          create: {
+            email: dto.email,
+            username: dto.username,
+            name: dto.name,
+            image: dto.image,
+          },
+        },
+      },
+    });
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { password, ...rest } = saved;
@@ -53,8 +58,19 @@ export class AuthService {
     };
   }
 
-  async findUserByEmail(email: string): AsyncResult<Auth> {
-    const user = await this.authRepository.findOne({ where: [{ email }], relations: ['user'] });
+  async findUserByEmail(email: string): AsyncResult<
+    Auth & {
+      user: User;
+    }
+  > {
+    const user = await this.prisma.auth.findUnique({
+      where: {
+        email,
+      },
+      include: {
+        user: true,
+      },
+    });
 
     if (!user) {
       return {
@@ -99,7 +115,11 @@ export class AuthService {
   }
 
   async get(email: string): AsyncResult<Auth> {
-    const user = await this.authRepository.findOne({ where: { email } });
+    const user = await this.prisma.auth.findUnique({
+      where: {
+        email,
+      },
+    });
 
     if (!user) {
       return {

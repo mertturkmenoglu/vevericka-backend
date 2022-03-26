@@ -1,9 +1,8 @@
+/* eslint-disable indent */
 import { IsLowercase, MaxLength, MinLength, IsString, IsNotEmpty } from 'class-validator';
-import { UserConstraints } from '../../user/user.entity';
 
 export class CreatePostDto {
-  @MaxLength(UserConstraints.username.max)
-  @MinLength(UserConstraints.username.min)
+  @MaxLength(32)
   @IsNotEmpty()
   @IsLowercase()
   @IsString()

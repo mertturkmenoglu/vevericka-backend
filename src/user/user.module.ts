@@ -1,20 +1,12 @@
 import { CacheModule, Module } from '@nestjs/common';
-import { TypeOrmModule } from '@nestjs/typeorm';
-import { Hobby } from './hobby.entity';
-import { Location } from './location.entity';
-import { SpeakingLanguage } from './speaking-language.entity';
+import { PrismaModule } from 'src/prisma/prisma.module';
 import { UserController } from './user.controller';
-import { User } from './user.entity';
 import { UserService } from './user.service';
-import { WishToSpeakLanguage } from './wish-to-speak-language.entity';
 
 @Module({
-  imports: [
-    TypeOrmModule.forFeature([User, SpeakingLanguage, WishToSpeakLanguage, Hobby, Location]),
-    CacheModule.register(),
-  ],
+  imports: [CacheModule.register(), PrismaModule],
   controllers: [UserController],
   providers: [UserService],
-  exports: [TypeOrmModule, UserService]
+  exports: [UserService],
 })
-export class UserModule { }
+export class UserModule {}

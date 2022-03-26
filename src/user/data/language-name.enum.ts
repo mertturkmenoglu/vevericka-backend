@@ -19,4 +19,4 @@ export enum LanguageName {
   GREEK = 'GREEK',
   HUNGARIAN = 'HUNGARIAN',
   CZECH = 'CZECH',
-};
+}

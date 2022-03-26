@@ -1,20 +1,19 @@
 import { Injectable } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
 import { CreatePostDto } from './dto/create-post.dto';
-import { Post } from './post.entity';
 import { UserService } from '../user/user.service';
+import { PrismaService } from 'src/prisma/prisma.service';
+import { Post } from '@prisma/client';
 
 @Injectable()
 export class PostService {
-  constructor(
-    @InjectRepository(Post)
-    private readonly postRepository: Repository<Post>,
-    private readonly userService: UserService,
-  ) {}
+  constructor(private readonly prisma: PrismaService, private readonly userService: UserService) {}
 
-  async getPostById(id: string): Promise<Post | null> {
-    const post = await this.postRepository.findOne(id);
+  async getPostById(id: number): Promise<Post | null> {
+    const post = await this.prisma.post.findUnique({
+      where: {
+        id,
+      },
+    });
 
     if (!post) {
       return null;
@@ -30,11 +29,18 @@ export class PostService {
       throw exception;
     }
 
-    const post = new Post();
-    post.content = dto.content;
-    post.user = user;
+    const post = await this.prisma.post.create({
+      data: {
+        content: dto.content,
+        user: {
+          connect: {
+            id: user.id,
+          },
+        },
+      },
+    });
 
-    return await this.postRepository.save(post);
+    return post;
   }
 
   async getPostsByUsername(
@@ -42,21 +48,39 @@ export class PostService {
     page: number,
     pageSize: number,
   ): Promise<[posts: Omit<Post, 'user'>[], totalRecords: number]> {
-    const [posts, totalRecords] = await this.postRepository
-      .createQueryBuilder('post')
-      .leftJoinAndSelect('post.user', 'user')
-      .where('user.username = :username', { username })
-      .addOrderBy('post.createdAt', 'ASC')
-      .skip(pageSize * (page - 1))
-      .take(pageSize)
-      .getManyAndCount();
-
-    const omitUser = posts.map((post) => {
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      const { user, ...rest } = post;
-      return rest;
+    const posts = await this.prisma.post.findMany({
+      where: {
+        user: {
+          username,
+        },
+      },
+      orderBy: {
+        createdAt: 'asc',
+      },
+      skip: pageSize * (page - 1),
+      take: pageSize,
+      include: {
+        likes: {
+          select: {
+            _count: true,
+            id: true,
+            name: true,
+            username: true,
+            image: true,
+          },
+        },
+        dislikes: true,
+      },
     });
 
-    return [omitUser, totalRecords];
+    const totalRecords = await this.prisma.post.count({
+      where: {
+        user: {
+          username,
+        },
+      },
+    });
+
+    return [posts, totalRecords];
   }
 }

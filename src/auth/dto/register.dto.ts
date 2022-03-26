@@ -2,32 +2,27 @@
 /* eslint-disable @typescript-eslint/no-inferrable-types */
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { IsLowercase, MaxLength, IsEmail, MinLength, IsString, IsNotEmpty } from 'class-validator';
-import { UserConstraints } from '../../user/user.entity';
 
 export class RegisterDto {
-  @MaxLength(UserConstraints.username.max)
-  @MinLength(UserConstraints.username.min)
+  @MaxLength(32)
   @IsNotEmpty()
   @IsLowercase()
   @IsString()
   username!: string;
 
-  @MaxLength(UserConstraints.email.max)
-  @MinLength(UserConstraints.email.min)
+  @MaxLength(255)
   @IsEmail()
   @IsString()
   @IsNotEmpty()
   @ApiProperty({ description: 'User email address', example: 'user@test.com' })
   email!: string;
 
-  @MinLength(UserConstraints.password.min)
-  @MaxLength(UserConstraints.password.max)
+  @MaxLength(256)
   @IsNotEmpty()
   @IsString()
   password!: string;
 
-  @MinLength(UserConstraints.name.min)
-  @MaxLength(UserConstraints.name.max)
+  @MaxLength(64)
   @IsString()
   name!: string;
 

@@ -1,4 +1,4 @@
-import { HttpException } from "@nestjs/common";
+import { HttpException } from '@nestjs/common';
 
 export interface Result<T> {
   data?: T;
