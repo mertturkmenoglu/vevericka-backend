@@ -8,8 +8,7 @@ export class AssetService {
   private readonly API_BASE_URL = process.env.CLOUDFLARE_IMAGES_API_BASE_URL;
   private readonly API_TOKEN = process.env.CLOUDFLARE_IMAGES_API_TOKEN;
 
-  // eslint-disable-next-line prettier/prettier
-  constructor(private readonly http: HttpService) { }
+  constructor(private readonly http: HttpService) {}
 
   async getUploadLink(): Promise<IUploadLinkResponse | null> {
     const url = `${this.API_BASE_URL}/direct_upload`;

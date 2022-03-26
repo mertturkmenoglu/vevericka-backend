@@ -1,5 +1,3 @@
-/* eslint-disable indent */
-
 import { IsNotEmpty, IsString, MaxLength } from 'class-validator';
 
 export class UnfollowUserDto {

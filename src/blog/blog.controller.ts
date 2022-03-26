@@ -19,8 +19,7 @@ import { Playlist } from './playlist.model';
   path: 'blog',
 })
 export class BlogController {
-  // eslint-disable-next-line prettier/prettier
-  constructor(private blogService: BlogService) { }
+  constructor(private blogService: BlogService) {}
 
   @Get('/playlist/latest')
   @ApiOkResponse({

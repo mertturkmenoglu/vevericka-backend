@@ -1,5 +1,3 @@
-/* eslint-disable indent */
-/* eslint-disable @typescript-eslint/no-inferrable-types */
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { IsLowercase, MaxLength, IsEmail, MinLength, IsString, IsNotEmpty } from 'class-validator';
 

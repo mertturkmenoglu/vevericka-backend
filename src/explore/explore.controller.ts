@@ -1,4 +1,3 @@
-/* eslint-disable prettier/prettier */
 import { Controller, Get, Param, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth, ApiConsumes, ApiOkResponse, ApiProduces, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
@@ -12,7 +11,7 @@ import { ExploreService } from './explore.service';
   path: 'explore',
 })
 export class ExploreController {
-  constructor(private exploreService: ExploreService) { }
+  constructor(private exploreService: ExploreService) {}
 
   @Get('/tags')
   @ApiOkResponse({

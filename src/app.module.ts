@@ -30,5 +30,4 @@ import { AssetModule } from './asset/asset.module';
   controllers: [],
   providers: [],
 })
-// eslint-disable-next-line prettier/prettier
-export class AppModule { }
+export class AppModule {}

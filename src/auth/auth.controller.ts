@@ -34,7 +34,6 @@ import { Auth } from '@prisma/client';
   path: 'auth',
 })
 export class AuthController {
-  // eslint-disable-next-line prettier/prettier
   constructor(private authService: AuthService) {}
 
   @Post('register')

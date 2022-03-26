@@ -8,5 +8,4 @@ import { HttpModule } from '@nestjs/axios';
   controllers: [AssetController],
   providers: [AssetService],
 })
-// eslint-disable-next-line prettier/prettier
-export class AssetModule { }
+export class AssetModule {}

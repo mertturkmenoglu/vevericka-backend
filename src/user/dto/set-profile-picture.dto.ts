@@ -1,4 +1,3 @@
-/* eslint-disable indent */
 import { IsUrl } from 'class-validator';
 
 export class SetProfilePictureDto {

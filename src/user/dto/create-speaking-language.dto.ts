@@ -1,5 +1,3 @@
-/* eslint-disable indent */
-
 import { Language, Proficiency } from '@prisma/client';
 import { IsNotEmpty, IsString, MaxLength } from 'class-validator';
 

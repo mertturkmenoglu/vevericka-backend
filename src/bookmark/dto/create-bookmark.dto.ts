@@ -1,3 +1,1 @@
-export class CreateBookmarkDto {
-
-}
+export class CreateBookmarkDto {}

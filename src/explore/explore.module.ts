@@ -4,6 +4,6 @@ import { ExploreService } from './explore.service';
 
 @Module({
   controllers: [ExploreController],
-  providers: [ExploreService]
+  providers: [ExploreService],
 })
 export class ExploreModule {}

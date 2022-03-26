@@ -8,10 +8,10 @@ import { CreateBookmarkDto } from './dto/create-bookmark.dto';
 @ApiProduces('application/json')
 @Controller({
   version: '3',
-  path: 'bookmark'
+  path: 'bookmark',
 })
 export class BookmarkController {
-  constructor(private bookmarkService: BookmarkService) { }
+  constructor(private bookmarkService: BookmarkService) {}
 
   @Get('/:id')
   async getBookmarkById(@Param('id') id: string) {

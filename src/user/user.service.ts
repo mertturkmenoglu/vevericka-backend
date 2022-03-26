@@ -11,8 +11,7 @@ import { CreateSpeakingLanguageDto } from './dto/create-speaking-language.dto';
 
 @Injectable()
 export class UserService {
-  // eslint-disable-next-line prettier/prettier
-  constructor(private readonly prisma: PrismaService) { }
+  constructor(private readonly prisma: PrismaService) {}
 
   async getUserByUsername(username: string): AsyncResult<User> {
     const user = await this.prisma.user.findUnique({

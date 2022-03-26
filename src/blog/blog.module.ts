@@ -7,5 +7,4 @@ import { ContentfulService } from './contentful.service';
   controllers: [BlogController],
   providers: [BlogService, ContentfulService],
 })
-// eslint-disable-next-line prettier/prettier
-export class BlogModule { }
+export class BlogModule {}

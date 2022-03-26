@@ -1,4 +1,3 @@
-/* eslint-disable indent */
 import { IsLowercase, MaxLength, MinLength, IsString, IsNotEmpty } from 'class-validator';
 
 export class CreatePostDto {

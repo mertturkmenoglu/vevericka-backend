@@ -11,15 +11,12 @@ import {
   Delete,
 } from '@nestjs/common';
 import { ApiConsumes, ApiProduces, ApiTags } from '@nestjs/swagger';
-// import { Feature, Hobby, Post, Speaking, User, WishToSpeak } from '@prisma/client';
 import { Language, Speaking, User } from '@prisma/client';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { Followee } from './data/followee.type';
-// import { Followee } from './data/followee.type';
 import { Follower } from './data/follower.type';
 import { CreateSpeakingLanguageDto } from './dto/create-speaking-language.dto';
 import { FollowUserDto } from './dto/follow-user.dto';
-// import { CreateFeatureDto } from './dto/create-feature.dto';
 import { SetProfilePictureDto } from './dto/set-profile-picture.dto';
 import { UnfollowUserDto } from './dto/unfollow-user.dto';
 import { UserService } from './user.service';
@@ -33,8 +30,7 @@ import { UserService } from './user.service';
   path: 'user',
 })
 export class UserController {
-  // eslint-disable-next-line prettier/prettier
-  constructor(private userService: UserService) { }
+  constructor(private userService: UserService) {}
 
   @Get('/all')
   async getAll() {
