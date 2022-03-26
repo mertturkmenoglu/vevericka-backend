@@ -16,6 +16,7 @@ import { Feature, Hobby, Language, Speaking, User, WishToSpeak } from '@prisma/c
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { Followee } from './data/followee.type';
 import { Follower } from './data/follower.type';
+import { Profile } from './data/profile.type';
 import { CreateFeatureDto } from './dto/create-feature.dto';
 import { CreateHobbyDto } from './dto/create-hobby.dto';
 import { CreateSpeakingLanguageDto } from './dto/create-speaking-language.dto';
@@ -274,6 +275,18 @@ export class UserController {
     features: Feature[];
   }> {
     const { data, exception } = await this.userService.getHobbiesAndFeaturesByUsername(username);
+
+    if (!data) {
+      throw exception;
+    }
+
+    return data;
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Get('/:username/profile')
+  async getProfileByUsername(@Param('username') username: string): Promise<Profile> {
+    const { data, exception } = await this.userService.getProfileByUsername(username);
 
     if (!data) {
       throw exception;

@@ -11,6 +11,7 @@ import { CreateSpeakingLanguageDto } from './dto/create-speaking-language.dto';
 import { CreateWishToSpeakLanguageDto } from './dto/create-wish-to-speak-language.dto';
 import { CreateHobbyDto } from './dto/create-hobby.dto';
 import { CreateFeatureDto } from './dto/create-feature.dto';
+import { Profile } from './data/profile.type';
 
 @Injectable()
 export class UserService {
@@ -20,12 +21,6 @@ export class UserService {
     const user = await this.prisma.user.findUnique({
       where: {
         username,
-      },
-      include: {
-        speaking: true,
-        wishToSpeak: true,
-        hobbies: true,
-        features: true,
       },
     });
 
@@ -505,6 +500,46 @@ export class UserService {
         hobbies,
         features,
       },
+    };
+  }
+
+  async getProfileByUsername(username: string): AsyncResult<Profile> {
+    const queryResult = await this.prisma.user.findUnique({
+      where: {
+        username,
+      },
+      include: {
+        speaking: true,
+        wishToSpeak: true,
+        features: true,
+        hobbies: true,
+        _count: {
+          select: {
+            followers: true,
+            following: true,
+            posts: true,
+          },
+        },
+      },
+    });
+
+    if (!queryResult) {
+      return {
+        exception: new HttpException('Cannot get profile', 400),
+      };
+    }
+
+    const { _count: count, ...rest } = queryResult;
+
+    const profile: Profile = {
+      ...rest,
+      followersCount: count.followers,
+      followingCount: count.following,
+      postsCount: count.posts,
+    };
+
+    return {
+      data: profile,
     };
   }
 
