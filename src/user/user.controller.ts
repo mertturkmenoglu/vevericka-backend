@@ -14,9 +14,9 @@ import {
 import { ApiConsumes, ApiProduces, ApiTags } from '@nestjs/swagger';
 import { Feature, Hobby, Language, Speaking, User, WishToSpeak } from '@prisma/client';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
-import { Followee } from './data/followee.type';
-import { Follower } from './data/follower.type';
-import { Profile } from './data/profile.type';
+import { Followee } from './types/followee.type';
+import { Follower } from './types/follower.type';
+import { Profile } from './types/profile.type';
 import { CreateFeatureDto } from './dto/create-feature.dto';
 import { CreateHobbyDto } from './dto/create-hobby.dto';
 import { CreateSpeakingLanguageDto } from './dto/create-speaking-language.dto';

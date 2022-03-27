@@ -3,15 +3,15 @@ import { AsyncResult } from '../types/AsyncResult';
 import { SetProfilePictureDto } from './dto/set-profile-picture.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { Feature, Hobby, Language, Speaking, User, WishToSpeak } from '@prisma/client';
-import { Follower } from './data/follower.type';
+import { Follower } from './types/follower.type';
 import FollowUserDto from 'dist/v2/dto/FollowUserDto';
 import { UnfollowUserDto } from './dto/unfollow-user.dto';
-import { Followee } from './data/followee.type';
+import { Followee } from './types/followee.type';
 import { CreateSpeakingLanguageDto } from './dto/create-speaking-language.dto';
 import { CreateWishToSpeakLanguageDto } from './dto/create-wish-to-speak-language.dto';
 import { CreateHobbyDto } from './dto/create-hobby.dto';
 import { CreateFeatureDto } from './dto/create-feature.dto';
-import { Profile } from './data/profile.type';
+import { Profile } from './types/profile.type';
 
 @Injectable()
 export class UserService {
@@ -224,7 +224,6 @@ export class UserService {
         data: queryResult,
       };
     } catch (e) {
-      console.log(e, JSON.stringify(e));
       return {
         exception: new HttpException('Db error', 500),
       };

@@ -27,7 +27,6 @@ export class AssetService {
       const response = await firstValueFrom(observable);
       return response.data;
     } catch (e) {
-      console.log('error happened', e);
       return null;
     }
   }

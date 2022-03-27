@@ -21,7 +21,6 @@ export class AssetController {
     description: 'Get direct creator upload link',
   })
   async getUploadLink(): Promise<IUploadLink> {
-    console.log('getUploadLink called');
     const uploadLink = await this.assetService.getUploadLink();
 
     if (uploadLink === null) {
