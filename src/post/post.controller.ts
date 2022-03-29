@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   HttpCode,
   NotFoundException,
@@ -11,13 +12,14 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { ApiTags, ApiConsumes, ApiProduces } from '@nestjs/swagger';
-import { Post } from '@prisma/client';
+import { Comment, Post } from '@prisma/client';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { MinimalUserResponse } from 'src/types/MinimalUserResponse';
 import { PaginatedResults } from 'src/types/PaginatedResult';
 import { PaginationQuery } from 'src/types/PaginationQuery';
 import { RequestUser } from 'src/user/types/request-user.type';
 import { User } from 'src/user/user.decorator';
+import { CreateCommentDto } from './dto/create-comment.dto';
 import { CreatePostDto } from './dto/create-post.dto';
 import { PostService } from './post.service';
 import { LikeStatus } from './types/like-status.enum';
@@ -175,5 +177,47 @@ export class PostController {
     }
 
     return data;
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Get('/:id/comments')
+  async getPostComments(
+    @Param('id', ParseIntPipe) postId: number,
+    @Query() paginationQuery: PaginationQuery,
+  ): Promise<PaginatedResults<Comment[]>> {
+    const { data, exception } = await this.postService.getPostComments(postId, paginationQuery);
+
+    if (!data) {
+      throw exception;
+    }
+
+    return data;
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @PostMapping('/:id/comment/')
+  @HttpCode(201)
+  async createComment(
+    @Param('id', ParseIntPipe) postId: number,
+    @Body() dto: CreateCommentDto,
+  ): Promise<Comment> {
+    const { data, exception } = await this.postService.createComment(postId, dto);
+
+    if (!data) {
+      throw exception;
+    }
+
+    return data;
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Delete('/comment/:commentId')
+  @HttpCode(204)
+  async deleteComment(@Param('commentId', ParseIntPipe) commentId: number): Promise<void> {
+    const { data, exception } = await this.postService.deleteComment(commentId);
+
+    if (!data) {
+      throw exception;
+    }
   }
 }

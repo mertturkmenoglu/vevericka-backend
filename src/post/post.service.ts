@@ -2,13 +2,14 @@ import { HttpException, Injectable } from '@nestjs/common';
 import { CreatePostDto } from './dto/create-post.dto';
 import { UserService } from '../user/user.service';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { Post } from '@prisma/client';
+import { Comment, Post } from '@prisma/client';
 import { SinglePost } from './types/single-post.type';
 import { AsyncResult } from 'src/types/AsyncResult';
 import { LikeStatus } from './types/like-status.enum';
 import { PaginationQuery } from 'src/types/PaginationQuery';
 import { PaginatedResults } from 'src/types/PaginatedResult';
 import { MinimalUserResponse } from 'src/types/MinimalUserResponse';
+import { CreateCommentDto } from './dto/create-comment.dto';
 
 @Injectable()
 export class PostService {
@@ -419,6 +420,90 @@ export class PostService {
         data: queryResult.dislikes,
         pagination: paginationQuery.getPaginationMeta(queryResult._count.dislikes),
       },
+    };
+  }
+
+  async getPostComments(
+    postId: number,
+    paginationQuery: PaginationQuery,
+  ): AsyncResult<PaginatedResults<Comment[]>> {
+    const [queryResult, totalRecords] = await this.prisma.$transaction([
+      this.prisma.comment.findMany({
+        where: {
+          postId,
+        },
+        orderBy: {
+          createdAt: paginationQuery.order,
+        },
+        skip: paginationQuery.pageSize * (paginationQuery.page - 1),
+        take: paginationQuery.pageSize,
+        include: {
+          user: {
+            select: {
+              id: true,
+              name: true,
+              username: true,
+              image: true,
+            },
+          },
+        },
+      }),
+      this.prisma.comment.count({
+        where: {
+          postId,
+        },
+      }),
+    ]);
+
+    return {
+      data: {
+        data: queryResult,
+        pagination: paginationQuery.getPaginationMeta(totalRecords),
+      },
+    };
+  }
+
+  async createComment(postId: number, dto: CreateCommentDto): AsyncResult<Comment> {
+    const result = await this.prisma.comment.create({
+      data: {
+        content: dto.content,
+        user: {
+          connect: {
+            username: dto.username,
+          },
+        },
+        post: {
+          connect: {
+            id: postId,
+          },
+        },
+      },
+      include: {
+        user: {
+          select: {
+            id: true,
+            name: true,
+            username: true,
+            image: true,
+          },
+        },
+      },
+    });
+
+    return {
+      data: result,
+    };
+  }
+
+  async deleteComment(commentId: number): AsyncResult<boolean> {
+    await this.prisma.comment.delete({
+      where: {
+        id: commentId,
+      },
+    });
+
+    return {
+      data: true,
     };
   }
 }

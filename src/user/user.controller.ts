@@ -10,6 +10,7 @@ import {
   HttpCode,
   Delete,
   ParseIntPipe,
+  Put,
 } from '@nestjs/common';
 import { ApiConsumes, ApiProduces, ApiTags } from '@nestjs/swagger';
 import { Feature, Hobby, Language, Speaking, User, WishToSpeak } from '@prisma/client';
@@ -25,6 +26,7 @@ import { FollowUserDto } from './dto/follow-user.dto';
 import { SetProfilePictureDto } from './dto/set-profile-picture.dto';
 import { UnfollowUserDto } from './dto/unfollow-user.dto';
 import { UserService } from './user.service';
+import { UpdateProfileDto as UpdatePublicDto } from './dto/update-profile.dto';
 
 @ApiTags('user')
 @ApiConsumes('application/json')
@@ -287,6 +289,24 @@ export class UserController {
   @Get('/:username/profile')
   async getProfileByUsername(@Param('username') username: string): Promise<Profile> {
     const { data, exception } = await this.userService.getProfileByUsername(username);
+
+    if (!data) {
+      throw exception;
+    }
+
+    return data;
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Put('/:username/public')
+  async updatePublicInformationByUsername(
+    @Param('username') username: string,
+    @Body() dto: UpdatePublicDto,
+  ): Promise<Profile> {
+    const { data, exception } = await this.userService.updatePublicInformationByUsername(
+      username,
+      dto,
+    );
 
     if (!data) {
       throw exception;

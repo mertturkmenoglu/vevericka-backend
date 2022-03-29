@@ -12,6 +12,7 @@ import { CreateWishToSpeakLanguageDto } from './dto/create-wish-to-speak-languag
 import { CreateHobbyDto } from './dto/create-hobby.dto';
 import { CreateFeatureDto } from './dto/create-feature.dto';
 import { Profile } from './types/profile.type';
+import { UpdateProfileDto } from './dto/update-profile.dto';
 
 @Injectable()
 export class UserService {
@@ -539,6 +540,50 @@ export class UserService {
 
     return {
       data: profile,
+    };
+  }
+
+  async updatePublicInformationByUsername(
+    username: string,
+    dto: UpdateProfileDto,
+  ): AsyncResult<Profile> {
+    const result = await this.prisma.user.update({
+      where: {
+        username,
+      },
+      data: {
+        ...dto,
+      },
+      include: {
+        speaking: true,
+        wishToSpeak: true,
+        features: true,
+        hobbies: true,
+        _count: {
+          select: {
+            followers: true,
+            following: true,
+            posts: true,
+          },
+        },
+      },
+    });
+
+    if (!result) {
+      return {
+        exception: new HttpException('Cannot update user profile', 400),
+      };
+    }
+
+    const { _count: count, ...rest } = result;
+
+    return {
+      data: {
+        ...rest,
+        followersCount: count.followers,
+        followingCount: count.following,
+        postsCount: count.posts,
+      },
     };
   }
 
