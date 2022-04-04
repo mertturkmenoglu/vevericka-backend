@@ -8,6 +8,7 @@ import { ExploreModule } from './explore/explore.module';
 import { PostModule } from './post/post.module';
 import { BlogModule } from './blog/blog.module';
 import { AssetModule } from './asset/asset.module';
+import { AlgoliaModule } from './algolia/algolia.module';
 
 @Module({
   imports: [
@@ -26,6 +27,7 @@ import { AssetModule } from './asset/asset.module';
     PostModule,
     BlogModule,
     AssetModule,
+    AlgoliaModule,
   ],
   controllers: [],
   providers: [],
