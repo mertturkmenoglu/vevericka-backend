@@ -9,7 +9,7 @@ import { SetProfilePictureDto } from './dto/set-profile-picture.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { Feature, Hobby, Language, Speaking, User, WishToSpeak } from '@prisma/client';
 import { Follower } from './types/follower.type';
-import FollowUserDto from 'dist/v2/dto/FollowUserDto';
+import { FollowUserDto } from './dto/follow-user.dto';
 import { UnfollowUserDto } from './dto/unfollow-user.dto';
 import { Followee } from './types/followee.type';
 import { CreateSpeakingLanguageDto } from './dto/create-speaking-language.dto';
