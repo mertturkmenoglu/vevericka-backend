@@ -1,4 +1,12 @@
-import { IsLowercase, MaxLength, MinLength, IsString, IsNotEmpty } from 'class-validator';
+import {
+  IsLowercase,
+  MaxLength,
+  MinLength,
+  IsString,
+  IsNotEmpty,
+  IsArray,
+  ArrayMaxSize,
+} from 'class-validator';
 
 export class CreatePostDto {
   @MaxLength(32)
@@ -12,4 +20,24 @@ export class CreatePostDto {
   @IsNotEmpty()
   @IsString()
   content!: string;
+
+  @IsArray()
+  @MinLength(1, {
+    each: true,
+  })
+  @IsString({
+    each: true,
+  })
+  @ArrayMaxSize(4)
+  images!: string[];
+
+  @IsArray()
+  @MinLength(1, {
+    each: true,
+  })
+  @IsString({
+    each: true,
+  })
+  @ArrayMaxSize(2)
+  videos!: string[];
 }

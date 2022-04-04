@@ -100,22 +100,24 @@ model Feature {
 
 model Post {
   // Primary Key
-  id        Int       @id @default(autoincrement())
+  id        Int         @id @default(autoincrement())
   
   // Scalar Values
-  content   String    @db.VarChar(255)
+  content   String      @db.VarChar(255)
 
   // Relations
-  user      User      @relation(name: "UserPosts", fields: [userId], references: [id], onDelete: Cascade)
+  user      User        @relation(name: "UserPosts", fields: [userId], references: [id], onDelete: Cascade)
   userId    Int
-  dislikes  User[]    @relation(name: "UserDislikes")
-  likes     User[]    @relation(name: "UserLikes")
+  dislikes  User[]      @relation(name: "UserDislikes")
+  likes     User[]      @relation(name: "UserLikes")
   tags      Tag[]
-  comments  Comment[] @relation(name: "PostComments")
+  comments  Comment[]   @relation(name: "PostComments")
+  images    PostImage[] @relation(name: "PostImages")
+  videos    PostVideo[] @relation(name: "PostVideos")
 
   // Meta
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
+  createdAt DateTime    @default(now())
+  updatedAt DateTime    @updatedAt
 }
 
 model Comment {
@@ -152,6 +154,38 @@ model Tag {
 
   // Indices
   @@index(tagName)
+}
+
+model PostImage {
+  // Primary Key
+  id        Int       @id @default(autoincrement())
+
+  // Scalar Values
+  url       String
+
+  // Relations
+  post      Post      @relation(name: "PostImages", fields: [postId], references: [id], onDelete: Cascade)
+  postId    Int
+
+  // Meta
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+}
+
+model PostVideo {
+  // Primary Key
+  id        Int       @id @default(autoincrement())
+
+  // Scalar Values
+  url       String
+
+  // Relations
+  post      Post      @relation(name: "PostVideos", fields: [postId], references: [id], onDelete: Cascade)
+  postId    Int
+
+  // Meta
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
 }
 
 ///

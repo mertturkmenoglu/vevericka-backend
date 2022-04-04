@@ -15,7 +15,14 @@ import { CreateCommentDto } from './dto/create-comment.dto';
 export class PostService {
   constructor(private readonly prisma: PrismaService, private readonly userService: UserService) {}
 
+  /**
+   * Get a post with the given id, populate relational fields and check the LikeStatus
+   * @param id is the post id
+   * @param thisUsername is the username of the user performing the request
+   * @returns a SinglePost object (async result)
+   */
   async getPostById(id: number, thisUsername: string): AsyncResult<SinglePost> {
+    // Get post and populate relational fields
     const post = await this.prisma.post.findUnique({
       where: {
         id,
@@ -32,6 +39,8 @@ export class PostService {
             protected: true,
           },
         },
+        images: true,
+        videos: true,
         _count: {
           select: {
             comments: true,
@@ -43,6 +52,7 @@ export class PostService {
       },
     });
 
+    // Find whether this post was liked/disliked by the person performing the query
     const likeQueryResult = await this.prisma.post.findUnique({
       where: {
         id,
@@ -83,6 +93,9 @@ export class PostService {
 
     const { _count: count, ...rest } = post;
 
+    // Merge all the information.
+    // This service method should always retun SinglePost object.
+    // Keep up to date with the data model.
     const singlePost: SinglePost = {
       ...rest,
       commentsCount: count.comments,
@@ -114,6 +127,20 @@ export class PostService {
             id: user.id,
           },
         },
+        images: {
+          createMany: {
+            data: dto.images.map((image) => ({
+              url: image,
+            })),
+          },
+        },
+        videos: {
+          createMany: {
+            data: dto.videos.map((video) => ({
+              url: video,
+            })),
+          },
+        },
       },
       include: {
         tags: true,
@@ -127,6 +154,8 @@ export class PostService {
             protected: true,
           },
         },
+        images: true,
+        videos: true,
         _count: {
           select: {
             comments: true,
@@ -169,6 +198,9 @@ export class PostService {
         skip: paginationQuery.pageSize * (paginationQuery.page - 1),
         take: paginationQuery.pageSize,
         include: {
+          tags: true,
+          images: true,
+          videos: true,
           _count: {
             select: {
               comments: true,
@@ -215,14 +247,14 @@ export class PostService {
     }
 
     const { following } = followingQueryResult;
-    following.push({ username });
+    const followingAndUser = [...following, { username }];
 
     const [feed, totalRecords] = await this.prisma.$transaction([
       this.prisma.post.findMany({
         where: {
           user: {
             username: {
-              in: [...following.map((u) => u.username)],
+              in: [...followingAndUser.map((u) => u.username)],
             },
           },
         },
@@ -232,6 +264,8 @@ export class PostService {
         skip: paginationQuery.pageSize * (paginationQuery.page - 1),
         take: paginationQuery.pageSize,
         include: {
+          images: true,
+          videos: true,
           _count: {
             select: {
               comments: true,

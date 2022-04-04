@@ -1,8 +1,9 @@
-import { Post, Tag } from '@prisma/client';
+import { Post, PostImage, Tag } from '@prisma/client';
 import { LikeStatus } from './like-status.enum';
 
 export type SinglePost = Post & {
   tags: Tag[];
+  images: PostImage[];
   user: {
     id: number;
     username: string;
