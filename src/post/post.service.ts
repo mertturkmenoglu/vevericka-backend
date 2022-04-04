@@ -2,7 +2,7 @@ import { HttpException, Injectable } from '@nestjs/common';
 import { CreatePostDto } from './dto/create-post.dto';
 import { UserService } from '../user/user.service';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { Comment, Post } from '@prisma/client';
+import { Comment, Post, User } from '@prisma/client';
 import { SinglePost } from './types/single-post.type';
 import { AsyncResult } from 'src/types/AsyncResult';
 import { LikeStatus } from './types/like-status.enum';
@@ -77,13 +77,7 @@ export class PostService {
       };
     }
 
-    const likeMapping = {
-      like: likeQueryResult.likes.length > 0,
-      dislike: likeQueryResult.dislikes.length > 0,
-    };
-
-    // eslint-disable-next-line prettier/prettier
-    const likeStatus = likeMapping.like ? LikeStatus.LIKED : (likeMapping.dislike ? LikeStatus.DISLIKED : LikeStatus.NONE);
+    const likeStatus = this.getLikeStatus(likeQueryResult.likes, likeQueryResult.dislikes);
 
     if (!post) {
       return {
@@ -261,7 +255,7 @@ export class PostService {
     const { following } = followingQueryResult;
     const followingAndUser = [...following, { username }];
 
-    const [feed, totalRecords] = await this.prisma.$transaction([
+    const [feedResult, totalRecords] = await this.prisma.$transaction([
       this.prisma.post.findMany({
         where: {
           user: {
@@ -296,6 +290,16 @@ export class PostService {
               verified: true,
             },
           },
+          likes: {
+            where: {
+              username,
+            },
+          },
+          dislikes: {
+            where: {
+              username,
+            },
+          },
         },
       }),
       this.prisma.post.count({
@@ -308,6 +312,16 @@ export class PostService {
         },
       }),
     ]);
+
+    const feed = feedResult.map((post) => {
+      const { likes, dislikes, ...postRest } = post;
+      const likeStatus = this.getLikeStatus(likes, dislikes);
+
+      return {
+        ...postRest,
+        likeStatus,
+      };
+    });
 
     return {
       data: {
@@ -551,5 +565,22 @@ export class PostService {
     return {
       data: true,
     };
+  }
+
+  private getLikeStatus(likes: User[], dislikes: User[]): LikeStatus {
+    const likeMapping = {
+      like: likes.length > 0,
+      dislike: dislikes.length > 0,
+    };
+
+    if (likeMapping.like) {
+      return LikeStatus.LIKED;
+    }
+
+    if (likeMapping.dislike) {
+      return LikeStatus.DISLIKED;
+    }
+
+    return LikeStatus.NONE;
   }
 }
