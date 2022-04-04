@@ -1,4 +1,4 @@
-export interface IUploadLinkResponse {
+export interface UploadLinkResponse {
   result: {
     id: string;
     uploadURL: string;

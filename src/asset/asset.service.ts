@@ -1,7 +1,7 @@
 import { HttpService } from '@nestjs/axios';
 import { Injectable } from '@nestjs/common';
 import { firstValueFrom } from 'rxjs';
-import { IUploadLinkResponse } from './models/upload-link-response.model';
+import { UploadLinkResponse } from './types/upload-link-response.type';
 
 @Injectable()
 export class AssetService {
@@ -10,11 +10,11 @@ export class AssetService {
 
   constructor(private readonly http: HttpService) {}
 
-  async getUploadLink(): Promise<IUploadLinkResponse | null> {
+  async getUploadLink(): Promise<UploadLinkResponse | null> {
     const url = `${this.API_BASE_URL}/direct_upload`;
 
     try {
-      const observable = this.http.post<IUploadLinkResponse>(
+      const observable = this.http.post<UploadLinkResponse>(
         url,
         {},
         {
