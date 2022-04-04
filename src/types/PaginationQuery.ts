@@ -54,12 +54,15 @@ export class PaginationQuery {
   }
 
   getPaginationMeta(totalRecords: number): Pagination {
+    const totalPages = Math.ceil(totalRecords / this.pageSize);
     return {
       currentPage: this.page,
       pageSize: this.pageSize,
-      totalPages: Math.ceil(totalRecords / this.pageSize),
+      totalPages,
       totalRecords: totalRecords,
       order: this.order,
+      hasPrevPage: this.page > 1,
+      hasNextPage: this.page < totalPages,
     };
   }
 }
