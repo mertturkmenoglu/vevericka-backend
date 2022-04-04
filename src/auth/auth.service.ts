@@ -4,12 +4,18 @@ import * as argon2 from 'argon2';
 import { RegisterDto } from './dto/register.dto';
 import { AsyncResult } from 'src/types/AsyncResult';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { Auth, User } from '@prisma/client';
+import { Auth } from '@prisma/client';
+import { AlgoliaService } from 'src/algolia/algolia.service';
+import { AuthWithoutPassword } from './types/auth-without-password.type';
+import { AuthWithUser } from './types/auth-with-user.type';
 
 @Injectable()
 export class AuthService {
-  // eslint-disable-next-line prettier/prettier
-  constructor(private readonly prisma: PrismaService, private jwtService: JwtService) { }
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly jwtService: JwtService,
+    private readonly algoliaService: AlgoliaService,
+  ) {}
 
   async doesUserExist(username: string, email: string): AsyncResult<boolean> {
     const user = await this.prisma.auth.count({
@@ -32,7 +38,7 @@ export class AuthService {
     };
   }
 
-  async saveUser(dto: RegisterDto): AsyncResult<Omit<Auth, 'password'>> {
+  async saveUser(dto: RegisterDto): AsyncResult<AuthWithoutPassword> {
     const hashed = await argon2.hash(dto.password, { type: argon2.argon2i });
 
     const saved = await this.prisma.auth.create({
@@ -48,21 +54,31 @@ export class AuthService {
           },
         },
       },
+      include: {
+        user: true,
+      },
     });
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { password, ...rest } = saved;
+    const { user, ...auth } = rest;
+
+    // Update Algolia user index
+    await this.algoliaService.saveUser({
+      id: auth.userId,
+      name: user.name,
+      username: user.username,
+      image: user.image,
+      protected: user.protected,
+      verified: user.verified,
+    });
 
     return {
-      data: rest,
+      data: auth,
     };
   }
 
-  async findUserByEmail(email: string): AsyncResult<
-    Auth & {
-      user: User;
-    }
-  > {
+  async findUserByEmail(email: string): AsyncResult<AuthWithUser> {
     const user = await this.prisma.auth.findUnique({
       where: {
         email,

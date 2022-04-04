@@ -24,7 +24,7 @@ import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
 // import { LocalAuthGuard } from './guards/local-auth.guard';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
-import { Auth } from '@prisma/client';
+import { AuthWithoutPassword } from './types/auth-without-password.type';
 
 @ApiTags('auth')
 @ApiConsumes('application/json')
@@ -39,7 +39,7 @@ export class AuthController {
   @Post('register')
   @ApiCreatedResponse({ status: 201, description: 'User registered successfully' })
   @ApiBadRequestResponse({ status: 400 })
-  async register(@Body() dto: RegisterDto): Promise<Omit<Auth, 'password'>> {
+  async register(@Body() dto: RegisterDto): Promise<AuthWithoutPassword> {
     const isBetaCodeOk = this.authService.checkBetaCode(dto.betaCode);
 
     if (!isBetaCodeOk) {
