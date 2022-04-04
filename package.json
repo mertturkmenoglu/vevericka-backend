@@ -42,6 +42,7 @@
     "@nestjs/typeorm": "^8.0.2",
     "@prisma/client": "^3.11.0",
     "@sendgrid/mail": "^7.4.2",
+    "algoliasearch": "^4.13.0",
     "argon2": "^0.27.1",
     "cache-manager": "^3.6.0",
     "chalk": "^4.1.0",
