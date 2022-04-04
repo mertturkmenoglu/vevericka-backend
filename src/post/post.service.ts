@@ -110,6 +110,18 @@ export class PostService {
     };
   }
 
+  async deletePostById(id: number): AsyncResult<boolean> {
+    await this.prisma.post.delete({
+      where: {
+        id,
+      },
+    });
+
+    return {
+      data: true,
+    };
+  }
+
   async createPost(dto: CreatePostDto): AsyncResult<SinglePost> {
     const { data: user, exception } = await this.userService.getUserByUsername(dto.username);
 

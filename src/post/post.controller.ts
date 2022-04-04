@@ -50,6 +50,17 @@ export class PostController {
     return data;
   }
 
+  @UseGuards(JwtAuthGuard)
+  @Delete('/:id')
+  @HttpCode(204)
+  async deletePostById(@Param('id', ParseIntPipe) id: number): Promise<void> {
+    const { data, exception } = await this.postService.deletePostById(id);
+
+    if (!data) {
+      throw exception;
+    }
+  }
+
   @PostMapping('/')
   async createPost(@Body() dto: CreatePostDto): Promise<SinglePost> {
     const { data, exception } = await this.postService.createPost(dto);
