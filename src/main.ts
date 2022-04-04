@@ -34,7 +34,9 @@ async function bootstrap() {
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('docs', app, document);
 
-  app.setGlobalPrefix('api');
+  if (process.env.NODE_ENV !== 'production') {
+    app.setGlobalPrefix('api');
+  }
 
   app.useGlobalPipes(
     new ValidationPipe({
