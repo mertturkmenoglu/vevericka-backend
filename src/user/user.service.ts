@@ -18,7 +18,7 @@ import { CreateHobbyDto } from './dto/create-hobby.dto';
 import { CreateFeatureDto } from './dto/create-feature.dto';
 import { Profile } from './types/profile.type';
 import { UpdateProfileDto } from './dto/update-profile.dto';
-import { updateAlgoliaSearchIndex } from './dto/update-algolia-search-index.dto';
+import { UpdateAlgoliaSearchIndex } from './dto/update-algolia-search-index.dto';
 import { AlgoliaService } from 'src/algolia/algolia.service';
 
 @Injectable()
@@ -28,7 +28,7 @@ export class UserService {
     private readonly algoliaService: AlgoliaService,
   ) {}
 
-  async updateAlgoliaSearchIndex(dto: updateAlgoliaSearchIndex): AsyncResult<boolean> {
+  async updateAlgoliaSearchIndex(dto: UpdateAlgoliaSearchIndex): AsyncResult<boolean> {
     if (
       dto.adminKey !== process.env.ALGOLIA_ADMIN_KEY ||
       dto.applicationId !== process.env.ALGOLIA_APPLICATION_ID

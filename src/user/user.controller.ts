@@ -27,7 +27,7 @@ import { SetProfilePictureDto } from './dto/set-profile-picture.dto';
 import { UnfollowUserDto } from './dto/unfollow-user.dto';
 import { UserService } from './user.service';
 import { UpdateProfileDto as UpdatePublicDto } from './dto/update-profile.dto';
-import { updateAlgoliaSearchIndex } from './dto/update-algolia-search-index.dto';
+import { UpdateAlgoliaSearchIndex } from './dto/update-algolia-search-index.dto';
 
 @ApiTags('user')
 @ApiConsumes('application/json')
@@ -42,7 +42,7 @@ export class UserController {
 
   @UseGuards(JwtAuthGuard)
   @PostMapping('/algolia')
-  async updateAlgoliaSearchIndex(@Body() dto: updateAlgoliaSearchIndex): Promise<boolean> {
+  async updateAlgoliaSearchIndex(@Body() dto: UpdateAlgoliaSearchIndex): Promise<boolean> {
     const { data, exception } = await this.userService.updateAlgoliaSearchIndex(dto);
 
     if (!data) {
