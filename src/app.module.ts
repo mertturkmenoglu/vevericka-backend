@@ -1,6 +1,6 @@
-import { CacheModule, Module } from '@nestjs/common';
+import { CacheInterceptor, CacheModule, Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
-import { ThrottlerModule } from '@nestjs/throttler';
+import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 import { AuthModule } from './auth/auth.module';
 import { UserModule } from './user/user.module';
 import { BookmarkModule } from './bookmark/bookmark.module';
@@ -9,6 +9,7 @@ import { PostModule } from './post/post.module';
 import { BlogModule } from './blog/blog.module';
 import { AssetModule } from './asset/asset.module';
 import { AlgoliaModule } from './algolia/algolia.module';
+import { APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
 
 @Module({
   imports: [
@@ -19,7 +20,11 @@ import { AlgoliaModule } from './algolia/algolia.module';
       ttl: 60,
       limit: 10,
     }),
-    CacheModule.register(),
+    CacheModule.register({
+      isGlobal: true,
+      ttl: 30, // seconds
+      max: 50, // maximum number of items in cache
+    }),
     AuthModule,
     UserModule,
     BookmarkModule,
@@ -30,6 +35,15 @@ import { AlgoliaModule } from './algolia/algolia.module';
     AlgoliaModule,
   ],
   controllers: [],
-  providers: [],
+  providers: [
+    {
+      provide: APP_INTERCEPTOR,
+      useClass: CacheInterceptor,
+    },
+    {
+      provide: APP_GUARD,
+      useClass: ThrottlerGuard,
+    },
+  ],
 })
 export class AppModule {}
