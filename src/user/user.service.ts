@@ -20,6 +20,8 @@ import { Profile } from './types/profile.type';
 import { UpdateProfileDto } from './dto/update-profile.dto';
 import { UpdateAlgoliaSearchIndex } from './dto/update-algolia-search-index.dto';
 import { AlgoliaService } from 'src/algolia/algolia.service';
+import { RequestUser } from './types/request-user.type';
+import { ProfileOmitted } from './types/profile-omitted.type';
 
 @Injectable()
 export class UserService {
@@ -551,39 +553,57 @@ export class UserService {
     };
   }
 
-  async getProfileByUsername(username: string): AsyncResult<Profile> {
-    const queryResult = await this.prisma.user.findUnique({
-      where: {
-        username,
-      },
-      include: {
-        speaking: true,
-        wishToSpeak: true,
-        features: true,
-        hobbies: true,
-        _count: {
-          select: {
-            followers: true,
-            following: true,
-            posts: true,
+  async getProfileByUsername(username: string, requestUser: RequestUser): AsyncResult<Profile> {
+    const [profileQuery, followingQuery] = await this.prisma.$transaction([
+      this.prisma.user.findUnique({
+        where: {
+          username,
+        },
+        include: {
+          speaking: true,
+          wishToSpeak: true,
+          features: true,
+          hobbies: true,
+          _count: {
+            select: {
+              followers: true,
+              following: true,
+              posts: true,
+            },
           },
         },
-      },
-    });
+      }),
+      this.prisma.user.findUnique({
+        where: {
+          username: requestUser.username,
+        },
+        include: {
+          following: {
+            where: {
+              username,
+            },
+          },
+        },
+      }),
+    ]);
 
-    if (!queryResult) {
+    if (!profileQuery || !followingQuery) {
       return {
         exception: new HttpException('Cannot get profile', 400),
       };
     }
 
-    const { _count: count, ...rest } = queryResult;
+    const { _count: count, ...rest } = profileQuery;
+    const { following } = followingQuery;
+    const isFollowedByThisUser = following.length > 0;
 
     const profile: Profile = {
       ...rest,
       followersCount: count.followers,
       followingCount: count.following,
       postsCount: count.posts,
+      isThisUser: rest.username === requestUser.username,
+      isFollowedByThisUser,
     };
 
     return {
@@ -594,7 +614,7 @@ export class UserService {
   async updatePublicInformationByUsername(
     username: string,
     dto: UpdateProfileDto,
-  ): AsyncResult<Profile> {
+  ): AsyncResult<ProfileOmitted> {
     const result = await this.prisma.user.update({
       where: {
         username,

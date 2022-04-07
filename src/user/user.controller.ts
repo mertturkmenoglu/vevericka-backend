@@ -28,6 +28,9 @@ import { UnfollowUserDto } from './dto/unfollow-user.dto';
 import { UserService } from './user.service';
 import { UpdateProfileDto as UpdatePublicDto } from './dto/update-profile.dto';
 import { UpdateAlgoliaSearchIndex } from './dto/update-algolia-search-index.dto';
+import { User as UserFromRequest } from './user.decorator';
+import { RequestUser } from './types/request-user.type';
+import { ProfileOmitted } from './types/profile-omitted.type';
 
 @ApiTags('user')
 @ApiConsumes('application/json')
@@ -300,8 +303,11 @@ export class UserController {
 
   @UseGuards(JwtAuthGuard)
   @Get('/:username/profile')
-  async getProfileByUsername(@Param('username') username: string): Promise<Profile> {
-    const { data, exception } = await this.userService.getProfileByUsername(username);
+  async getProfileByUsername(
+    @Param('username') username: string,
+    @UserFromRequest() requestUser: RequestUser,
+  ): Promise<Profile> {
+    const { data, exception } = await this.userService.getProfileByUsername(username, requestUser);
 
     if (!data) {
       throw exception;
@@ -315,7 +321,7 @@ export class UserController {
   async updatePublicInformationByUsername(
     @Param('username') username: string,
     @Body() dto: UpdatePublicDto,
-  ): Promise<Profile> {
+  ): Promise<ProfileOmitted> {
     const { data, exception } = await this.userService.updatePublicInformationByUsername(
       username,
       dto,
