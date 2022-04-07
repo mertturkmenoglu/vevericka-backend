@@ -8,4 +8,6 @@ export type Profile = Partial<User> & {
   followersCount: number;
   followingCount: number;
   postsCount: number;
+  isFollowedByThisUser: boolean;
+  isThisUser: boolean;
 };
