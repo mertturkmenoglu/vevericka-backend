@@ -180,6 +180,12 @@ export class AuthService {
       },
     });
 
+    await this.prisma.user.delete({
+      where: {
+        username,
+      },
+    });
+
     return {
       data: true,
     };

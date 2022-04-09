@@ -16,7 +16,7 @@ model Auth {
   password  String    @db.VarChar(256)
 
   // Relations
-  user      User      @relation(fields: [userId], references: [id])
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId    Int
 
   // Meta
