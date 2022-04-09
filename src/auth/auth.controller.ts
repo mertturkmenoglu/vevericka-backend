@@ -9,6 +9,8 @@ import {
   UseGuards,
   Param,
   InternalServerErrorException,
+  HttpCode,
+  Delete,
 } from '@nestjs/common';
 import {
   ApiTags,
@@ -116,5 +118,17 @@ export class AuthController {
   @ApiBearerAuth()
   getAuthTest(@Param('email') email: string) {
     return this.authService.get(email);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Delete('/:username')
+  @ApiBearerAuth()
+  @HttpCode(204)
+  async deleteUser(@Param('username') username: string): Promise<void> {
+    const { data, exception } = await this.authService.deleteUser(username);
+
+    if (!data) {
+      throw exception;
+    }
   }
 }

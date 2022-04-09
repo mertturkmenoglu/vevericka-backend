@@ -148,6 +148,43 @@ export class AuthService {
     };
   }
 
+  async deleteUser(username: string): AsyncResult<boolean> {
+    console.log('auth service', { username });
+    const userFromUserTable = await this.prisma.user.findUnique({
+      where: {
+        username,
+      },
+    });
+
+    if (!userFromUserTable) {
+      return {
+        exception: new NotFoundException(`User not found: ${username}`),
+      };
+    }
+
+    const user = await this.prisma.auth.findUnique({
+      where: {
+        email: userFromUserTable.email,
+      },
+    });
+
+    if (!user) {
+      return {
+        exception: new NotFoundException(`User not found: ${username}`),
+      };
+    }
+
+    await this.prisma.auth.delete({
+      where: {
+        email: user.email,
+      },
+    });
+
+    return {
+      data: true,
+    };
+  }
+
   checkBetaCode(betaCode: string): boolean {
     return betaCode === process.env.BETA_REGISTER_CODE;
   }
