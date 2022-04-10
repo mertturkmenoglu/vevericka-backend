@@ -75,6 +75,7 @@ export class PostController {
       throw exception;
     }
 
+    await this.cacheManager.reset();
     return data;
   }
 
