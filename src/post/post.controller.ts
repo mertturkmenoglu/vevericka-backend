@@ -1,9 +1,11 @@
 import {
   Body,
+  CACHE_MANAGER,
   Controller,
   Delete,
   Get,
   HttpCode,
+  Inject,
   NotFoundException,
   Param,
   ParseIntPipe,
@@ -24,6 +26,7 @@ import { CreatePostDto } from './dto/create-post.dto';
 import { PostService } from './post.service';
 import { LikeStatus } from './types/like-status.enum';
 import { SinglePost } from './types/single-post.type';
+import { Cache } from 'cache-manager';
 
 @ApiTags('post')
 @ApiConsumes('application/json')
@@ -33,7 +36,10 @@ import { SinglePost } from './types/single-post.type';
   path: 'post',
 })
 export class PostController {
-  constructor(private readonly postService: PostService) {}
+  constructor(
+    private readonly postService: PostService,
+    @Inject(CACHE_MANAGER) private readonly cacheManager: Cache,
+  ) {}
 
   @UseGuards(JwtAuthGuard)
   @Get('/:id')
@@ -122,6 +128,8 @@ export class PostController {
     if (!data) {
       throw exception;
     }
+
+    await this.cacheManager.reset();
   }
 
   @UseGuards(JwtAuthGuard)
@@ -140,6 +148,8 @@ export class PostController {
     if (!data) {
       throw exception;
     }
+
+    await this.cacheManager.reset();
   }
 
   @UseGuards(JwtAuthGuard)
@@ -158,6 +168,8 @@ export class PostController {
     if (!data) {
       throw exception;
     }
+
+    await this.cacheManager.reset();
   }
 
   @UseGuards(JwtAuthGuard)
