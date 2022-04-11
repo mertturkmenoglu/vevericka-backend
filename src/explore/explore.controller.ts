@@ -1,5 +1,6 @@
-import { Controller, Get, Param, UseGuards } from '@nestjs/common';
+import { Controller, Get, Param, Query, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth, ApiConsumes, ApiOkResponse, ApiProduces, ApiTags } from '@nestjs/swagger';
+import { PaginationQuery } from 'src/types/PaginationQuery';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { ExploreService } from './explore.service';
 
@@ -18,25 +19,49 @@ export class ExploreController {
     description:
       'Get popular tags ?time=[today,yesterday,week,month,year,all]&page=1&pageSize=25&location=[global,local]',
   })
-  async getPopularTags() {
-    return this.exploreService.testFunction();
+  async getPopularTags(@Query() paginationQuery: PaginationQuery) {
+    const { data, exception } = await this.exploreService.getPopularTags(paginationQuery);
+
+    if (!data) {
+      throw exception;
+    }
+
+    return data;
   }
 
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
-  @Get('/tag/:id')
-  async getTagById(@Param('id') id: string) {
-    return id;
-  }
+  @Get('/tag/:tagName')
+  async getTagByTagName(@Param('tagName') tagName: string) {
+    const { data, exception } = await this.exploreService.getTagByTagName(tagName);
 
-  @Get('/tag/:id/posts')
-  async getTagPosts(@Param('id') id: string) {
-    return id;
+    if (!data) {
+      throw exception;
+    }
+
+    return data;
   }
 
   @Get('/people')
-  async getPopularPeople() {
-    return null;
+  async getPopularPeople(@Query() paginationQuery: PaginationQuery) {
+    const { data, exception } = await this.exploreService.getPopularPeople(paginationQuery);
+
+    if (!data) {
+      throw exception;
+    }
+
+    return data;
+  }
+
+  @Get('/tags-and-people')
+  async getPopularTagsAndPeople(@Query() paginationQuery: PaginationQuery) {
+    const { data, exception } = await this.exploreService.getPopularTagsAndPeople(paginationQuery);
+
+    if (!data) {
+      throw exception;
+    }
+
+    return data;
   }
 
   @Get('/posts')
