@@ -125,6 +125,13 @@ export class PostService {
       };
     }
 
+    const tags = this.getTagsFromPostContent(dto.content).map((tag) => tag.replace('#', ''));
+
+    await this.prisma.tag.createMany({
+      data: tags.map((tag) => ({ tagName: tag })),
+      skipDuplicates: true,
+    });
+
     const post = await this.prisma.post.create({
       data: {
         content: dto.content,
@@ -132,6 +139,9 @@ export class PostService {
           connect: {
             id: user.id,
           },
+        },
+        tags: {
+          connect: tags.map((tag) => ({ tagName: tag })),
         },
         images: {
           createMany: {
@@ -582,5 +592,11 @@ export class PostService {
     }
 
     return LikeStatus.NONE;
+  }
+
+  private getTagsFromPostContent(content: string): RegExpMatchArray {
+    const hashtagRegex = /#[-A-Z0-9_]+/gi;
+    const tags = content.match(hashtagRegex);
+    return tags || [];
   }
 }
