@@ -1,11 +1,12 @@
 generator client {
   provider        = "prisma-client-js"
-  previewFeatures = ["extendedIndexes"]
+  previewFeatures = ["extendedIndexes", "referentialIntegrity"]
 }
 
 datasource db {
-  provider = "postgresql"
+  provider = "mysql"
   url      = env("DATABASE_URL")
+  referentialIntegrity = "prisma"
 }
 
 model Auth {
