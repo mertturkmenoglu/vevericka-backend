@@ -18,7 +18,7 @@ import { APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
     }),
     ThrottlerModule.forRoot({
       ttl: 60,
-      limit: process.env.NODE_ENV === 'production' ? 20 : 100,
+      limit: process.env.NODE_ENV === 'production' ? 120 : 300,
     }),
     CacheModule.register({
       isGlobal: true,
