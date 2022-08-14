@@ -10,6 +10,7 @@ import { BlogModule } from './blog/blog.module';
 import { AssetModule } from './asset/asset.module';
 import { AlgoliaModule } from './algolia/algolia.module';
 import { APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
+import { ShortModule } from './short/short.module';
 
 @Module({
   imports: [
@@ -33,6 +34,7 @@ import { APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
     BlogModule,
     AssetModule,
     AlgoliaModule,
+    ShortModule,
   ],
   controllers: [],
   providers: [
