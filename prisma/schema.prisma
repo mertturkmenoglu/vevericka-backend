@@ -1,6 +1,6 @@
 generator client {
   provider        = "prisma-client-js"
-  previewFeatures = ["extendedIndexes", "referentialIntegrity"]
+  previewFeatures = ["referentialIntegrity"]
 }
 
 datasource db {
@@ -58,8 +58,10 @@ model User {
   likes       Post[]        @relation(name: "UserLikes")
   dislikes    Post[]        @relation(name: "UserDislikes")
   comments    Comment[]     @relation(name: "UserComments")
-  followers   User[]        @relation("UserFollows", references: [id])
-  following   User[]        @relation("UserFollows", references: [id])
+  followers   User[]        @relation("UserFollows")
+  following   User[]        @relation("UserFollows")
+  shorts      Short[]       @relation("UserShorts")
+
   // Meta
   createdAt   DateTime      @default(now())
   updatedAt   DateTime      @updatedAt
@@ -115,6 +117,22 @@ model Post {
   comments Comment[]   @relation(name: "PostComments")
   images   PostImage[] @relation(name: "PostImages")
   videos   PostVideo[] @relation(name: "PostVideos")
+
+  // Meta
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Short {
+  // Primary Key
+  id Int @id @default(autoincrement())
+
+  // Scalar Values
+  url String @db.VarChar(255)
+
+  // Relations
+  user     User        @relation(name: "UserShorts", fields: [userId], references: [id], onDelete: Cascade)
+  userId   Int
 
   // Meta
   createdAt DateTime @default(now())
