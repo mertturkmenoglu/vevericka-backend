@@ -8,7 +8,6 @@ import { ExploreModule } from './explore/explore.module';
 import { PostModule } from './post/post.module';
 import { BlogModule } from './blog/blog.module';
 import { AssetModule } from './asset/asset.module';
-import { AlgoliaModule } from './algolia/algolia.module';
 import { APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
 import { ShortModule } from './short/short.module';
 
@@ -33,7 +32,6 @@ import { ShortModule } from './short/short.module';
     PostModule,
     BlogModule,
     AssetModule,
-    AlgoliaModule,
     ShortModule,
   ],
   controllers: [],

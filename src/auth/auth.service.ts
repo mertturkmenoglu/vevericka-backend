@@ -5,17 +5,12 @@ import { RegisterDto } from './dto/register.dto';
 import { AsyncResult } from 'src/types/AsyncResult';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { Auth } from '@prisma/client';
-import { AlgoliaService } from 'src/algolia/algolia.service';
 import { AuthWithoutPassword } from './types/auth-without-password.type';
 import { AuthWithUser } from './types/auth-with-user.type';
 
 @Injectable()
 export class AuthService {
-  constructor(
-    private readonly prisma: PrismaService,
-    private readonly jwtService: JwtService,
-    private readonly algoliaService: AlgoliaService,
-  ) {}
+  constructor(private readonly prisma: PrismaService, private readonly jwtService: JwtService) {}
 
   async doesUserExist(username: string, email: string): AsyncResult<boolean> {
     const user = await this.prisma.auth.count({
@@ -62,16 +57,6 @@ export class AuthService {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { password, ...rest } = saved;
     const { user, ...auth } = rest;
-
-    // Update Algolia user index
-    await this.algoliaService.saveUser({
-      id: auth.userId,
-      name: user.name,
-      username: user.username,
-      image: user.image,
-      protected: user.protected,
-      verified: user.verified,
-    });
 
     return {
       data: auth,

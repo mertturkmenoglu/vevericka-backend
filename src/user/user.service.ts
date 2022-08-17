@@ -1,9 +1,4 @@
-import {
-  HttpException,
-  Injectable,
-  NotFoundException,
-  UnauthorizedException,
-} from '@nestjs/common';
+import { HttpException, Injectable, NotFoundException } from '@nestjs/common';
 import { AsyncResult } from '../types/AsyncResult';
 import { SetProfilePictureDto } from './dto/set-profile-picture.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
@@ -18,55 +13,12 @@ import { CreateHobbyDto } from './dto/create-hobby.dto';
 import { CreateFeatureDto } from './dto/create-feature.dto';
 import { Profile } from './types/profile.type';
 import { UpdateProfileDto } from './dto/update-profile.dto';
-import { UpdateAlgoliaSearchIndex } from './dto/update-algolia-search-index.dto';
-import { AlgoliaService } from 'src/algolia/algolia.service';
 import { RequestUser } from './types/request-user.type';
 import { ProfileOmitted } from './types/profile-omitted.type';
 
 @Injectable()
 export class UserService {
-  constructor(
-    private readonly prisma: PrismaService,
-    private readonly algoliaService: AlgoliaService,
-  ) {}
-
-  async updateAlgoliaSearchIndex(dto: UpdateAlgoliaSearchIndex): AsyncResult<boolean> {
-    if (
-      dto.adminKey !== process.env.ALGOLIA_ADMIN_KEY ||
-      dto.applicationId !== process.env.ALGOLIA_APPLICATION_ID
-    ) {
-      return {
-        // eslint-disable-next-line quotes
-        exception: new UnauthorizedException("You don't have the rights to do this operation"),
-      };
-    }
-
-    const allUsers = await this.prisma.user.findMany({
-      select: {
-        id: true,
-        name: true,
-        username: true,
-        email: true,
-        protected: true,
-        verified: true,
-        image: true,
-      },
-    });
-
-    try {
-      allUsers.forEach(async (user) => {
-        this.algoliaService.saveUser(user);
-      });
-
-      return {
-        data: true,
-      };
-    } catch (e) {
-      return {
-        exception: new HttpException(`Algolia error: ${JSON.stringify(e)}`, 500),
-      };
-    }
-  }
+  constructor(private readonly prisma: PrismaService) {}
 
   async getUserByUsername(username: string): AsyncResult<User> {
     const user = await this.prisma.user.findUnique({
