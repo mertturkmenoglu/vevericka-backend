@@ -114,11 +114,16 @@ export class AuthController {
       id: user.id,
     };
 
-    res.header('Set-Cookie', this.authService.getCookieWithJwtToken(payload));
-
-    return res.json({
-      username: user.username,
-    });
+    return res
+      .cookie('jwt-token', this.authService.signJwtPaylod(payload), {
+        httpOnly: true,
+        secure: process.env.NODE_ENV !== 'development',
+        maxAge: 1000 * 60 * 60 * 24 * 7,
+        path: '/',
+      })
+      .json({
+        username: user.username,
+      });
   }
 
   @UseGuards(JwtAuthGuard)
