@@ -45,7 +45,7 @@ export class PostController {
   @Get('/:id')
   async getPostById(
     @Param('id', ParseIntPipe) id: number,
-    @User() user: RequestUser,
+    @User() { user }: RequestUser,
   ): Promise<SinglePost> {
     const { data, exception } = await this.postService.getPostById(id, user.username);
 
@@ -118,7 +118,7 @@ export class PostController {
   @HttpCode(204)
   async likePost(
     @Param('id', ParseIntPipe) postId: number,
-    @User() user: RequestUser,
+    @User() { user }: RequestUser,
   ): Promise<void> {
     const { data, exception } = await this.postService.changeLikeStatus(
       postId,
@@ -138,7 +138,7 @@ export class PostController {
   @HttpCode(204)
   async dislikePost(
     @Param('id', ParseIntPipe) postId: number,
-    @User() user: RequestUser,
+    @User() { user }: RequestUser,
   ): Promise<void> {
     const { data, exception } = await this.postService.changeLikeStatus(
       postId,
@@ -158,7 +158,7 @@ export class PostController {
   @HttpCode(204)
   async likeNone(
     @Param('id', ParseIntPipe) postId: number,
-    @User() user: RequestUser,
+    @User() { user }: RequestUser,
   ): Promise<void> {
     const { data, exception } = await this.postService.changeLikeStatus(
       postId,
