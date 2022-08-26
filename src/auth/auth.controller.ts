@@ -116,7 +116,9 @@ export class AuthController {
 
     res.header('Set-Cookie', cookieString);
 
-    return res.sendStatus(200);
+    return res.json({
+      username: user.username,
+    });
   }
 
   @UseGuards(JwtAuthGuard)
