@@ -107,14 +107,14 @@ export class AuthController {
 
     const user = result.user;
 
-    const cookieString = this.authService.getCookieWithJwtToken({
+    const payload = {
       email: user.email,
       username: user.username,
       image: user.image,
       id: user.id,
-    });
+    };
 
-    res.header('Set-Cookie', cookieString);
+    res.header('Set-Cookie', this.authService.getCookieWithJwtToken(payload));
 
     return res.json({
       username: user.username,
