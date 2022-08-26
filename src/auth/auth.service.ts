@@ -124,15 +124,8 @@ export class AuthService {
     return betaCode === process.env.BETA_REGISTER_CODE;
   }
 
-  public getCookieWithJwtToken(payload: JwtPayload): string {
-    const token = this.jwtService.sign(payload);
-    return createCookie({
-      name: 'jwt-token',
-      value: token,
-      maxAge: '7d',
-      isHttpOnly: true,
-      path: '/',
-    });
+  public signJwtPaylod(payload: JwtPayload): string {
+    return this.jwtService.sign(payload);
   }
 
   public get cookieForLogout(): string {
