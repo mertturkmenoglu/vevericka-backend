@@ -1,6 +1,12 @@
 export type RequestUser = {
-  id: number;
-  name: string;
-  username: string;
-  image: string;
+  email: string;
+  password: string;
+  userId: number;
+  user: {
+    id: number;
+    username: string;
+    email: string;
+    name: string;
+    image: string;
+  };
 };
