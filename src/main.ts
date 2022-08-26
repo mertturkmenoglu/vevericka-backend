@@ -13,10 +13,12 @@ import { PrismaService } from './prisma/prisma.service';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
     cors: {
-      origin: '*',
+      origin:
+        process.env.NODE_ENV === 'production' ? 'https://vevericka.app' : 'http://localhost:3000',
       methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
       preflightContinue: false,
       optionsSuccessStatus: 204,
+      credentials: true,
     },
   });
 
