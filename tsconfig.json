@@ -27,7 +27,10 @@
     "incremental": true,
     "strictBindCallApply": false,
     "forceConsistentCasingInFileNames": false,
-    "noFallthroughCasesInSwitch": false
+    "noFallthroughCasesInSwitch": false,
+    "paths": {
+      "@/*": ["src/*"],
+    }
   },
   "exclude": ["node_modules", "src/v2"],
   "lib": ["es2015"]
