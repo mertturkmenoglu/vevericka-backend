@@ -1,18 +1,17 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import * as argon2 from 'argon2';
-import { RegisterDto } from './dto/register.dto';
-import { AsyncResult } from 'src/types/AsyncResult';
+import { AuthWithoutPasswordDto, JwtPayload, RegisterDto } from './dto';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { Auth } from '@prisma/client';
-import { AuthWithoutPassword } from './types/auth-without-password.type';
+
 import { AuthWithUser } from './types/auth-with-user.type';
+import { AsyncResult, createCookie } from '@/common';
 
 @Injectable()
 export class AuthService {
   constructor(private readonly prisma: PrismaService, private readonly jwtService: JwtService) {}
 
-  async doesUserExist(username: string, email: string): AsyncResult<boolean> {
+  public async doesUserExist(username: string, email: string): Promise<boolean> {
     const user = await this.prisma.auth.count({
       where: {
         OR: [
@@ -28,42 +27,43 @@ export class AuthService {
       },
     });
 
-    return {
-      data: user > 0,
-    };
+    return user > 0;
   }
 
-  async saveUser(dto: RegisterDto): AsyncResult<AuthWithoutPassword> {
-    const hashed = await argon2.hash(dto.password, { type: argon2.argon2i });
+  async saveUser(dto: RegisterDto): AsyncResult<AuthWithoutPasswordDto> {
+    try {
+      const hashed = await argon2.hash(dto.password, { type: argon2.argon2i });
 
-    const saved = await this.prisma.auth.create({
-      data: {
-        email: dto.email,
-        password: hashed,
-        user: {
-          create: {
-            email: dto.email,
-            username: dto.username,
-            name: dto.name,
-            image: dto.image,
+      const saved = await this.prisma.auth.create({
+        data: {
+          email: dto.email,
+          password: hashed,
+          user: {
+            create: {
+              email: dto.email,
+              username: dto.username,
+              name: dto.name,
+              image: dto.image,
+            },
           },
         },
-      },
-      include: {
-        user: true,
-      },
-    });
+        include: {
+          user: true,
+        },
+      });
 
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const { password, ...rest } = saved;
-    const { user, ...auth } = rest;
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      const { password, ...rest } = saved;
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      const { user, ...auth } = rest;
 
-    return {
-      data: auth,
-    };
+      return auth;
+    } catch (e) {
+      return new InternalServerErrorException('Cannot save user');
+    }
   }
 
-  async findUserByEmail(email: string): AsyncResult<AuthWithUser> {
+  public async findUserByEmail(email: string): AsyncResult<AuthWithUser> {
     const user = await this.prisma.auth.findUnique({
       where: {
         email,
@@ -74,67 +74,17 @@ export class AuthService {
     });
 
     if (!user) {
-      return {
-        exception: new NotFoundException(`User not found: ${email}`),
-      };
+      return new NotFoundException(`User not found: ${email}`);
     }
 
-    return {
-      data: user,
-    };
+    return user;
   }
 
-  async doPasswordsMatch(plain: string, hashed: string): AsyncResult<boolean> {
-    const match = await argon2.verify(hashed, plain, { type: argon2.argon2i });
-    return {
-      data: match,
-    };
+  public async doPasswordsMatch(plain: string, hashed: string): Promise<boolean> {
+    return await argon2.verify(hashed, plain, { type: argon2.argon2i });
   }
 
-  async getBearerToken(
-    id: number,
-    username: string,
-    email: string,
-    image: string,
-  ): AsyncResult<string> {
-    const payload = {
-      id,
-      username,
-      email,
-      image,
-    };
-
-    const jwtToken = this.jwtService.sign(payload, {
-      secret: process.env.JWT_SECRET,
-      expiresIn: '7d',
-    });
-
-    const bearerToken = `Bearer ${jwtToken}`;
-    return {
-      data: bearerToken,
-    };
-  }
-
-  async get(email: string): AsyncResult<Auth> {
-    const user = await this.prisma.auth.findUnique({
-      where: {
-        email,
-      },
-    });
-
-    if (!user) {
-      return {
-        exception: new NotFoundException(`User not found: ${email}`),
-      };
-    }
-
-    return {
-      data: user,
-    };
-  }
-
-  async deleteUser(username: string): AsyncResult<boolean> {
-    console.log('auth service', { username });
+  public async deleteUser(username: string): AsyncResult<boolean> {
     const userFromUserTable = await this.prisma.user.findUnique({
       where: {
         username,
@@ -142,9 +92,7 @@ export class AuthService {
     });
 
     if (!userFromUserTable) {
-      return {
-        exception: new NotFoundException(`User not found: ${username}`),
-      };
+      return new NotFoundException(`User not found: ${username}`);
     }
 
     const user = await this.prisma.auth.findUnique({
@@ -154,9 +102,7 @@ export class AuthService {
     });
 
     if (!user) {
-      return {
-        exception: new NotFoundException(`User not found: ${username}`),
-      };
+      return new NotFoundException(`User not found: ${username}`);
     }
 
     await this.prisma.auth.delete({
@@ -171,12 +117,31 @@ export class AuthService {
       },
     });
 
-    return {
-      data: true,
-    };
+    return true;
   }
 
-  checkBetaCode(betaCode: string): boolean {
+  public checkBetaCode(betaCode: string): boolean {
     return betaCode === process.env.BETA_REGISTER_CODE;
+  }
+
+  public getCookieWithJwtToken(payload: JwtPayload): string {
+    const token = this.jwtService.sign(payload);
+    return createCookie({
+      name: 'jwt-token',
+      value: token,
+      maxAge: '7d',
+      isHttpOnly: true,
+      path: '/',
+    });
+  }
+
+  public get cookieForLogout(): string {
+    return createCookie({
+      name: 'jwt-token',
+      value: '',
+      isHttpOnly: true,
+      path: '/',
+      maxAge: '0',
+    });
   }
 }
