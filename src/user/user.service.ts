@@ -527,7 +527,7 @@ export class UserService {
       }),
       this.prisma.user.findUnique({
         where: {
-          username: requestUser.username,
+          username: requestUser.user.username,
         },
         include: {
           following: {
@@ -554,7 +554,7 @@ export class UserService {
       followersCount: count.followers,
       followingCount: count.following,
       postsCount: count.posts,
-      isThisUser: rest.username === requestUser.username,
+      isThisUser: rest.username === requestUser.user.username,
       isFollowedByThisUser,
     };
 
