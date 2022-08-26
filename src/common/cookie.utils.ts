@@ -3,7 +3,7 @@ export interface CreateCookieOptions {
   value: string;
   isHttpOnly?: boolean;
   path?: string;
-  maxAge?: string;
+  maxAge?: string | number;
 }
 
 export function createCookie({
