@@ -5,6 +5,7 @@ import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import helmet from 'helmet';
 import compression from 'compression';
 import morgan from 'morgan';
+import cookieParser from 'cookie-parser';
 
 import { AppModule } from './app.module';
 import { PrismaService } from './prisma/prisma.service';
@@ -51,6 +52,8 @@ async function bootstrap() {
   app.use(morgan('dev'));
 
   app.use(compression());
+
+  app.use(cookieParser());
 
   const prismaService = app.get(PrismaService);
   await prismaService.enableShutdownHooks(app);
