@@ -118,6 +118,7 @@ export class AuthController {
       .cookie('jwt-token', this.authService.signJwtPaylod(payload), {
         httpOnly: true,
         secure: process.env.NODE_ENV !== 'development',
+        domain: process.env.NODE_ENV === 'development' ? 'localhost' : 'vevericka.app',
         maxAge: 1000 * 60 * 60 * 24 * 7,
         path: '/',
       })
