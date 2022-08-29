@@ -11,15 +11,20 @@ import { AppModule } from './app.module';
 import { PrismaService } from './prisma/prisma.service';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule, {
-    cors: {
-      origin:
-        process.env.NODE_ENV === 'production' ? 'https://vevericka.app' : 'http://localhost:3000',
-      methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
-      preflightContinue: false,
-      optionsSuccessStatus: 204,
-      credentials: true,
+  const app = await NestFactory.create(AppModule);
+
+  app.enableCors({
+    origin: (origin, callback) => {
+      const prodRegex = '^https:\\/\\/vevericka\\.app$';
+      const devRegex = '^http:\\/\\/localhost\\:3000$';
+      const regex = process.env.NODE_ENV === 'development' ? devRegex : prodRegex;
+      const isValid = new RegExp(regex, 'i').test(origin);
+      callback(null, isValid);
     },
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+    preflightContinue: false,
+    optionsSuccessStatus: 204,
+    credentials: true,
   });
 
   app.enableVersioning({
