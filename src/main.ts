@@ -19,6 +19,7 @@ async function bootstrap() {
       const devRegex = '^http:\\/\\/localhost\\:3000$';
       const regex = process.env.NODE_ENV === 'development' ? devRegex : prodRegex;
       const isValid = new RegExp(regex, 'i').test(origin);
+      console.log('CORS: ', { origin, env: process.env.NODE_ENV, isValid });
       callback(null, isValid);
     },
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
