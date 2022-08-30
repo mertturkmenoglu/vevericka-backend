@@ -117,6 +117,7 @@ export class AuthController {
     return res
       .cookie('jwt-token', this.authService.signJwtPaylod(payload), {
         httpOnly: true,
+        domain: process.env.NODE_ENV === 'development' ? 'localhost' : 'railway.app',
         secure: process.env.NODE_ENV !== 'development',
         maxAge: 1000 * 60 * 60 * 24 * 7,
         path: '/',
