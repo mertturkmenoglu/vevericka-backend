@@ -23,7 +23,7 @@ export class ContentfulService {
     return this._locale;
   }
 
-  private async getAllPlaylists(): Promise<Playlist[]> {
+  public async getAllPlaylists(): Promise<Playlist[]> {
     const res = await this.client.getEntries<Playlist>({
       content_type: 'monthlyPlaylist',
       locale: this.locale,

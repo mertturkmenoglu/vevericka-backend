@@ -37,6 +37,13 @@ export class BlogController {
     return latest;
   }
 
+  @Get('/playlist/all')
+  async getAllPlaylists(): Promise<Playlist[]> {
+    const all = await this.blogService.getAllPlaylists();
+
+    return all;
+  }
+
   @Get('/playlist')
   @ApiOkResponse({
     description: 'Get playlist by query',

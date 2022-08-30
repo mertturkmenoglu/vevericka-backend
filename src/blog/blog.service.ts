@@ -15,4 +15,8 @@ export class BlogService {
   async getPlaylistByQuery(year: number, month: number): Promise<Playlist | null> {
     return this.contentfulService.getPlaylistByQuery(year, month);
   }
+
+  async getAllPlaylists(): Promise<Playlist[]> {
+    return this.contentfulService.getAllPlaylists();
+  }
 }
